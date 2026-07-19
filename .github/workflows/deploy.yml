@@ -1,0 +1,59 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Trigger en push a la rama principal
+  push:
+    branches: [ main, master ]
+  # Permite ejecutar este workflow manualmente desde Actions tab
+  workflow_dispatch:
+
+# Establece permisos de GITHUB_TOKEN para permitir despliegue a Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Solo permite un despliegue concurrente
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  BUILD_PATH: "."
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tu repositorio
+        uses: actions/checkout@v4
+      
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+      
+      - name: Instalar dependencias
+        run: npm ci
+      
+      - name: Build con Astro
+        run: npm run build
+
+      - name: Upload artefacto
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./dist
+
+  deploy:
+    name: Deploy
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy a GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
