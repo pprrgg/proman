@@ -1,0 +1,13 @@
+{
+  "name": "proman-docs-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/copy-docs.js && astro dev",
+    "build": "node scripts/copy-docs.js && astro build",
+    "preview": "astro preview"
+  },
+  "devDependencies": {
+    "astro": "^4.8.0"
+  }
+}
