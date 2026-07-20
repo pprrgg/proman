@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FV Control</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<style>
+  :root{
+    --bg-panel: rgba(13,20,69,0.95);
+    --bg-panel-header: rgba(26,35,126,0.5);
+    --orange: #ff9800;
+    --orange-dark: #f57c00;
+    --blue: #4fc3f7;
+    --red: #ef5350;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;width:100%;height:100%;font-family:'Roboto','Helvetica','Arial',sans-serif;background:#0d1445;overflow:hidden;}
+  #app{position:relative;width:100%;height:100vh;overflow:hidden;}
+  #map{position:absolute;inset:0;height:100%;width:100%;touch-action:none;user-select:none;}
+  .leaflet-container{touch-action:none !important;user-select:none;}
+  path.leaflet-interactive{touch-action:none !important;cursor:pointer;}
+
+  /* ---------- SIDEBAR ---------- */
+  #sidebar{
+    position:fixed;top:100px;left:0;z-index:1200;
+    width:180px;height:calc(100vh - 100px);
+    background:var(--bg-panel);backdrop-filter:blur(12px);
+    border-radius:0 8px 8px 0;box-shadow:0 8px 32px rgba(0,0,0,0.5);
+    border:1px solid rgba(255,255,255,0.08);overflow:hidden;
+    transition:width .3s ease;display:flex;flex-direction:column;
+  }
+  #sidebar.collapsed{width:40px;}
+  #sidebar-header{
+    display:flex;align-items:center;justify-content:space-between;padding:8px;
+    border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;min-height:40px;
+    background:var(--bg-panel-header);
+  }
+  #sidebar.collapsed #sidebar-header{justify-content:center;}
+  .brand{color:var(--blue);font-size:.85rem;font-weight:900;white-space:nowrap;}
+  .icon-btn{background:transparent;border:none;cursor:pointer;color:var(--blue);
+    display:flex;align-items:center;justify-content:center;padding:4px;border-radius:50%;}
+  .icon-btn:hover{background:rgba(255,255,255,0.08);}
+  .icon-btn svg{width:18px;height:18px;fill:currentColor;}
+
+  #sidebar-body{flex:1;overflow-y:auto;padding:8px;}
+  #sidebar.collapsed #sidebar-body{display:none;}
+
+  .stats-box{background:rgba(255,255,255,0.05);border-radius:6px;padding:8px;margin-bottom:8px;text-align:center;color:rgba(255,255,255,0.8);font-size:.75rem;}
+
+  .btn-new{width:100%;background:var(--orange);color:#fff;font-size:.75rem;border:none;border-radius:4px;padding:6px 0;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;font-weight:600;}
+  .btn-new:hover{background:var(--orange-dark);}
+
+  .grid-item{margin-bottom:4px;}
+  .grid-item-header{
+    border-radius:6px;padding:4px 8px;background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.05);cursor:pointer;min-height:32px;
+    display:flex;align-items:center;justify-content:space-between;gap:4px;
+  }
+  .grid-item-header:hover{background:rgba(255,255,255,0.08);}
+  .grid-item-header.selected{background:rgba(255,165,0,0.25);border:1px solid rgba(255,165,0,0.4);}
+  .grid-item-text{flex:1;min-width:0;}
+  .grid-item-title-row{display:flex;align-items:center;justify-content:space-between;}
+  .grid-item-name{font-size:.75rem;font-weight:600;color:rgba(255,255,255,0.8);}
+  .grid-item-name.selected{color:#fff;font-weight:900;}
+  .grid-item-count{font-size:.65rem;color:rgba(255,255,255,0.5);}
+  .grid-item-power{font-size:.55rem;color:rgba(255,255,255,0.3);}
+  .expand-btn{background:transparent;border:none;cursor:pointer;color:rgba(255,255,255,0.5);padding:2px;display:flex;}
+  .expand-btn.selected{color:#fff;}
+  .expand-btn svg{width:16px;height:16px;fill:currentColor;}
+
+  .config-wrap{margin-left:8px;padding-left:8px;border-left:2px solid rgba(255,165,0,0.3);padding-top:8px;padding-bottom:8px;border-radius:0 4px 4px 0;}
+  .config-section{border-radius:6px;padding:8px;margin-bottom:8px;}
+  .sec-info{background:rgba(255,255,255,0.05);}
+  .sec-panel{background:rgba(79,195,247,0.05);}
+  .sec-struct{background:rgba(255,152,0,0.05);}
+  .sec-title{font-size:.55rem;margin-bottom:4px;letter-spacing:1px;}
+  .sec-info .sec-title{color:rgba(255,255,255,0.3);}
+  .sec-panel .sec-title{color:rgba(79,195,247,0.4);}
+  .sec-struct .sec-title{color:rgba(255,152,0,0.4);}
+
+  .field{margin-bottom:6px;}
+  .field label{display:block;font-size:.7rem;color:rgba(255,255,255,0.5);font-weight:500;margin-bottom:1px;}
+  .field input[type=text], .field input[type=number]{
+    width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.15);
+    color:rgba(255,255,255,0.9);font-size:.75rem;padding:2px 0;outline:none;font-family:inherit;
+  }
+  .field input:focus{border-bottom:1px solid var(--orange);}
+  .field select{
+    width:100%;background:#0d1445;border:1px solid rgba(255,255,255,0.15);border-radius:4px;
+    color:rgba(255,255,255,0.9);font-size:.7rem;padding:4px;outline:none;font-family:inherit;
+  }
+
+  .btn-outline{width:100%;font-size:.6rem;color:rgba(255,255,255,0.7);background:transparent;
+    border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:4px 0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:4px;}
+  .btn-outline:hover{border-color:var(--orange);color:#fff;}
+
+  .orientation-toggle{display:flex;justify-content:center;margin-bottom:6px;}
+  .btn-orient{font-size:.6rem;padding:4px 16px;color:rgba(255,255,255,0.8);
+    border:1px solid rgba(255,255,255,0.15);background:rgba(79,195,247,0.1);border-radius:16px;
+    min-width:120px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;}
+  .btn-orient:hover{background:rgba(79,195,247,0.2);border-color:var(--blue);}
+
+  .total-panels{color:rgba(255,255,255,0.4);font-size:.6rem;text-align:center;}
+
+  .preview-box{display:flex;flex-direction:column;align-items:center;gap:4px;background:rgba(0,0,0,0.2);border-radius:6px;padding:8px;margin-bottom:8px;}
+  .preview-svg-wrap{transform:scale(2);transform-origin:center center;display:flex;justify-content:center;align-items:center;width:100%;padding:6px 0;}
+  .preview-label{color:rgba(255,255,255,0.5);font-size:.6rem;font-weight:600;}
+  .angle-labels{display:flex;gap:16px;justify-content:center;width:100%;}
+
+  .slider-row{margin-bottom:4px;}
+  .slider-row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
+  .slider-row-head .label{color:rgba(255,255,255,0.4);font-size:.55rem;}
+  .slider-row-head .value{color:#fff;font-size:.6rem;font-weight:600;}
+  input[type=range]{width:100%;height:4px;-webkit-appearance:none;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--blue);cursor:pointer;}
+  input[type=range].orange::-webkit-slider-thumb{background:var(--orange);}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--blue);border:none;cursor:pointer;}
+  input[type=range].orange::-moz-range-thumb{background:var(--orange);}
+  input[type=range]:disabled{opacity:.35;}
+
+  .actions-row{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.05);padding-top:4px;justify-content:center;}
+  .btn-action{font-size:.55rem;color:rgba(255,255,255,0.5);background:transparent;border:none;padding:2px 6px;min-height:20px;cursor:pointer;display:flex;align-items:center;gap:2px;}
+  .btn-action:hover{color:#fff;}
+  .btn-action.danger{color:var(--red);}
+  .btn-action svg{width:12px;height:12px;fill:currentColor;}
+
+  /* ---------- SAVE FAB ---------- */
+  #save-fab-wrap{position:fixed;bottom:24px;right:24px;z-index:99999;pointer-events:none;}
+  #save-fab{
+    pointer-events:auto;transition:all .3s;opacity:0;transform:scale(0);
+    width:48px;height:48px;border-radius:50%;background:#ed6c02;color:#fff;border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,0,0,0.4);
+  }
+  #save-fab.show{opacity:1;transform:scale(1);}
+  #save-fab.pulse{animation:pulse-small 1.5s infinite;}
+  #save-fab:hover{background:#e65100;}
+  #save-fab svg{width:22px;height:22px;fill:currentColor;}
+  @keyframes pulse-small{0%{box-shadow:0 0 0 0 rgba(237,108,2,.6);}70%{box-shadow:0 0 0 10px rgba(237,108,2,0);}100%{box-shadow:0 0 0 0 rgba(237,108,2,0);}}
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;display:none;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:#111a4d;color:#fff;border-radius:8px;width:min(520px,92vw);max-height:86vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.6);}
+  .modal-title{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;font-size:1.1rem;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .modal-body{padding:20px;}
+  .sombra-note{font-size:.75rem;color:rgba(255,255,255,0.5);margin-bottom:12px;line-height:1.4;}
+  .sombra-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .sombra-cell{background:rgba(255,255,255,0.05);border-radius:6px;padding:8px;text-align:center;}
+  .sombra-cell .dir{font-size:.6rem;color:rgba(255,255,255,0.5);margin-bottom:4px;}
+  .sombra-cell .val{font-size:.7rem;color:var(--orange);font-weight:700;margin-top:2px;}
+
+  /* ---------- LEAFLET CUSTOM MARKERS ---------- */
+  .custom-drag-icon, .custom-rotate-icon, .arrow, .grid-plus, .info-marker-icon{background:transparent;border:none;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <span class="brand" id="brand-text">☀️ FV Control</span>
+      <button class="icon-btn" id="btn-toggle-menu"></button>
+    </div>
+    <div id="sidebar-body">
+      <div class="stats-box" id="stats-box">0p | 0.00 kWp</div>
+      <button class="btn-new" id="btn-add-new">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        Nuevo
+      </button>
+      <div id="grid-list"></div>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <div id="save-fab-wrap">
+    <button id="save-fab" title="Guardar cambios">
+      <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+    </button>
+  </div>
+
+  <div class="modal-overlay" id="shadow-modal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span id="shadow-modal-title">Sombras</span>
+        <button class="icon-btn" id="btn-close-shadow">
+          <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="sombra-note">
+          Nota: el componente original (<code>ShadowProfileChart</code>) no estaba incluido en el archivo subido,
+          así que este es un editor equivalente simplificado: 16 valores de sombreado (uno por franja horaria/dirección),
+          de 0 (sombra total) a 1 (sin sombra).
+        </div>
+        <div class="sombra-grid" id="sombra-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     ICONOS / RECURSOS VISUALES
+     ============================================================ */
+  const arrowWhiteSvg = '<svg viewBox="0 0 24 24" fill="white" width="14" height="14"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path></svg>';
+
+  const moveIcon = L.divIcon({
+    className: 'custom-drag-icon',
+    html: '<div style="background-color: #ff9800; width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.3);"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"/></svg></div>',
+    iconSize: [22, 22], iconAnchor: [11, 11]
+  });
+
+  const rotateHandleIcon = L.divIcon({
+    className: 'custom-rotate-icon',
+    html: '<div style="background-color: #2196f3; width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.3);"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></div>',
+    iconSize: [22, 22], iconAnchor: [11, 11]
+  });
+
+  /* ============================================================
+     SVG PREVIEWS (Azimut / Ángulos)
+     ============================================================ */
+  function azimutPreviewSvg(rotation){
+    const size=50, cx=size/2, cy=size/2, r=15;
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="2,2" />
+      <text x="${cx}" y="${cy - r - 2}" font-size="4" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-weight="900">N</text>
+      <g transform="rotate(${rotation}, ${cx}, ${cy})">
+        <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cx + r}" stroke="#4fc3f7" stroke-width="2" stroke-linecap="round" />
+        <path d="M ${cx - 3} ${cy + r - 4} L ${cx} ${cy + r} L ${cx + 3} ${cy + r - 4} Z" fill="#4fc3f7" />
+        <circle cx="${cx}" cy="${cy}" r="2" fill="#333" />
+      </g>
+    </svg>`;
+  }
+
+  function anglePreviewSvg(tilt, slope, isDouble){
+    const sizeW=50, sizeH=60, cx=25, baseY=40, panelLen=16;
+    const tRad = tilt*Math.PI/180, sRad = slope*Math.PI/180;
+    const peakY = baseY - (panelLen*Math.sin(tRad));
+    const dx = panelLen*Math.cos(tRad);
+    const footLX = cx-dx, footRX = cx+dx;
+    const tx = cx + panelLen*Math.cos(-tRad);
+    const ty = baseY + panelLen*Math.sin(-tRad);
+    const sx1 = cx + 20*Math.cos(-sRad), sy1 = baseY + 20*Math.sin(-sRad);
+    const sx2 = cx - 20*Math.cos(-sRad), sy2 = baseY - 20*Math.sin(-sRad);
+    let body;
+    if(isDouble){
+      body = `<line x1="${footLX}" y1="${baseY}" x2="${cx}" y2="${peakY}" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round" opacity="0.6" />
+        <line x1="${footRX}" y1="${baseY}" x2="${cx}" y2="${peakY}" stroke="#1a677e" stroke-width="3" stroke-linecap="round" />
+        <circle cx="${cx}" cy="${peakY}" r="2" fill="#4fc3f7" />`;
+    } else {
+      body = `<line x1="${sx1}" y1="${sy1}" x2="${sx2}" y2="${sy2}" stroke="#f57c00" stroke-width="2" stroke-linecap="round" />
+        <line x1="${cx}" y1="${baseY}" x2="${tx}" y2="${ty}" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round" />
+        <circle cx="${cx}" cy="${baseY}" r="2" fill="#333" />`;
+    }
+    return `<svg width="${sizeW}" height="${sizeH}" viewBox="0 0 ${sizeW} ${sizeH}">
+      <path d="M ${cx + panelLen} ${baseY} A ${panelLen} ${panelLen} 0 0 0 ${cx - panelLen} ${baseY}" fill="none" stroke="rgba(255,255,255,0.2)" stroke-dasharray="2,2" />
+      <line x1="2" y1="${baseY}" x2="${sizeW - 2}" y2="${baseY}" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+      ${body}
+    </svg>`;
+  }
+
+  /* ============================================================
+     FreeGridManager -- pintado de paneles sobre el mapa
+     ============================================================ */
+  class FreeGridManager {
+    constructor(map, onUpdate, onSelect, onDoubleClick, onGridSelect) {
+      this.map = map;
+      this.onUpdate = onUpdate;
+      this.onSelect = onSelect;
+      this.onDoubleClick = onDoubleClick;
+      this.onGridSelect = onGridSelect;
+      this.gridLayer = L.layerGroup().addTo(this.map);
+
+      this.isDragging = false;
+      this.paintMode = true;
+      this.lastTouchedId = null;
+
+      const stopDrawing = () => {
+        if (this.isDragging) {
+          this.isDragging = false;
+          this.lastTouchedId = null;
+          this.map.dragging.enable();
+        }
+      };
+      window.addEventListener('pointerup', stopDrawing);
+      window.addEventListener('pointercancel', stopDrawing);
+
+      const handlePointerMove = (e) => {
+        if (!this.isDragging) return;
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        if (el && el._leaflet_id) {
+          this.gridLayer.eachLayer((layer) => {
+            if (layer._path === el && layer.options.customCellId) {
+              const cellId = layer.options.customCellId;
+              const gridId = layer.options.customGridId;
+              if (this.lastTouchedId !== cellId) {
+                this.lastTouchedId = cellId;
+                this.onUpdate(gridId, cellId, this.paintMode);
+              }
+            }
+          });
+        }
+      };
+      window.addEventListener('pointermove', handlePointerMove);
+    }
+
+    metersToPx(m) {
+      if (!this.map || !this.map._loaded) return 10;
+      const c = this.map.getCenter();
+      const p1 = this.map.latLngToLayerPoint(c);
+      const p2 = this.map.layerPointToLatLng(L.point(p1.x + 10, p1.y));
+      return (m / c.distanceTo(p2)) * 10;
+    }
+
+    render(grids, activeId) {
+      this.gridLayer.clearLayers();
+      grids.forEach(g => this.drawGrid(g, g.id === activeId));
+    }
+
+    drawGrid(grid, isActive) {
+      const center = this.map.latLngToLayerPoint(grid.baseLatLng);
+      const rad = (grid.rotation * Math.PI) / 180;
+      const tiltRad = (grid.config.tilt * Math.PI) / 180;
+
+      const isV = grid.config.orientation === 'vertical';
+      const rows = grid.config.rows || 1;
+      const cols = grid.config.cols || 1;
+      const baseH = isV ? grid.config.height : grid.config.width;
+      const baseW = isV ? grid.config.width : grid.config.height;
+
+      const panelH = baseH * rows;
+      const panelW = baseW * cols;
+
+      const pW_px = this.metersToPx(panelW);
+      const pH_px = this.metersToPx(panelH) * Math.cos(tiltRad);
+
+      const panels = new Set(grid.paneles || []);
+      const tipo = grid.config.tipoEstructura || 'coplanar';
+
+      const cellsToRender = new Set();
+      if (panels.size === 0) {
+        cellsToRender.add("0,0");
+      } else {
+        panels.forEach(id => {
+          cellsToRender.add(id);
+          const [r, c] = id.split(',').map(Number);
+          for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+              cellsToRender.add(`${r + dr},${c + dc}`);
+            }
+          }
+        });
+      }
+
+      cellsToRender.forEach(id => {
+        const [r, c] = id.split(',').map(Number);
+        const active = panels.has(id);
+
+        let arrowRad = rad;
+        let verticalOffset = 0;
+
+        if (tipo === 'doble') {
+          if (Math.abs(r) % 2 === 0) { arrowRad = rad + Math.PI; } else { arrowRad = rad; }
+          verticalOffset = r * pH_px + (Math.floor(r / 2) * (pH_px * 0.15));
+        } else if (tipo === 'libre') {
+          const lat = Math.abs(this.map.getCenter().lat);
+          const kFactor = 1 / Math.tan(Math.max(5, 90 - lat - 23.44) * Math.PI / 180);
+          const hProjected = panelH * Math.sin(Math.max(0, grid.config.tilt - grid.config.slope) * Math.PI / 180);
+          const gapMeters = hProjected * kFactor;
+          verticalOffset = r * (pH_px + this.metersToPx(gapMeters));
+        } else {
+          verticalOffset = r * pH_px;
+        }
+
+        const cp = L.point(
+          center.x + (c * pW_px * Math.cos(rad) - verticalOffset * Math.sin(rad)),
+          center.y + (c * pW_px * Math.sin(rad) + verticalOffset * Math.cos(rad))
+        );
+
+        const corners = [[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]].map(([dx, dy]) =>
+          this.map.layerPointToLatLng(L.point(
+            cp.x + (dx * pW_px * Math.cos(rad) - dy * pH_px * Math.sin(rad)),
+            cp.y + (dx * pW_px * Math.sin(rad) + dy * pH_px * Math.cos(rad))
+          ))
+        );
+
+        const cell = L.polygon(corners, {
+          color: active ? "#fff" : (isActive ? "rgba(255,255,255,0.4)" : "transparent"),
+          weight: active ? 1 : 0.5,
+          fillColor: active ? "#031530" : (isActive ? "rgba(255,255,255,0.1)" : "transparent"),
+          fillOpacity: active ? 0.6 : 0.2,
+          interactive: true,
+          className: isActive ? 'editable-cell' : 'non-interactive-cell',
+          customCellId: id,
+          customGridId: grid.id
+        }).addTo(this.gridLayer);
+
+        const cellLatLng = this.map.layerPointToLatLng(cp);
+
+        cell.on('dblclick', () => {
+          this.onSelect(grid.id);
+          this.onGridSelect(grid.id);
+          this.onDoubleClick();
+        });
+        cell.on('click', () => {
+          this.onSelect(grid.id);
+          this.onGridSelect(grid.id);
+        });
+
+        if (active) {
+          L.marker(cellLatLng, {
+            icon: L.divIcon({
+              className: 'arrow',
+              html: `<div style="transform: rotate(${arrowRad}rad); display: flex; justify-content: center; align-items: center; opacity: 0.8;">${arrowWhiteSvg}</div>`,
+              iconSize: [14, 14], iconAnchor: [7, 7]
+            }),
+            interactive: false
+          }).addTo(this.gridLayer);
+
+          if (rows > 1 || cols > 1) {
+            const p1 = corners[0], p2 = corners[1], p3 = corners[2], p4 = corners[3];
+            for (let i = 1; i < rows; i++) {
+              const ratio = i / rows;
+              const start = [p1.lat + (p4.lat - p1.lat) * ratio, p1.lng + (p4.lng - p1.lng) * ratio];
+              const end = [p2.lat + (p3.lat - p2.lat) * ratio, p2.lng + (p3.lng - p2.lng) * ratio];
+              L.polyline([start, end], { color: 'rgba(255,255,255,0.3)', weight: 0.8, interactive: false }).addTo(this.gridLayer);
+            }
+            for (let j = 1; j < cols; j++) {
+              const ratio = j / cols;
+              const start = [p1.lat + (p2.lat - p1.lat) * ratio, p1.lng + (p2.lng - p1.lng) * ratio];
+              const end = [p4.lat + (p3.lat - p4.lat) * ratio, p4.lng + (p3.lng - p4.lng) * ratio];
+              L.polyline([start, end], { color: 'rgba(255,255,255,0.3)', weight: 0.8, interactive: false }).addTo(this.gridLayer);
+            }
+          }
+        } else if (isActive) {
+          L.marker(cellLatLng, {
+            icon: L.divIcon({
+              className: 'grid-plus',
+              html: `<div style="color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 300;">+</div>`,
+              iconSize: [16, 16], iconAnchor: [8, 8]
+            }),
+            interactive: false
+          }).addTo(this.gridLayer);
+        }
+
+        if (isActive) {
+          L.DomEvent.on(cell._path, 'pointerdown', (e) => {
+            L.DomEvent.stop(e);
+            e.target.setPointerCapture(e.pointerId);
+            this.isDragging = true;
+            this.paintMode = !active;
+            this.lastTouchedId = id;
+            this.map.dragging.disable();
+            this.onUpdate(grid.id, id, this.paintMode);
+          });
+          cell.on('mouseover', () => {
+            if (this.isDragging) this.onUpdate(grid.id, id, this.paintMode);
+          });
+        }
+      });
+
+      // --- MARCADOR DE INFORMACIÓN ---
+      const bloquesPintados = (grid.paneles?.length || 0);
+      const panelesPorBloque = (grid.config.rows || 1) * (grid.config.cols || 1);
+      const totalPaneles = bloquesPintados * panelesPorBloque;
+      const nombreGrupo = grid.nombre || "G";
+
+      const infoIcon = L.divIcon({
+        className: 'info-marker-icon',
+        html: `
+          <div style="
+            background-color: #ff9800; color: white; width: 30px; height: 30px; border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border: 2px solid #ffffff; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            font-family: 'Roboto', 'Helvetica', sans-serif; pointer-events: none; user-select: none;
+            line-height: 1; padding: 2px 0;">
+            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;opacity:.9;margin-bottom:1px;line-height:1;">${nombreGrupo}</span>
+            <span style="font-size:13px;font-weight:800;line-height:1;">${totalPaneles}</span>
+          </div>`,
+        iconSize: [30, 30], iconAnchor: [15, 15]
+      });
+
+      L.marker(grid.baseLatLng, { icon: infoIcon, interactive: false, zIndexOffset: 1000, keyboard: false }).addTo(this.gridLayer);
+    }
+  }
+
+  /* ============================================================
+     ESTADO DE LA APP (equivalente a los useState de React)
+     ============================================================ */
+  const state = {
+    grids: [],
+    activeGridId: null,
+    shadowModalOpen: false,
+    shouldAutoCenter: false,
+    menuOpen: true,
+    expandedGroups: {},
+    isMapInteraction: false,
+    lastSavedSnapshot: ""
+  };
+  let needsAutoCenter = false;
+  let isSavingInternal = false;
+
+  let map = null;
+  let gridManager = null;
+  let baseMarker = null;
+  let rotateMarker = null;
+
+  function activeGrid() { return state.grids.find(g => g.id === state.activeGridId); }
+
+  /* ============================================================
+     PERSISTENCIA (sessionStorage "excelData" -> hoja "Diseño_FV")
+     Replica el flujo de guardado/carga del componente original.
+     ============================================================ */
+  function loadDataFromSession(forceCenter) {
+    const raw = sessionStorage.getItem("excelData");
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed["Diseño_FV"]?.length > 1) {
+        const headers = parsed["Diseño_FV"][0];
+        const data = parsed["Diseño_FV"].slice(1).map((r) => {
+          const row = {};
+          headers.forEach((h, i) => {
+            let v = r[i];
+            if (typeof v === "string" && (v.startsWith("{") || v.startsWith("["))) {
+              try { v = JSON.parse(v.replace(/'/g, '"')); } catch (e) { console.warn("Error parseando:", h, v); }
+            }
+            row[h] = v;
+          });
+          const lat = parseFloat(row.lat);
+          const lng = parseFloat(row.lng);
+          const validLat = Number.isFinite(lat) ? lat : 40.4167;
+          const validLng = Number.isFinite(lng) ? lng : -3.70325;
+          return {
+            id: row.id || Date.now(),
+            nombre: row.nombre || "G1",
+            rotation: Number.isFinite(parseFloat(row.rotation)) ? parseFloat(row.rotation) : 0,
+            baseLatLng: { lat: validLat, lng: validLng },
+            config: {
+              tipoEstructura: row.tipoEstructura || "coplanar",
+              width: Number.isFinite(parseFloat(row.width)) ? parseFloat(row.width) : 1.1,
+              height: Number.isFinite(parseFloat(row.height)) ? parseFloat(row.height) : 1.9,
+              tilt: Number.isFinite(parseFloat(row.tilt)) ? parseFloat(row.tilt) : 30,
+              slope: Number.isFinite(parseFloat(row.slope)) ? parseFloat(row.slope) : 0,
+              orientation: row.orientation || "vertical",
+              potenciaW: Number.isFinite(parseFloat(row.potenciaW)) ? parseFloat(row.potenciaW) : 450,
+              rows: Number.isFinite(parseInt(row.rows)) ? parseInt(row.rows) : 1,
+              cols: Number.isFinite(parseInt(row.cols)) ? parseInt(row.cols) : 1,
+              modelo: row.modelo || "",
+              FVcost: Number.isFinite(parseFloat(row.FVcost)) ? parseFloat(row.FVcost) : 0
+            },
+            paneles: Array.isArray(row.paneles) ? row.paneles : [],
+            sombras: Array.isArray(row.sombras) ? row.sombras : Array(16).fill(1)
+          };
+        }).filter(g => g.baseLatLng && Number.isFinite(g.baseLatLng.lat) && Number.isFinite(g.baseLatLng.lng));
+
+        const dataStr = JSON.stringify(data);
+        if (dataStr !== state.lastSavedSnapshot) {
+          state.grids = data;
+          state.lastSavedSnapshot = dataStr;
+          if (forceCenter && !isSavingInternal && data.length > 0) {
+            state.shouldAutoCenter = true;
+            needsAutoCenter = true;
+            state.expandedGroups[data[0].id] = true;
+          }
+          fullRender();
+        }
+      }
+    } catch (e) {
+      console.error("Error sincronizando sesión:", e);
+    }
+  }
+
+  function handleSave() {
+    if (state.grids.length === 0) return;
+    isSavingInternal = true;
+    try {
+      const features = state.grids.flatMap((grid) => {
+        const rad = (grid.rotation * Math.PI) / 180;
+        const tiltRad = (grid.config.tilt * Math.PI) / 180;
+        const isV = grid.config.orientation === 'vertical';
+        const rows = grid.config.rows || 1;
+        const cols = grid.config.cols || 1;
+        const bH = isV ? grid.config.height : grid.config.width;
+        const bW = isV ? grid.config.width : grid.config.height;
+        const panelH = bH * rows;
+        const panelW = bW * cols;
+        const latRef = grid.baseLatLng.lat;
+        const lngRef = grid.baseLatLng.lng;
+        const latRad = latRef * (Math.PI / 180);
+        const R = 6378137.0;
+        const pH_projected = panelH * Math.cos(tiltRad);
+        const tipo = grid.config.tipoEstructura || 'coplanar';
+
+        return grid.paneles.map((panelId) => {
+          const [r, c] = panelId.split(',').map(Number);
+          let vStep = 0;
+          if (tipo === 'libre') {
+            const k = 1 / Math.tan(Math.max(5, 90 - Math.abs(latRef) - 23.44) * Math.PI / 180);
+            const hV = panelH * Math.sin(Math.max(0, grid.config.tilt - grid.config.slope) * Math.PI / 180);
+            vStep = r * (pH_projected + (hV * k));
+          } else if (tipo === 'doble') {
+            vStep = r * pH_projected + (Math.floor(r / 2) * (pH_projected * 0.15));
+          } else {
+            vStep = r * pH_projected;
+          }
+
+          const corners = [
+            { dx: -panelW / 2, dy: pH_projected / 2 },
+            { dx: panelW / 2, dy: pH_projected / 2 },
+            { dx: panelW / 2, dy: -pH_projected / 2 },
+            { dx: -panelW / 2, dy: -pH_projected / 2 },
+            { dx: -panelW / 2, dy: pH_projected / 2 }
+          ].map((off) => {
+            const xR = ((c * panelW) + off.dx) * Math.cos(rad) - (vStep + off.dy) * Math.sin(rad);
+            const yR = ((c * panelW) + off.dx) * Math.sin(rad) + (vStep + off.dy) * Math.cos(rad);
+            const lng = lngRef + (xR / (R * Math.cos(latRad))) * (180 / Math.PI);
+            const lat = latRef - (yR / R) * (180 / Math.PI);
+            return [lng, lat];
+          });
+
+          return { type: "Feature", properties: { area: grid.nombre, block: panelId }, geometry: { type: "Polygon", coordinates: [corners] } };
+        });
+      });
+
+      const fullGeoJSON = { type: "FeatureCollection", features };
+      const geoJsonString = JSON.stringify(fullGeoJSON).replace(/"/g, "'");
+      const currentData = JSON.parse(sessionStorage.getItem("excelData") || "{}");
+
+      const headers = ["Capítulo", "Categoría", "nombre", "tipoEstructura", "id", "lat", "lng", "rotation",
+        "width", "height", "tilt", "slope", "orientation", "modelo", "potenciaW", "rows", "cols",
+        "FVcost", "paneles", "sombras", "geojson"];
+
+      const rowsData = state.grids.map((g) => [
+        "FV", "Paneles", g.nombre, g.config?.tipoEstructura || "coplanar", g.id,
+        g.baseLatLng?.lat || 0, g.baseLatLng?.lng || 0, g.rotation || 0,
+        g.config?.width || 0, g.config?.height || 0, g.config?.tilt || 0, g.config?.slope || 0,
+        g.config?.orientation || "vertical", g.config?.modelo || "", g.config?.potenciaW || 0,
+        g.config?.rows || 1, g.config?.cols || 1, g.config?.FVcost || 0,
+        JSON.stringify(g.paneles || []).replace(/"/g, "'"),
+        JSON.stringify(g.sombras || []).replace(/"/g, "'"),
+        geoJsonString
+      ]);
+
+      currentData["Diseño_FV"] = [headers, ...rowsData];
+      sessionStorage.setItem("excelData", JSON.stringify(currentData));
+      state.lastSavedSnapshot = JSON.stringify(state.grids);
+      window.dispatchEvent(new Event("sessionStorageUpdate"));
+      renderSaveFab();
+    } catch (error) {
+      console.error("Error al guardar en sesión:", error);
+    } finally {
+      setTimeout(() => { isSavingInternal = false; }, 50);
+    }
+  }
+
+  function generateGeoJSONData() {
+    if (!state.grids.length) return null;
+    const features = state.grids.flatMap((grid) => {
+      const rad = (grid.rotation * Math.PI) / 180;
+      const tiltRad = (grid.config.tilt * Math.PI) / 180;
+      const isV = grid.config.orientation === 'vertical';
+      const rows = grid.config.rows || 1;
+      const cols = grid.config.cols || 1;
+      const baseH = isV ? grid.config.height : grid.config.width;
+      const baseW = isV ? grid.config.width : grid.config.height;
+      const panelH = baseH * rows;
+      const panelW = baseW * cols;
+      const latRad = grid.baseLatLng.lat * (Math.PI / 180);
+      const m_per_deg_lat = 111320;
+      const m_per_deg_lng = 111320 * Math.cos(latRad);
+      const tipo = grid.config.tipoEstructura || 'coplanar';
+      const pH_projected = panelH * Math.cos(tiltRad);
+
+      return grid.paneles.map((panelId) => {
+        const [r, c] = panelId.split(',').map(Number);
+        let verticalOffsetMeters = 0;
+        if (tipo === 'doble') {
+          verticalOffsetMeters = r * pH_projected + (Math.floor(r / 2) * (pH_projected * 0.15));
+        } else if (tipo === 'libre') {
+          const lat = Math.abs(grid.baseLatLng.lat);
+          const kFactor = 1 / Math.tan(Math.max(5, 90 - lat - 23.44) * Math.PI / 180);
+          const hProjectedReal = panelH * Math.sin(Math.max(0, grid.config.tilt - grid.config.slope) * Math.PI / 180);
+          const gapMeters = hProjectedReal * kFactor;
+          verticalOffsetMeters = r * (pH_projected + gapMeters);
+        } else {
+          verticalOffsetMeters = r * pH_projected;
+        }
+
+        const cornersOffsets = [
+          { dx: -panelW / 2, dy: pH_projected / 2 }, { dx: panelW / 2, dy: pH_projected / 2 },
+          { dx: panelW / 2, dy: -pH_projected / 2 }, { dx: -panelW / 2, dy: -pH_projected / 2 },
+          { dx: -panelW / 2, dy: pH_projected / 2 }
+        ];
+        const coordinates = cornersOffsets.map(offset => {
+          const x = (c * panelW) + offset.dx;
+          const y = verticalOffsetMeters + offset.dy;
+          const xRot = x * Math.cos(rad) - y * Math.sin(rad);
+          const yRot = x * Math.sin(rad) + y * Math.cos(rad);
+          return [grid.baseLatLng.lng + (xRot / m_per_deg_lng), grid.baseLatLng.lat - (yRot / m_per_deg_lat)];
+        });
+        return { type: "Feature", properties: { area: grid.nombre, row: r, col: c, structure: tipo }, geometry: { type: "Polygon", coordinates: [coordinates] } };
+      });
+    });
+    return { type: "FeatureCollection", features };
+  }
+
+  function exportToGeoJSON() {
+    const geojson = generateGeoJSONData();
+    if (!geojson) return;
+    const blob = new Blob([JSON.stringify(geojson)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `FV_Export_${Date.now()}.geojson`; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  /* ============================================================
+     ACCIONES SOBRE GRIDS
+     ============================================================ */
+  function updateGrid(id, fields) {
+    state.grids = state.grids.map(g => g.id === id ? { ...g, ...fields, config: { ...g.config, ...(fields.config || {}) } } : g);
+    fullRender();
+  }
+
+  function handleAddNew() {
+    if (!map) return;
+    const id = Date.now();
+    const c = map.getCenter();
+    const n = {
+      id, nombre: `G${state.grids.length + 1}`, baseLatLng: { lat: c.lat, lng: c.lng }, rotation: 0,
+      config: { modelo: "JKM540M-72HL4-V", potenciaW: 540, width: 1.134, height: 2.278, tipoEstructura: "coplanar",
+        tilt: 30, slope: 0, orientation: "vertical", rows: 1, cols: 1, FVcost: 1000 },
+      paneles: ["0,0"], sombras: Array(16).fill(1)
+    };
+    state.grids = [n, ...state.grids];
+    state.activeGridId = id;
+    state.expandedGroups[id] = true;
+    state.shouldAutoCenter = false;
+    needsAutoCenter = false;
+    map.flyTo(n.baseLatLng, 22, { duration: 0.8 });
+    fullRender();
+  }
+
+  function handleCopy(gridToCopy) {
+    if (!gridToCopy) return;
+    const id = Date.now();
+    const offset = 0.00002;
+    const clonedGrid = {
+      ...gridToCopy, id, nombre: `${gridToCopy.nombre}c`,
+      baseLatLng: { lat: gridToCopy.baseLatLng.lat - offset, lng: gridToCopy.baseLatLng.lng + offset },
+      paneles: [...gridToCopy.paneles], sombras: [...gridToCopy.sombras]
+    };
+    state.grids = [clonedGrid, ...state.grids];
+    state.activeGridId = id;
+    state.expandedGroups[id] = true;
+    state.shouldAutoCenter = false;
+    needsAutoCenter = false;
+    map.flyTo(clonedGrid.baseLatLng, 18, { duration: 0.8 });
+    fullRender();
+  }
+
+  function deleteGrid(id) {
+    state.grids = state.grids.filter(x => x.id !== id);
+    state.activeGridId = null;
+    fullRender();
+  }
+
+  function selectGrid(gridId, opts) {
+    opts = opts || {};
+    if (state.isMapInteraction) return;
+    state.isMapInteraction = true;
+    const grid = state.grids.find(g => g.id === gridId);
+    if (!grid) { state.isMapInteraction = false; return; }
+    state.activeGridId = gridId;
+    state.expandedGroups[gridId] = true;
+    if (map && grid.baseLatLng) map.flyTo(grid.baseLatLng, Math.max(map.getZoom(), 18), { duration: 0.8 });
+    fullRender();
+    setTimeout(() => { state.isMapInteraction = false; }, 100);
+  }
+
+  function toggleGroupExpand(id) { state.expandedGroups[id] = !state.expandedGroups[id]; renderSidebar(); }
+  function toggleMenuOpen() { state.menuOpen = !state.menuOpen; renderSidebarCollapse(); }
+
+  function computeStats() {
+    return state.grids.reduce((acc, g) => {
+      const bloquesPintados = (g.paneles?.length || 0);
+      const panelesPorBloque = (g.config.rows || 1) * (g.config.cols || 1);
+      const totalPanelesGrupo = bloquesPintados * panelesPorBloque;
+      acc.panels += totalPanelesGrupo;
+      acc.power += totalPanelesGrupo * (g.config.potenciaW || 0);
+      return acc;
+    }, { panels: 0, power: 0 });
+  }
+
+  /* ============================================================
+     RENDER: SIDEBAR
+     ============================================================ */
+  const iconExpandLess = '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
+  const iconExpandMore = '<svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
+  const iconChevronLeft = '<svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>';
+  const iconChevronRight = '<svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>';
+  const iconPortrait = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M16 1H8C6.34 1 5 2.34 5 4v16c0 1.66 1.34 3 3 3h8c1.66 0 3-1.34 3-3V4c0-1.66-1.34-3-3-3zm1 18H7V5h10v14z"/></svg>';
+  const iconLandscape = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M20 5.41L18.59 4 7 15.59V9H5v10h10v-2H8.41z" transform="rotate(90 12 12)"/></svg>';
+  const iconShadow = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>';
+  const iconCopy = '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+  const iconPanel = '<svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm8 16H5v-6h6v6zm0-8H5V5h6v6zm8 8h-6v-6h6v6zm0-8h-6V5h6v6z"/></svg>';
+  const iconDelete = '<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+
+  function renderSaveFab() {
+    const fab = document.getElementById('save-fab');
+    const hasPending = state.lastSavedSnapshot !== JSON.stringify(state.grids);
+    fab.classList.toggle('show', hasPending);
+    fab.classList.toggle('pulse', hasPending);
+  }
+
+  function renderSidebarCollapse() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('collapsed', !state.menuOpen);
+    const btn = document.getElementById('btn-toggle-menu');
+    const brand = document.getElementById('brand-text');
+    brand.style.display = state.menuOpen ? 'inline' : 'none';
+    btn.innerHTML = state.menuOpen ? iconChevronLeft : iconChevronRight;
+  }
+
+  function renderSidebar() {
+    const stats = computeStats();
+    document.getElementById('stats-box').textContent = `${stats.panels}p | ${(stats.power / 1000).toFixed(2)} kWp`;
+
+    const listEl = document.getElementById('grid-list');
+    const ag = activeGrid();
+    listEl.innerHTML = state.grids.map((g) => {
+      const isSelected = g.id === state.activeGridId;
+      const isExpanded = !!state.expandedGroups[g.id];
+      const bloquesPintados = g.paneles?.length || 0;
+      const panelesPorBloque = (g.config.rows || 1) * (g.config.cols || 1);
+      const totalPanelesReal = bloquesPintados * panelesPorBloque;
+      const pwr = ((totalPanelesReal * (g.config.potenciaW || 0)) / 1000).toFixed(1);
+
+      let configHtml = '';
+      if (isExpanded && isSelected) {
+        const tipo = ag?.config.tipoEstructura || 'coplanar';
+        configHtml = `
+          <div class="config-wrap">
+            <div class="config-section sec-info">
+              <div class="sec-title">─ INFORMACIÓN ─</div>
+              <div class="field">
+                <label>Nombre</label>
+                <input type="text" data-action="nombre" maxlength="3" value="${ag?.nombre || ''}" />
+              </div>
+              <div class="field">
+                <label>Coste (EUR)</label>
+                <input type="number" data-action="FVcost" value="${ag?.config.FVcost ?? ''}" />
+              </div>
+              <button class="btn-outline" data-action="open-shadow">${iconShadow} Configurar Sombras</button>
+            </div>
+
+            <div class="config-section sec-panel">
+              <div class="sec-title">─ PANEL ─</div>
+              <div class="field">
+                <label>Modelo</label>
+                <input type="text" data-action="modelo" value="${ag?.config.modelo || ''}" />
+              </div>
+              <div class="field">
+                <label>Potencia (Wp)</label>
+                <input type="number" data-action="potenciaW" value="${ag?.config.potenciaW ?? ''}" />
+              </div>
+              <div class="orientation-toggle">
+                <button class="btn-orient" data-action="toggle-orientation">
+                  ${ag?.config.orientation === 'vertical' ? iconPortrait + ' Vertical' : iconLandscape + ' Horizontal'}
+                </button>
+              </div>
+              <div class="field">
+                <label>Alto (m)</label>
+                <input type="number" step="0.001" data-action="height" value="${ag?.config.height ?? 0}" />
+              </div>
+              <div class="field">
+                <label>Ancho (m)</label>
+                <input type="number" step="0.001" data-action="width" value="${ag?.config.width ?? 0}" />
+              </div>
+              <div class="field">
+                <label>Filas</label>
+                <input type="number" min="1" data-action="rows" value="${ag?.config.rows ?? 1}" />
+              </div>
+              <div class="field">
+                <label>Columnas</label>
+                <input type="number" min="1" data-action="cols" value="${ag?.config.cols ?? 1}" />
+              </div>
+              <div class="total-panels">Total: ${(ag?.config.rows || 1) * (ag?.config.cols || 1)} paneles/bloque</div>
+            </div>
+
+            <div class="config-section sec-struct">
+              <div class="sec-title">─ ESTRUCTURA ─</div>
+              <div class="field">
+                <label>Tipo de estructura</label>
+                <select data-action="tipoEstructura">
+                  <option value="coplanar" ${tipo === 'coplanar' ? 'selected' : ''}>Coplanar</option>
+                  <option value="libre" ${tipo === 'libre' ? 'selected' : ''}>Libre</option>
+                  <option value="doble" ${tipo === 'doble' ? 'selected' : ''}>Doble eje</option>
+                </select>
+              </div>
+
+              <div class="preview-box">
+                <div class="preview-svg-wrap">${azimutPreviewSvg(ag?.rotation || 0)}</div>
+                <div class="preview-label">Azimut: ${Math.round(ag?.rotation || 0)}°</div>
+              </div>
+              <input type="range" class="blue" min="-180" max="180" value="${ag?.rotation || 0}" data-action="rotation" />
+
+              <div class="preview-box">
+                <div class="preview-svg-wrap">${anglePreviewSvg(ag?.config.tilt || 0, ag?.config.slope || 0, tipo === 'doble')}</div>
+                <div class="angle-labels">
+                  <span class="preview-label">Inc: ${ag?.config.tilt || 0}°</span>
+                  <span class="preview-label">Suelo: ${ag?.config.slope || 0}°</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-row-head"><span class="label">Inclinación</span><span class="value">${ag?.config.tilt || 0}°</span></div>
+                <input type="range" class="blue" min="0" max="90" value="${ag?.config.tilt || 0}" data-action="tilt" ${tipo === 'coplanar' ? 'disabled' : ''} />
+              </div>
+              <div class="slider-row">
+                <div class="slider-row-head"><span class="label">Pendiente suelo</span><span class="value">${ag?.config.slope || 0}°</span></div>
+                <input type="range" class="orange" min="0" max="90" value="${ag?.config.slope || 0}" data-action="slope" ${tipo === 'doble' ? 'disabled' : ''} />
+              </div>
+            </div>
+
+            <div class="actions-row">
+              <button class="btn-action" data-action="copy">${iconCopy} Copiar</button>
+              <button class="btn-action" data-action="geojson">${iconPanel} GeoJSON</button>
+              <button class="btn-action danger" data-action="delete">${iconDelete} Eliminar</button>
+            </div>
+          </div>`;
+      }
+
+      return `
+        <div class="grid-item" data-id="${g.id}">
+          <div class="grid-item-header ${isSelected ? 'selected' : ''}" data-action="select-menu">
+            <div class="grid-item-text">
+              <div class="grid-item-title-row">
+                <span class="grid-item-name ${isSelected ? 'selected' : ''}">${g.nombre}</span>
+                <span class="grid-item-count">${totalPanelesReal}p</span>
+              </div>
+              <div class="grid-item-power">${pwr} kWp</div>
+            </div>
+            <button class="expand-btn ${isSelected ? 'selected' : ''}" data-action="expand">${isExpanded ? iconExpandLess : iconExpandMore}</button>
+          </div>
+          ${configHtml}
+        </div>`;
+    }).join('');
+
+    // Attach event listeners
+    listEl.querySelectorAll('.grid-item').forEach(itemEl => {
+      const id = Number(itemEl.getAttribute('data-id'));
+      const g = state.grids.find(x => x.id === id);
+
+      itemEl.querySelector('[data-action="select-menu"]').addEventListener('click', () => selectGrid(id));
+      itemEl.querySelector('[data-action="expand"]').addEventListener('click', (e) => { e.stopPropagation(); toggleGroupExpand(id); });
+
+      const bindField = (sel, handler) => {
+        const el = itemEl.querySelector(sel);
+        if (el) el.addEventListener('input', handler);
+      };
+      bindField('[data-action="nombre"]', (e) => { if (e.target.value.length <= 3) updateGrid(id, { nombre: e.target.value }); });
+      bindField('[data-action="FVcost"]', (e) => updateGrid(id, { config: { FVcost: parseFloat(e.target.value) || 0 } }));
+      bindField('[data-action="modelo"]', (e) => updateGrid(id, { config: { modelo: e.target.value } }));
+      bindField('[data-action="potenciaW"]', (e) => updateGrid(id, { config: { potenciaW: parseFloat(e.target.value) || 0 } }));
+      bindField('[data-action="height"]', (e) => updateGrid(id, { config: { height: parseFloat(e.target.value) || 0 } }));
+      bindField('[data-action="width"]', (e) => updateGrid(id, { config: { width: parseFloat(e.target.value) || 0 } }));
+      bindField('[data-action="rows"]', (e) => updateGrid(id, { config: { rows: Math.max(1, parseInt(e.target.value) || 1) } }));
+      bindField('[data-action="cols"]', (e) => updateGrid(id, { config: { cols: Math.max(1, parseInt(e.target.value) || 1) } }));
+
+      const orientBtn = itemEl.querySelector('[data-action="toggle-orientation"]');
+      if (orientBtn) orientBtn.addEventListener('click', () => {
+        updateGrid(id, { config: { orientation: g.config.orientation === 'vertical' ? 'horizontal' : 'vertical' } });
+      });
+
+      const tipoSelect = itemEl.querySelector('[data-action="tipoEstructura"]');
+      if (tipoSelect) tipoSelect.addEventListener('change', (e) => {
+        const tipo = e.target.value;
+        const updates = { tipoEstructura: tipo };
+        if (tipo === 'coplanar') updates.tilt = g.config.slope || 0;
+        if (tipo === 'doble') updates.slope = 0;
+        updateGrid(id, { config: updates });
+      });
+
+      bindField('[data-action="rotation"]', (e) => updateGrid(id, { rotation: parseFloat(e.target.value) }));
+      bindField('[data-action="tilt"]', (e) => {
+        let v = parseFloat(e.target.value);
+        if (g.config.tipoEstructura === 'libre') v = Math.max(v, g.config.slope || 0);
+        updateGrid(id, { config: { tilt: v } });
+      });
+      bindField('[data-action="slope"]', (e) => {
+        const v = parseFloat(e.target.value);
+        const updates = { slope: v };
+        if (g.config.tipoEstructura === 'coplanar') updates.tilt = v;
+        else if (g.config.tipoEstructura === 'libre') { if (v > g.config.tilt) updates.tilt = v; }
+        updateGrid(id, { config: updates });
+      });
+
+      const shadowBtn = itemEl.querySelector('[data-action="open-shadow"]');
+      if (shadowBtn) shadowBtn.addEventListener('click', () => openShadowModal());
+
+      const copyBtn = itemEl.querySelector('[data-action="copy"]');
+      if (copyBtn) copyBtn.addEventListener('click', () => handleCopy(g));
+
+      const geojsonBtn = itemEl.querySelector('[data-action="geojson"]');
+      if (geojsonBtn) geojsonBtn.addEventListener('click', () => exportToGeoJSON());
+
+      const deleteBtn = itemEl.querySelector('[data-action="delete"]');
+      if (deleteBtn) deleteBtn.addEventListener('click', () => deleteGrid(id));
+    });
+  }
+
+  /* ============================================================
+     RENDER: MODAL SOMBRAS (equivalente simplificado)
+     ============================================================ */
+  function renderShadowModal() {
+    const overlay = document.getElementById('shadow-modal');
+    overlay.classList.toggle('open', state.shadowModalOpen);
+    const ag = activeGrid();
+    document.getElementById('shadow-modal-title').textContent = `Sombras: ${ag?.nombre || ''}`;
+    const grid = document.getElementById('sombra-grid');
+    const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];
+    const sombras = ag?.sombras || Array(16).fill(1);
+    grid.innerHTML = sombras.map((v, i) => `
+      <div class="sombra-cell">
+        <div class="dir">${dirs[i] || i}</div>
+        <input type="range" class="orange" min="0" max="1" step="0.05" value="${v}" data-idx="${i}" />
+        <div class="val">${Number(v).toFixed(2)}</div>
+      </div>`).join('');
+
+    grid.querySelectorAll('input[type=range]').forEach(inp => {
+      inp.addEventListener('input', (e) => {
+        const idx = Number(e.target.getAttribute('data-idx'));
+        const current = activeGrid();
+        if (!current) return;
+        const newSombras = [...(current.sombras || Array(16).fill(1))];
+        newSombras[idx] = parseFloat(e.target.value);
+        updateGrid(current.id, { sombras: newSombras });
+        renderShadowModal();
+      });
+    });
+  }
+
+  function openShadowModal() { state.shadowModalOpen = true; renderShadowModal(); }
+  function closeShadowModal() { state.shadowModalOpen = false; renderShadowModal(); }
+
+  /* ============================================================
+     RENDER: MAPA (marcadores base + handle de rotación)
+     ============================================================ */
+  function renderMapMarkers() {
+    if (baseMarker) { map.removeLayer(baseMarker); baseMarker = null; }
+    if (rotateMarker) { map.removeLayer(rotateMarker); rotateMarker = null; }
+
+    const ag = activeGrid();
+    if (!ag) return;
+
+    baseMarker = L.marker(ag.baseLatLng, { draggable: true, icon: moveIcon }).addTo(map);
+    
+    baseMarker.on('drag', (e) => {
+      const currentAg = activeGrid();
+      if(currentAg) {
+        currentAg.baseLatLng = e.target.getLatLng();
+        if (gridManager) gridManager.render(state.grids, state.activeGridId);
+        
+        // Mover el rotateMarker de forma sincronizada
+        if(rotateMarker) {
+            const center = map.latLngToLayerPoint(currentAg.baseLatLng);
+            const rad = (currentAg.rotation * Math.PI) / 180;
+            const p = L.point(center.x + 85 * Math.sin(-rad), center.y + 85 * Math.cos(-rad));
+            rotateMarker.setLatLng(map.layerPointToLatLng(p));
+        }
+      }
+    });
+    baseMarker.on('dragend', (e) => updateGrid(state.activeGridId, { baseLatLng: e.target.getLatLng() }));
+
+    const center = map.latLngToLayerPoint(ag.baseLatLng);
+    const rad = (ag.rotation * Math.PI) / 180;
+    const p = L.point(center.x + 85 * Math.sin(-rad), center.y + 85 * Math.cos(-rad));
+    const rotateHandlePos = map.layerPointToLatLng(p);
+
+    rotateMarker = L.marker(rotateHandlePos, { draggable: true, icon: rotateHandleIcon }).addTo(map);
+    
+    rotateMarker.on('drag', (e) => {
+      const currentAg = activeGrid();
+      if(currentAg) {
+        const c = map.latLngToLayerPoint(currentAg.baseLatLng);
+        const mouse = map.latLngToLayerPoint(e.target.getLatLng());
+        const dx = mouse.x - c.x, dy = mouse.y - c.y;
+        currentAg.rotation = -Math.atan2(dx, dy) * (180 / Math.PI);
+        if (gridManager) gridManager.render(state.grids, state.activeGridId);
+      }
+    });
+    rotateMarker.on('dragend', (e) => {
+      const currentAg = activeGrid();
+      if(currentAg) {
+        const c = map.latLngToLayerPoint(currentAg.baseLatLng);
+        const mouse = map.latLngToLayerPoint(e.target.getLatLng());
+        const dx = mouse.x - c.x, dy = mouse.y - c.y;
+        updateGrid(state.activeGridId, { rotation: -Math.atan2(dx, dy) * (180 / Math.PI) });
+      }
+    });
+  }
+
+  /* ============================================================
+     FULL RENDER
+     ============================================================ */
+  function fullRender() {
+    if (gridManager) gridManager.render(state.grids, state.activeGridId);
+    renderMapMarkers();
+    renderSidebar();
+    renderSaveFab();
+    if (state.shadowModalOpen) renderShadowModal();
+
+    if (map && state.grids.length > 0 && needsAutoCenter) {
+      const firstGrid = state.grids[0];
+      if (firstGrid.baseLatLng) {
+        map.flyTo(firstGrid.baseLatLng, 18, { duration: 0.8 });
+        state.activeGridId = firstGrid.id;
+        state.expandedGroups[firstGrid.id] = true;
+        needsAutoCenter = false;
+        setTimeout(() => { state.shouldAutoCenter = false; }, 100);
+        renderSidebar();
+        renderMapMarkers();
+      }
+    }
+  }
+
+  /* ============================================================
+     INIT
+     ============================================================ */
+  function init() {
+    map = L.map('map', { center: [40.41, -3.7], zoom: 18, zoomControl: false });
+    L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 22 }).addTo(map);
+
+    gridManager = new FreeGridManager(
+      map,
+      (gid, cid, add) => {
+        state.grids = state.grids.map(g => {
+          if (g.id !== gid) return g;
+          const s = new Set(g.paneles);
+          add ? s.add(cid) : s.delete(cid);
+          return { ...g, paneles: Array.from(s) };
+        });
+        fullRender();
+      },
+      (id) => { state.activeGridId = id; state.expandedGroups[id] = true; },
+      () => {},
+      (gridId) => selectGrid(gridId)
+    );
+
+    document.getElementById('btn-toggle-menu').addEventListener('click', toggleMenuOpen);
+    document.getElementById('btn-add-new').addEventListener('click', handleAddNew);
+    document.getElementById('save-fab').addEventListener('click', handleSave);
+    document.getElementById('btn-close-shadow').addEventListener('click', closeShadowModal);
+    document.getElementById('shadow-modal').addEventListener('click', (e) => { if (e.target.id === 'shadow-modal') closeShadowModal(); });
+
+    renderSidebarCollapse();
+
+    loadDataFromSession(true);
+    window.addEventListener('storage', () => loadDataFromSession(true));
+    window.addEventListener('sessionStorageUpdate', () => loadDataFromSession(true));
+
+    fullRender();
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>
