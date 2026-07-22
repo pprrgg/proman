@@ -631,7 +631,6 @@
 
     <!-- LIBS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -639,7 +638,7 @@
     <style>
         /* (Mantenemos todos tus estilos CSS originales exactamente igual) */
         body {
-            font-family: 'Poppins', 'Inter', sans-serif;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
             scroll-behavior: smooth;
             background-color: #050a18;
             color: white;
@@ -663,7 +662,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 72px;
+            height: 64px;
             z-index: 100000 !important;
             background-color: white !important;
             border-bottom: 2px solid #003399;
@@ -695,11 +694,11 @@
 
         .nav-link-text {
             color: #1e293b !important;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 12px !important;
-            letter-spacing: 0.04em;
-            padding: 0 14px !important;
+            font-weight: 600;
+            text-transform: none;
+            font-size: 14px !important;
+            letter-spacing: normal;
+            padding: 0 16px !important;
             height: 100%;
             display: flex;
             align-items: center;
@@ -803,7 +802,7 @@
         #mobile-menu {
             display: none;
             position: fixed;
-            top: 72px;
+            top: 64px;
             left: 0;
             width: 300px;
             background: white;
