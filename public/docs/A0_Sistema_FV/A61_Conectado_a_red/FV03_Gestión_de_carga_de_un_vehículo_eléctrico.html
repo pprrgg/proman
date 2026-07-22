@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>FV03_Gestión_de_carga_de_un_vehículo_eléctrico — Generador de informe PDF</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: system-ui, Arial, sans-serif;
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    line-height: 1.4;
+  }
+  @media (max-width: 700px) {
+    body {
+      max-width: 100%;
+      margin: 0;
+      padding: 1rem;
+    }
+  }
+  h1 { font-size: 1.4rem; }
+  label {
+    display: block;
+    font-size: .85rem;
+    margin-top: .6rem;
+    margin-bottom: .2rem;
+    opacity: .8;
+  }
+  input[type="url"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: .45rem .6rem;
+    font-size: .95rem;
+    border-radius: 6px;
+    border: 1px solid #8886;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+  }
+  .actions { display: flex; gap: .6rem; flex-wrap: wrap; margin: 1rem 0; }
+  button {
+    cursor: pointer;
+    padding: .6rem 1.1rem;
+    font-size: .95rem;
+    border-radius: 6px;
+    border: 1px solid #8886;
+    background: #2563eb;
+    color: #fff;
+  }
+  button.secondary { background: transparent; color: inherit; }
+  button.btn-mini { padding: .25rem .55rem; font-size: .75rem; }
+  button:disabled { opacity: .5; cursor: wait; }
+  #estado { font-size: .9rem; margin: .5rem 0; min-height: 1.2em; }
+  #estado.error { color: #dc2626; }
+  #estado.ok { color: #16a34a; }
+
+  .tabs {
+    display: flex;
+    gap: .3rem;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #8886;
+    margin: 1rem 0 0;
+  }
+  .tab-btn {
+    background: transparent;
+    color: inherit;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    padding: .55rem 1rem;
+    font-size: .9rem;
+    opacity: .65;
+  }
+  .tab-btn.activa {
+    opacity: 1;
+    border-color: #8886;
+    background: #8881;
+    font-weight: bold;
+  }
+  .tab-panel { display: none; padding-top: 1rem; }
+  .tab-panel.activa { display: block; }
+
+  .hoja-wrap { overflow-x: auto; margin-bottom: .6rem; border: 1px solid #8886; border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+  th, td { border: 1px solid #8886; padding: .3rem .4rem; }
+  th {
+    background: #8881;
+    font-size: .72rem;
+    text-align: left;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+  }
+  th.col-acciones, td.col-acciones { width: 1%; white-space: nowrap; text-align: center; }
+  td input {
+    width: 100%;
+    min-width: 90px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    padding: .25rem;
+    border-radius: 4px;
+  }
+  td input:focus { border-color: #2563eb; background: Canvas; }
+  .hoja-toolbar { margin: 0 0 1.2rem; }
+
+  details.grupo-detalle {
+    border: 1px solid #8886;
+    border-radius: 8px;
+    margin-bottom: .5rem;
+  }
+  details.grupo-detalle > summary {
+    cursor: pointer;
+    padding: .5rem .8rem;
+    font-weight: 600;
+    font-size: .8rem;
+    background: #8881;
+    list-style: none;
+  }
+  details.grupo-detalle > summary::-webkit-details-marker { display: none; }
+  details.grupo-detalle > summary::before {
+    content: '▶';
+    display: inline-block;
+    margin-right: .5rem;
+    font-size: .65rem;
+    transition: transform .15s;
+  }
+  details.grupo-detalle[open] > summary::before { transform: rotate(90deg); }
+  .grupo-cuerpo { padding: .7rem .8rem .8rem 1.4rem; }
+
+  .visor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: 0 0 .6rem;
+    flex: none;
+  }
+  .visor-toolbar span {
+    font-size: .85rem;
+    opacity: .75;
+    margin-left: auto;
+  }
+  .visor-toolbar a {
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    padding: .6rem 1.1rem;
+    font-size: .95rem;
+    border-radius: 6px;
+    border: 1px solid #8886;
+    color: inherit;
+  }
+  #visor {
+    display: block;
+    width: 100%;
+    height: 80vh;
+    border: 1px solid #8886;
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+
+<h1>FV03_Gestión_de_carga_de_un_vehículo_eléctrico — Generador de informe PDF</h1>
+
+<label>URL de la API (endpoint POST /f)</label>
+<input type="url" id="apiUrl" value="http://127.0.0.1:8888/A0_Sistema_FV/A61_Conectado_a_red/FV03_Gestión_de_carga_de_un_vehículo_eléctrico/f">
+
+<div class="actions">
+  <button type="button" class="secondary" id="btnRecargarInputs">Recargar inputs (GET /i)</button>
+  <button type="submit" id="btnGenerar" form="formulario">Generar PDF (POST /f)</button>
+</div>
+
+<form id="formulario">
+
+  <div class="tabs" id="tabsNav" role="tablist"></div>
+
+  <div id="tabsPanels"></div>
+</form>
+
+<div id="estado"></div>
+
+<script>
+// datos[nombreHoja] = array-of-arrays, fila 0 = cabecera, resto = filas de datos.
+let datos = {};
+
+// Misma idea que sessionStorage.setItem("excelData", ...) en AppXLS.jsx:
+// el JSON editado vive en la sesión y es la fuente de verdad al enviar a la API.
+const SESSION_KEY = 'excelData';
+const SESSION_KEY_DOC_PREFIX = `${SESSION_KEY}:`;
+
+function getSessionKey() {
+  return `${SESSION_KEY_DOC_PREFIX}${location.pathname}`;
+}
+
+function guardarEnSesion() {
+  const key = getSessionKey();
+  sessionStorage.setItem(key, JSON.stringify(datos));
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(datos));
+}
+
+function urlBase(sufijo) {
+  return document.getElementById('apiUrl').value.replace(/\/f$/, sufijo);
+}
+
+function mostrarEstado(mensaje, tipo) {
+  const el = document.getElementById('estado');
+  el.textContent = mensaje;
+  el.className = tipo || '';
+}
+
+// ==========================================
+// Carga de /i y construcción dinámica de tabs
+// ==========================================
+
+async function cargarInputs({ forzarReset = false } = {}) {
+  mostrarEstado('Cargando inputs…');
+  try {
+    let cargadoDeSesion = false;
+
+    if (forzarReset) {
+      // Reinicio explícito (botón "Recargar inputs"): descartamos la sesión
+      // y volvemos a pedir los valores de fábrica al servidor.
+      sessionStorage.removeItem(getSessionKey());
+      sessionStorage.removeItem(SESSION_KEY);
+    } else {
+      // Carga de página: si ya hay una sesión (edición previa), la reutilizamos
+      // en vez de pisarla. El reinicio desde /i solo ocurre la primera vez
+      // (cuando todavía no existe nada guardado en sessionStorage).
+      const sessionRaw = sessionStorage.getItem(getSessionKey());
+      if (sessionRaw) {
+        datos = JSON.parse(sessionRaw);
+        cargadoDeSesion = true;
+        guardarEnSesion();
+      }
+    }
+
+    if (!cargadoDeSesion) {
+      const resp = await fetch(urlBase('/i'));
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      datos = await resp.json();
+      guardarEnSesion();
+    }
+
+    renderizarTabs();
+    mostrarEstado(cargadoDeSesion ? 'Inputs recuperados de la sesión.' : 'Inputs cargados correctamente.', 'ok');
+
+    // El informe se renderiza siempre con lo que haya en la sesión en ese momento
+    // (los valores de /i la primera vez, o lo último editado en cargas posteriores).
+    await generarPdf();
+  } catch (e) {
+    mostrarEstado(`Error cargando inputs: ${e.message}`, 'error');
+  }
+}
+
+const TAB_INFORME = '__informe_pdf__';
+
+function crearTabInforme(nav, panels) {
+  const boton = document.createElement('button');
+  boton.type = 'button';
+  boton.className = 'tab-btn';
+  boton.dataset.tab = TAB_INFORME;
+  boton.textContent = 'Informe PDF';
+  boton.addEventListener('click', () => activarTab(TAB_INFORME));
+  nav.appendChild(boton);
+
+  const panel = document.createElement('div');
+  panel.className = 'tab-panel';
+  panel.id = `tab-${TAB_INFORME}`;
+  panel.innerHTML = `
+    <iframe id="visor"></iframe>
+  `;
+  panels.appendChild(panel);
+}
+
+function renderizarTabs() {
+  const nav = document.getElementById('tabsNav');
+  const panels = document.getElementById('tabsPanels');
+  nav.innerHTML = '';
+  panels.innerHTML = '';
+
+  // Pestaña fija con el informe renderizado; siempre va primero y activa por defecto.
+  crearTabInforme(nav, panels);
+
+  Object.keys(datos).forEach((clave) => {
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'tab-btn';
+    boton.dataset.tab = clave;
+    boton.textContent = clave;
+    boton.addEventListener('click', () => activarTab(clave));
+    nav.appendChild(boton);
+
+    const panel = document.createElement('div');
+    panel.className = 'tab-panel';
+    panel.id = `tab-${clave}`;
+    panels.appendChild(panel);
+
+    renderizarHoja(clave, panel);
+  });
+
+  activarTab(TAB_INFORME);
+}
+
+function activarTab(id) {
+  document.querySelectorAll('#tabsNav .tab-btn').forEach((b) => b.classList.toggle('activa', b.dataset.tab === id));
+  document.querySelectorAll('#tabsPanels .tab-panel').forEach((p) => p.classList.toggle('activa', p.id === `tab-${id}`));
+}
+
+// --- Agrupación recursiva por las dos primeras columnas ---
+
+function agruparFilas(filasConIndice, columnas) {
+  if (columnas.length === 0) {
+    return { tipo: 'hojas', filas: filasConIndice };
+  }
+  const [colIdx, ...resto] = columnas;
+  const grupos = new Map();
+  filasConIndice.forEach((item) => {
+    const valor = (item.fila[colIdx] ?? '').toString().trim() || '(sin valor)';
+    if (!grupos.has(valor)) grupos.set(valor, []);
+    grupos.get(valor).push(item);
+  });
+
+  const hijos = [];
+  grupos.forEach((items, valor) => {
+    hijos.push({ colIdx, valor, arbol: agruparFilas(items, resto) });
+  });
+
+  return { tipo: 'grupo', hijos };
+}
+
+function contarFilas(nodo) {
+  if (nodo.tipo === 'hojas') return nodo.filas.length;
+  return nodo.hijos.reduce((acc, h) => acc + contarFilas(h.arbol), 0);
+}
+
+function renderizarHoja(clave, contenedor) {
+  contenedor.innerHTML = '';
+
+  const filas = datos[clave] || [];
+  const cabecera = filas[0] || [];
+  const filasConIndice = filas.slice(1).map((fila, i) => ({ indiceFila: i + 1, fila }));
+
+  // Solo agrupamos si quedan columnas de datos además de las dos usadas para agrupar.
+  const columnasAgrupables = cabecera.length > 2 ? [0, 1] : [];
+  const arbol = agruparFilas(filasConIndice, columnasAgrupables);
+
+  renderizarNodo(arbol, contenedor, {
+    clave,
+    cabecera,
+    columnasOcultas: columnasAgrupables,
+    rutaGrupo: [],
+    onCambio: () => renderizarHoja(clave, contenedor),
+  });
+}
+
+function renderizarNodo(nodo, contenedor, ctx) {
+  if (nodo.tipo === 'hojas') {
+    renderizarTablaFilas(nodo.filas, contenedor, ctx);
+    return;
+  }
+
+  const nombreGrupo = ['grp', ctx.clave, ctx.rutaGrupo.length, ...ctx.rutaGrupo.map((r) => r.valor)]
+    .join('-')
+    .replace(/[^a-zA-Z0-9_-]/g, '_');
+
+  nodo.hijos.forEach(({ colIdx, valor, arbol }, i) => {
+    const details = document.createElement('details');
+    details.className = 'grupo-detalle';
+    details.name = nombreGrupo; // hace que los hermanos del mismo nivel se colapsen entre sí
+    details.open = i === 0;
+
+    const summary = document.createElement('summary');
+    summary.textContent = `${ctx.cabecera[colIdx] ?? `Col ${colIdx + 1}`}: ${valor} (${contarFilas(arbol)})`;
+    details.appendChild(summary);
+
+    const cuerpo = document.createElement('div');
+    cuerpo.className = 'grupo-cuerpo';
+    details.appendChild(cuerpo);
+
+    renderizarNodo(arbol, cuerpo, { ...ctx, rutaGrupo: [...ctx.rutaGrupo, { colIdx, valor }] });
+
+    contenedor.appendChild(details);
+  });
+}
+
+function renderizarTablaFilas(filasConIndice, contenedor, ctx) {
+  const { clave, cabecera, columnasOcultas, rutaGrupo, onCambio } = ctx;
+  const colsVisibles = cabecera.map((_, i) => i).filter((i) => !columnasOcultas.includes(i));
+
+  const wrap = document.createElement('div');
+  wrap.className = 'hoja-wrap';
+  const tabla = document.createElement('table');
+
+  const thead = document.createElement('thead');
+  const trHead = document.createElement('tr');
+  colsVisibles.forEach((i) => {
+    const th = document.createElement('th');
+    th.textContent = cabecera[i];
+    trHead.appendChild(th);
+  });
+  const thAcciones = document.createElement('th');
+  thAcciones.className = 'col-acciones';
+  trHead.appendChild(thAcciones);
+  thead.appendChild(trHead);
+  tabla.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  filasConIndice.forEach(({ indiceFila }) => {
+    tbody.appendChild(crearFila(clave, indiceFila, colsVisibles, onCambio));
+  });
+  tabla.appendChild(tbody);
+
+  wrap.appendChild(tabla);
+  contenedor.appendChild(wrap);
+
+  const btnAdd = document.createElement('button');
+  btnAdd.type = 'button';
+  btnAdd.className = 'secondary btn-mini';
+  btnAdd.textContent = '+ Añadir fila';
+  btnAdd.addEventListener('click', () => {
+    const nuevaFila = new Array(cabecera.length).fill('');
+    rutaGrupo.forEach(({ colIdx, valor }) => { nuevaFila[colIdx] = valor; });
+    datos[clave].push(nuevaFila);
+    guardarEnSesion();
+    onCambio();
+  });
+  contenedor.appendChild(btnAdd);
+}
+
+function crearFila(clave, indiceFila, colsVisibles, onCambio) {
+  const tr = document.createElement('tr');
+  const fila = datos[clave][indiceFila];
+
+  colsVisibles.forEach((c) => {
+    const td = document.createElement('td');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = fila[c] ?? '';
+    input.addEventListener('input', (e) => {
+      datos[clave][indiceFila][c] = e.target.value;
+      guardarEnSesion();
+    });
+    td.appendChild(input);
+    tr.appendChild(td);
+  });
+
+  const tdAcciones = document.createElement('td');
+  tdAcciones.className = 'col-acciones';
+  const btnDel = document.createElement('button');
+  btnDel.type = 'button';
+  btnDel.className = 'secondary btn-mini';
+  btnDel.textContent = '✕';
+  btnDel.title = 'Eliminar fila';
+  btnDel.addEventListener('click', () => {
+    datos[clave].splice(indiceFila, 1);
+    guardarEnSesion();
+    onCambio();
+  });
+  tdAcciones.appendChild(btnDel);
+  tr.appendChild(tdAcciones);
+
+  return tr;
+}
+
+function construirPayload() {
+  // Enviamos lo que hay guardado en la sesión (igual que handleExportProject
+  // en AppXLS.jsx lee sessionStorage.getItem("excelData") en vez del state en memoria).
+  const sessionRaw = sessionStorage.getItem(SESSION_KEY);
+  if (sessionRaw) {
+    try {
+      return JSON.parse(sessionRaw);
+    } catch (e) {
+      console.error('Error al leer el JSON de la sesión, se usa el estado en memoria', e);
+    }
+  }
+  return datos;
+}
+
+// ==========================================
+// Visor de PDF (pestaña "Informe PDF")
+// ==========================================
+
+let urlPdfActual = null;
+
+function mostrarPdf(blob) {
+  if (urlPdfActual) URL.revokeObjectURL(urlPdfActual);
+  urlPdfActual = URL.createObjectURL(blob);
+
+  document.getElementById('visor').src = urlPdfActual;
+}
+
+// ==========================================
+// Acciones principales
+// ==========================================
+
+async function generarPdf() {
+  const boton = document.getElementById('btnGenerar');
+  boton.disabled = true;
+  mostrarEstado('Generando PDF…');
+
+  try {
+    const payload = construirPayload();
+    const resp = await fetch(document.getElementById('apiUrl').value, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!resp.ok) {
+      const texto = await resp.text();
+      throw new Error(`HTTP ${resp.status}: ${texto}`);
+    }
+
+    const blob = await resp.blob();
+    mostrarPdf(blob);
+    mostrarEstado('PDF generado correctamente.', 'ok');
+  } catch (e) {
+    mostrarEstado(`Error: ${e.message}`, 'error');
+  } finally {
+    boton.disabled = false;
+  }
+}
+
+document.getElementById('formulario').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  generarPdf();
+});
+
+document.getElementById('btnRecargarInputs').addEventListener('click', () => cargarInputs({ forzarReset: true }));
+
+cargarInputs();
+</script>
+
+</body>
+</html>

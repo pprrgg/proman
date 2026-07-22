@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planificador de Paneles Solares</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#0D1826;
+    --panel:#132335;
+    --panel-border:#25405A;
+    --paper:#EFE9DA;
+    --paper-grid:#D9D0B8;
+    --ink:#22301F;
+    --ink-soft:#4B5A45;
+    --amber:#F2A33B;
+    --amber-dim:#B97C2A;
+    --teal:#4C978F;
+    --text-light:#E9E4D6;
+    --text-muted:#8CA0AE;
+    --danger:#D9694F;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text-light);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+  }
+  .app{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    min-height:100vh;
+  }
+  /* ---------- SIDEBAR ---------- */
+  .sidebar{
+    background:var(--panel);
+    border-right:1px solid var(--panel-border);
+    padding:28px 24px 60px;
+    overflow-y:auto;
+  }
+  .brand{
+    margin-bottom:28px;
+  }
+  .brand .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:6px;
+  }
+  .brand h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:22px;
+    font-weight:700;
+    line-height:1.2;
+    margin:0 0 8px;
+  }
+  .brand p{
+    font-size:13px;
+    color:var(--text-muted);
+    line-height:1.5;
+    margin:0;
+  }
+  .group{
+    margin-bottom:26px;
+    padding-top:18px;
+    border-top:1px solid var(--panel-border);
+  }
+  .group-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin-bottom:14px;
+  }
+  .field{ margin-bottom:16px; }
+  .field:last-child{ margin-bottom:0; }
+  .field-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:6px;
+  }
+  .field-row label{
+    font-size:13px;
+    color:var(--text-light);
+    font-weight:500;
+  }
+  .field-row .val{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--amber);
+    font-weight:600;
+  }
+  input[type="range"]{
+    -webkit-appearance:none;
+    width:100%;
+    height:4px;
+    border-radius:2px;
+    background:var(--panel-border);
+    outline:none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:16px;height:16px;
+    border-radius:50%;
+    background:var(--amber);
+    border:2px solid #0D1826;
+    cursor:pointer;
+    margin-top:-6px;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:14px;height:14px;
+    border-radius:50%;
+    background:var(--amber);
+    border:2px solid #0D1826;
+    cursor:pointer;
+  }
+  input[type="range"]::-moz-range-track{
+    height:4px;border-radius:2px;background:var(--panel-border);
+  }
+  .toggle{
+    display:flex;
+    border:1px solid var(--panel-border);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .toggle button{
+    flex:1;
+    background:transparent;
+    border:none;
+    color:var(--text-muted);
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:500;
+    padding:9px 6px;
+    cursor:pointer;
+    line-height:1.3;
+  }
+  .toggle button.active{
+    background:var(--amber);
+    color:#20140A;
+    font-weight:600;
+  }
+  .hint{
+    font-size:11.5px;
+    color:var(--text-muted);
+    margin-top:8px;
+    line-height:1.5;
+  }
+  .btn-mini{
+    background:transparent;
+    border:1px solid var(--teal);
+    color:var(--teal);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    padding:6px 10px;
+    border-radius:4px;
+    cursor:pointer;
+    margin-top:8px;
+  }
+  .btn-mini:hover{ background:rgba(76,151,143,.15); }
+
+  /* ---------- MAIN ---------- */
+  .main{
+    padding:28px 32px 60px;
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .topbar h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:19px;
+    margin:0;
+    font-weight:600;
+  }
+  .topbar .sub{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--text-muted);
+  }
+
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:1px;
+    background:var(--panel-border);
+    border:1px solid var(--panel-border);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .stat{
+    background:var(--panel);
+    padding:14px 12px;
+  }
+  .stat .n{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:22px;
+    font-weight:700;
+    color:var(--amber);
+    line-height:1.1;
+  }
+  .stat .l{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin-top:5px;
+  }
+
+  .sheet{
+    background:var(--paper);
+    border-radius:6px;
+    border:1px solid #C7BEA4;
+    box-shadow:0 8px 24px rgba(0,0,0,.28);
+    padding:16px 18px 14px;
+    position:relative;
+  }
+  .sheet .sheet-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .sheet svg{ display:block; width:100%; height:auto; }
+
+  .note{
+    font-size:12px;
+    color:var(--text-muted);
+    line-height:1.6;
+    max-width:820px;
+  }
+  .note b{ color:var(--text-light); }
+
+  @media (max-width:880px){
+    .app{ grid-template-columns:1fr; }
+    .sidebar{ border-right:none; border-bottom:1px solid var(--panel-border); }
+    .stats{ grid-template-columns:repeat(3,1fr); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="eyebrow">Estudio de instalación · FV</div>
+      <h1>Planificador de Paneles Solares</h1>
+      <p>Ajusta la latitud, la superficie y el modo de montaje para calcular la inclinación recomendada y la separación entre filas sin sombras.</p>
+    </div>
+
+    <div class="group">
+      <div class="group-title">01 — Ubicación</div>
+      <div class="field">
+        <div class="field-row"><label>Latitud</label><span class="val" id="v-lat">40° N</span></div>
+        <input type="range" id="lat" min="-60" max="66" step="1" value="40">
+      </div>
+      <div class="field">
+        <div class="field-row"><label>Desviación respecto al ecuador (orientación)</label><span class="val" id="v-az">0°</span></div>
+        <input type="range" id="az" min="0" max="90" step="1" value="0">
+        <div class="hint">0° = orientación óptima (sur en el hemisferio norte, norte en el sur). A más grados, más desviada del ideal.</div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">02 — Modo de montaje</div>
+      <div class="toggle">
+        <button id="mode-rack" class="active">Estructura propia<br>(superficie plana)</button>
+        <button id="mode-flush">Paneles a ras<br>(tejado inclinado)</button>
+      </div>
+
+      <div class="field" id="field-surfacetilt" style="margin-top:16px; display:none;">
+        <div class="field-row"><label>Inclinación del tejado</label><span class="val" id="v-surfacetilt">30°</span></div>
+        <input type="range" id="surfacetilt" min="0" max="45" step="1" value="30">
+      </div>
+
+      <div class="field" id="field-paneltilt" style="margin-top:16px;">
+        <div class="field-row"><label>Inclinación del panel</label><span class="val" id="v-paneltilt">40°</span></div>
+        <input type="range" id="paneltilt" min="0" max="60" step="1" value="40">
+        <button class="btn-mini" id="btn-optimal">usar inclinación óptima</button>
+      </div>
+      <div class="hint" id="mode-hint">La estructura fija el ángulo de cada panel de forma independiente al tejado, que se asume plano u horizontal.</div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">03 — Superficie disponible</div>
+      <div class="field">
+        <div class="field-row"><label>Longitud (sentido de las filas)</label><span class="val" id="v-slen">12 m</span></div>
+        <input type="range" id="slen" min="2" max="40" step="0.5" value="12">
+      </div>
+      <div class="field">
+        <div class="field-row"><label>Anchura</label><span class="val" id="v-swid">9 m</span></div>
+        <input type="range" id="swid" min="2" max="40" step="0.5" value="9">
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">04 — Panel solar</div>
+      <div class="field">
+        <div class="field-row"><label>Largo del panel</label><span class="val" id="v-plen">1.7 m</span></div>
+        <input type="range" id="plen" min="0.8" max="2.2" step="0.1" value="1.7">
+      </div>
+      <div class="field">
+        <div class="field-row"><label>Ancho del panel</label><span class="val" id="v-pwid">1.0 m</span></div>
+        <input type="range" id="pwid" min="0.6" max="1.3" step="0.05" value="1.0">
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+    <div class="topbar">
+      <h2>Disposición calculada</h2>
+      <div class="sub" id="topbar-sub">LAT 40°N · MODO ESTRUCTURA PROPIA</div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="sheet">
+      <div class="sheet-label">Planta — vista superior</div>
+      <svg id="svg-plan" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-label">Sección — vista lateral (esquema de 2 filas)</div>
+      <svg id="svg-section" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <p class="note" id="note-text"></p>
+  </main>
+
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+
+  const state = {
+    lat: 40,
+    az: 0,
+    mode: 'rack', // 'rack' | 'flush'
+    surfaceTilt: 30,
+    panelTilt: 40,
+    slen: 12,
+    swid: 9,
+    plen: 1.7,
+    pwid: 1.0
+  };
+
+  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+  function rad(d){ return d * Math.PI / 180; }
+
+  function recommendedTilt(lat){
+    return clamp(Math.round(Math.abs(lat)), 0, 60);
+  }
+
+  function computeAlphaMin(lat){
+    // Solar elevation at solar noon on the winter solstice (worst case)
+    return clamp(90 - Math.abs(lat) - 23.45, 5, 90);
+  }
+
+  function compute(){
+    const lat = state.lat;
+    const alphaMin = computeAlphaMin(lat);
+    const betaOpt = recommendedTilt(lat);
+    const Lp = state.plen, Wp = state.pwid;
+
+    let beta, gap, pitch, rows, shadowNote;
+
+    if(state.mode === 'rack'){
+      beta = state.panelTilt;
+      const betaR = rad(beta), alphaR = rad(alphaMin);
+      gap = Lp * Math.sin(betaR) / Math.tan(alphaR);
+      pitch = Lp * Math.cos(betaR) + gap;
+      const usable = state.slen - Lp*Math.cos(betaR);
+      rows = usable > 0 ? Math.floor(usable/pitch) + 1 : 0;
+      shadowNote = true;
+    } else {
+      beta = state.surfaceTilt;
+      gap = 0.03; // small maintenance/mounting gap, coplanar panels don't self-shade
+      pitch = Lp + gap;
+      rows = Math.floor(state.slen / pitch);
+      shadowNote = false;
+    }
+
+    const cols = Math.floor(state.swid / Wp);
+    rows = Math.max(rows, 0);
+    const totalPanels = rows * cols;
+
+    const tiltFactor = Math.cos(rad(beta - betaOpt));
+    const azFactor = Math.cos(rad(state.az));
+    const relYield = clamp(tiltFactor * azFactor, 0, 1) * 100;
+
+    return { lat, alphaMin, betaOpt, beta, gap, pitch, rows, cols, totalPanels, relYield, shadowNote, Lp, Wp };
+  }
+
+  // ---------- UI bindings ----------
+  function bindRange(id, key, fmt){
+    const el = $(id);
+    el.value = state[key];
+    el.addEventListener('input', ()=>{
+      state[key] = parseFloat(el.value);
+      $('v-'+id) && ($('v-'+id).textContent = fmt(state[key]));
+      render();
+    });
+    $('v-'+id).textContent = fmt(state[key]);
+  }
+
+  bindRange('lat','lat', v => Math.abs(v)+'° '+(v>=0?'N':'S'));
+  bindRange('az','az', v => v+'°');
+  bindRange('surfacetilt','surfaceTilt', v => v+'°');
+  bindRange('paneltilt','panelTilt', v => v+'°');
+  bindRange('slen','slen', v => v.toFixed(1)+' m');
+  bindRange('swid','swid', v => v.toFixed(1)+' m');
+  bindRange('plen','plen', v => v.toFixed(1)+' m');
+  bindRange('pwid','pwid', v => v.toFixed(2)+' m');
+
+  $('mode-rack').addEventListener('click', ()=>{
+    state.mode='rack';
+    $('mode-rack').classList.add('active');
+    $('mode-flush').classList.remove('active');
+    $('field-surfacetilt').style.display='none';
+    $('field-paneltilt').style.display='block';
+    $('mode-hint').textContent = 'La estructura fija el ángulo de cada panel de forma independiente al tejado, que se asume plano u horizontal.';
+    render();
+  });
+  $('mode-flush').addEventListener('click', ()=>{
+    state.mode='flush';
+    $('mode-flush').classList.add('active');
+    $('mode-rack').classList.remove('active');
+    $('field-surfacetilt').style.display='block';
+    $('field-paneltilt').style.display='none';
+    $('mode-hint').textContent = 'Los paneles siguen la pendiente del tejado sin estructura propia: al ser coplanares, no se sombrean entre filas.';
+    render();
+  });
+  $('btn-optimal').addEventListener('click', ()=>{
+    state.panelTilt = recommendedTilt(state.lat);
+    $('paneltilt').value = state.panelTilt;
+    $('v-paneltilt').textContent = state.panelTilt+'°';
+    render();
+  });
+
+  // ---------- SVG rendering: plan view ----------
+  function renderPlan(c){
+    const svg = $('svg-plan');
+    const W = 900, H = 520, margin = 70;
+    const availW = W - margin*2, availH = H - margin*2;
+    const scale = Math.min(availW/state.swid, availH/state.slen);
+    const drawW = state.swid*scale, drawH = state.slen*scale;
+    const ox = (W - drawW)/2, oy = margin - 10;
+
+    let grid = '';
+    for(let x=0; x<=state.swid; x++){
+      const gx = ox + x*scale;
+      grid += `<line x1="${gx}" y1="${oy}" x2="${gx}" y2="${oy+drawH}" stroke="var(--paper-grid)" stroke-width="1"/>`;
+    }
+    for(let y=0; y<=state.slen; y++){
+      const gy = oy + y*scale;
+      grid += `<line x1="${ox}" y1="${gy}" x2="${ox+drawW}" y2="${gy}" stroke="var(--paper-grid)" stroke-width="1"/>`;
+    }
+
+    let panels = '';
+    const panelPxW = state.pwid*scale;
+    const panelPxDepth = (state.mode==='rack' ? state.plen*Math.cos(rad(c.beta)) : state.plen) * scale;
+    for(let r=0; r<c.rows; r++){
+      const rowY = oy + r*c.pitch*scale;
+      for(let k=0; k<c.cols; k++){
+        const px = ox + k*panelPxW;
+        panels += `<rect x="${px+1}" y="${rowY+1}" width="${panelPxW-2}" height="${panelPxDepth-2}" fill="#1D3A55" stroke="#0D1826" stroke-width="0.6" rx="1.5"/>`;
+      }
+    }
+
+    const boundary = `<rect x="${ox}" y="${oy}" width="${drawW}" height="${drawH}" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+
+    const dimW = `<line x1="${ox}" y1="${oy+drawH+22}" x2="${ox+drawW}" y2="${oy+drawH+22}" stroke="var(--ink-soft)" stroke-width="1"/>
+      <line x1="${ox}" y1="${oy+drawH+16}" x2="${ox}" y2="${oy+drawH+28}" stroke="var(--ink-soft)" stroke-width="1"/>
+      <line x1="${ox+drawW}" y1="${oy+drawH+16}" x2="${ox+drawW}" y2="${oy+drawH+28}" stroke="var(--ink-soft)" stroke-width="1"/>
+      <text x="${ox+drawW/2}" y="${oy+drawH+40}" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="var(--ink-soft)">${state.swid.toFixed(1)} m</text>`;
+
+    const dimH = `<line x1="${ox-22}" y1="${oy}" x2="${ox-22}" y2="${oy+drawH}" stroke="var(--ink-soft)" stroke-width="1"/>
+      <line x1="${ox-28}" y1="${oy}" x2="${ox-16}" y2="${oy}" stroke="var(--ink-soft)" stroke-width="1"/>
+      <line x1="${ox-28}" y1="${oy+drawH}" x2="${ox-16}" y2="${oy+drawH}" stroke="var(--ink-soft)" stroke-width="1"/>
+      <text x="${ox-38}" y="${oy+drawH/2}" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="var(--ink-soft)" transform="rotate(-90 ${ox-38} ${oy+drawH/2})">${state.slen.toFixed(1)} m</text>`;
+
+    const northArrow = `<g transform="translate(${W-56},${34})">
+      <line x1="0" y1="18" x2="0" y2="-2" stroke="var(--ink)" stroke-width="2"/>
+      <polygon points="0,-10 -6,2 6,2" fill="var(--ink)"/>
+      <text x="0" y="34" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-soft)">${c.shadowNote ? 'Sol\u2193 filas' : 'pendiente'}</text>
+    </g>`;
+
+    svg.innerHTML = grid + boundary + panels + dimW + dimH + northArrow;
+  }
+
+  // ---------- SVG rendering: section view ----------
+  function renderSection(c){
+    const svg = $('svg-section');
+    const W = 900, H = 420;
+    const baseY = 300;
+    const pxPerM = 90; // fixed schematic scale
+    const startX = 90;
+
+    let content = '';
+
+    // ground/paper grid
+    for(let i=0;i<12;i++){
+      const gx = i*70;
+      content += `<line x1="${gx}" y1="30" x2="${gx}" y2="${baseY}" stroke="var(--paper-grid)" stroke-width="1"/>`;
+    }
+
+    const Lp = state.plen;
+    const betaR = rad(c.beta);
+    const alphaR = rad(c.alphaMin);
+
+    if(state.mode === 'rack'){
+      // baseline horizontal
+      content += `<line x1="${startX-40}" y1="${baseY}" x2="${W-40}" y2="${baseY}" stroke="var(--ink)" stroke-width="2"/>`;
+
+      const pitchPx = c.pitch * pxPerM;
+      const rowsToShow = 2;
+      let lastTopX=0, lastTopY=0;
+
+      for(let r=0;r<rowsToShow;r++){
+        const baseX = startX + r*pitchPx;
+        const topX = baseX + Lp*Math.cos(betaR)*pxPerM;
+        const topY = baseY - Lp*Math.sin(betaR)*pxPerM;
+
+        // mount leg (rear)
+        content += `<line x1="${topX}" y1="${baseY}" x2="${topX}" y2="${topY}" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="3,3"/>`;
+        // panel
+        content += `<line x1="${baseX}" y1="${baseY}" x2="${topX}" y2="${topY}" stroke="var(--amber)" stroke-width="6" stroke-linecap="round"/>`;
+        // base point marker
+        content += `<circle cx="${baseX}" cy="${baseY}" r="3" fill="var(--ink)"/>`;
+
+        if(r===0){
+          lastTopX = topX; lastTopY = topY;
+          // beta angle arc at base
+          const arcR = 34;
+          content += `<path d="M ${baseX+arcR} ${baseY} A ${arcR} ${arcR} 0 0 0 ${baseX + arcR*Math.cos(betaR)} ${baseY - arcR*Math.sin(betaR)}" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>`;
+          content += `<text x="${baseX+arcR+8}" y="${baseY-6}" font-family="IBM Plex Mono" font-size="12" fill="var(--ink)">\u03B2 ${c.beta.toFixed(0)}\u00B0</text>`;
+        }
+        if(r===1){
+          content += `<text x="${baseX-6}" y="${baseY+22}" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-soft)" text-anchor="middle">fila 2</text>`;
+        } else {
+          content += `<text x="${baseX-6}" y="${baseY+22}" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-soft)" text-anchor="middle">fila 1</text>`;
+        }
+      }
+
+      // sun + ray + shadow to next row base
+      const sunX = 40, sunY = 40;
+      content += `<circle cx="${sunX}" cy="${sunY}" r="14" fill="var(--amber)"/>`;
+      for(let i=0;i<8;i++){
+        const a = i*Math.PI/4;
+        content += `<line x1="${sunX+Math.cos(a)*18}" y1="${sunY+Math.sin(a)*18}" x2="${sunX+Math.cos(a)*24}" y2="${sunY+Math.sin(a)*24}" stroke="var(--amber)" stroke-width="2"/>`;
+      }
+      const shadowTargetX = startX + pitchPx;
+      content += `<line x1="${sunX+20}" y1="${sunY+10}" x2="${lastTopX}" y2="${lastTopY}" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="2,4"/>`;
+      content += `<line x1="${lastTopX}" y1="${lastTopY}" x2="${shadowTargetX}" y2="${baseY}" stroke="var(--danger)" stroke-width="1.5" stroke-dasharray="5,3"/>`;
+      content += `<text x="${(lastTopX+shadowTargetX)/2}" y="${baseY+40}" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--danger)">sombra al mediodía solar, solsticio de invierno</text>`;
+
+      // alpha angle marker near shadow landing
+      content += `<text x="${lastTopX+10}" y="${lastTopY-8}" font-family="IBM Plex Mono" font-size="12" fill="var(--ink)">\u03B1 ${c.alphaMin.toFixed(0)}\u00B0</text>`;
+
+      // gap + pitch dimension
+      const panelBaseEndX = startX + Lp*Math.cos(betaR)*pxPerM;
+      content += `<line x1="${panelBaseEndX}" y1="${baseY+56}" x2="${shadowTargetX}" y2="${baseY+56}" stroke="var(--ink-soft)" stroke-width="1"/>
+        <text x="${(panelBaseEndX+shadowTargetX)/2}" y="${baseY+70}" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-soft)">separación ${c.gap.toFixed(2)} m</text>`;
+      content += `<line x1="${startX}" y1="${baseY+90}" x2="${shadowTargetX}" y2="${baseY+90}" stroke="var(--teal)" stroke-width="1"/>
+        <text x="${(startX+shadowTargetX)/2}" y="${baseY+104}" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--teal)">paso entre filas ${c.pitch.toFixed(2)} m</text>`;
+
+    } else {
+      // flush mode: inclined baseline, panels coplanar, no shading
+      const x0 = startX-40, y0 = baseY;
+      const runPx = (W-140);
+      const x1 = x0 + runPx*Math.cos(betaR);
+      const y1 = y0 - runPx*Math.sin(betaR);
+      content += `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="var(--ink)" stroke-width="2"/>`;
+
+      const pitchPx = c.pitch*pxPerM;
+      for(let r=0;r<3;r++){
+        const d = startX + r*pitchPx - x0;
+        const bx = x0 + d*Math.cos(betaR);
+        const by = y0 - d*Math.sin(betaR);
+        const ex = bx + Lp*Math.cos(betaR)*pxPerM;
+        const ey = by - Lp*Math.sin(betaR)*pxPerM;
+        content += `<line x1="${bx}" y1="${by}" x2="${ex}" y2="${ey}" stroke="var(--amber)" stroke-width="7" stroke-linecap="round"/>`;
+      }
+
+      // roof tilt angle
+      content += `<path d="M ${x0+40} ${y0} A 40 40 0 0 0 ${x0+40*Math.cos(betaR)} ${y0-40*Math.sin(betaR)}" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>`;
+      content += `<text x="${x0+50}" y="${y0-10}" font-family="IBM Plex Mono" font-size="12" fill="var(--ink)">\u03B3 ${c.beta.toFixed(0)}\u00B0 (pendiente del tejado)</text>`;
+
+      // sun + ray hitting the roof plane
+      const sunX = 780, sunY = 44;
+      content += `<circle cx="${sunX}" cy="${sunY}" r="14" fill="var(--amber)"/>`;
+      for(let i=0;i<8;i++){
+        const a = i*Math.PI/4;
+        content += `<line x1="${sunX+Math.cos(a)*18}" y1="${sunY+Math.sin(a)*18}" x2="${sunX+Math.cos(a)*24}" y2="${sunY+Math.sin(a)*24}" stroke="var(--amber)" stroke-width="2"/>`;
+      }
+      const hitD = startX + pitchPx*0.5 - x0;
+      const hitX = x0 + hitD*Math.cos(betaR);
+      const hitY = y0 - hitD*Math.sin(betaR);
+      content += `<line x1="${sunX-20}" y1="${sunY+14}" x2="${hitX}" y2="${hitY}" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="2,4"/>`;
+      content += `<text x="${hitX-10}" y="${hitY-16}" text-anchor="end" font-family="IBM Plex Mono" font-size="12" fill="var(--ink)">\u03B1 ${c.alphaMin.toFixed(0)}\u00B0</text>`;
+      content += `<text x="${x0+20}" y="${y0+40}" font-family="IBM Plex Mono" font-size="11" fill="var(--teal)">paneles coplanares — sin sombra entre filas</text>`;
+      content += `<text x="${x0+20}" y="${y0+58}" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-soft)">separación de montaje: ${(c.gap*100).toFixed(0)} cm · paso ${c.pitch.toFixed(2)} m</text>`;
+    }
+
+    svg.innerHTML = content;
+  }
+
+  function renderStats(c){
+    const items = [
+      { n: c.totalPanels, l:'Paneles totales' },
+      { n: c.rows+' × '+c.cols, l:'Filas × columnas' },
+      { n: c.beta.toFixed(0)+'°', l:'Inclinación usada' },
+      { n: c.alphaMin.toFixed(0)+'°', l:'Sol mín. (invierno)' },
+      { n: c.gap.toFixed(2)+' m', l: state.mode==='rack' ? 'Separación filas' : 'Separación montaje' },
+      { n: c.relYield.toFixed(0)+'%', l:'Rendimiento relativo' },
+    ];
+    $('stats').innerHTML = items.map(i => `<div class="stat"><div class="n">${i.n}</div><div class="l">${i.l}</div></div>`).join('');
+  }
+
+  function render(){
+    const c = compute();
+    renderStats(c);
+    renderPlan(c);
+    renderSection(c);
+    $('topbar-sub').textContent = `LAT ${Math.abs(state.lat)}°${state.lat>=0?'N':'S'} · MODO ${state.mode==='rack'?'ESTRUCTURA PROPIA':'PANELES A RAS'} · ${c.totalPanels} PANELES`;
+    $('note-text').innerHTML = `<b>Cómo se calcula:</b> la inclinación óptima orientativa equivale aproximadamente a la latitud del lugar (${c.betaOpt}°). La separación entre filas se dimensiona para que, al mediodía solar del solsticio de invierno —cuando el sol alcanza su altura mínima del año (${c.alphaMin.toFixed(1)}° en esta latitud)— la sombra de una fila no llegue a cubrir la siguiente. El rendimiento relativo es una estimación simplificada frente al ángulo y orientación óptimos, y no sustituye un estudio de producción energética (kWh) profesional.`;
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

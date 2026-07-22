@@ -1,0 +1,17 @@
+{
+  "name": "proman-docs-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "predeploy": "scripts/set-docs-url.sh prod && astro build",
+    "deploy": "gh-pages -d dist",
+    "postdeploy": "scripts/set-docs-url.sh local"
+  },
+  "devDependencies": {
+    "astro": "^4.8.0",
+    "gh-pages": "^6.3.0"
+  }
+}
