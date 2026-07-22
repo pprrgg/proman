@@ -631,7 +631,7 @@
 
     <!-- LIBS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -639,7 +639,7 @@
     <style>
         /* (Mantenemos todos tus estilos CSS originales exactamente igual) */
         body {
-            font-family: 'Poppins', 'Inter', sans-serif;
+            font-family: 'Inter', sans-serif;
             scroll-behavior: smooth;
             background-color: #050a18;
             color: white;
@@ -663,7 +663,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 72px;
+            height: 65px;
             z-index: 100000 !important;
             background-color: white !important;
             border-bottom: 2px solid #003399;
@@ -695,11 +695,11 @@
 
         .nav-link-text {
             color: #1e293b !important;
-            font-weight: 700;
+            font-weight: 900;
             text-transform: uppercase;
-            font-size: 12px !important;
-            letter-spacing: 0.04em;
-            padding: 0 14px !important;
+            font-size: 10px !important;
+            letter-spacing: 0.05em;
+            padding: 0 12px !important;
             height: 100%;
             display: flex;
             align-items: center;
@@ -803,7 +803,7 @@
         #mobile-menu {
             display: none;
             position: fixed;
-            top: 72px;
+            top: 60px;
             left: 0;
             width: 300px;
             background: white;
@@ -995,8 +995,24 @@
                 <i class="material-icons text-[20px]">menu</i>
             </button>
 
+            <!-- Logo -->
+            <div class="flex items-center gap-2 cursor-pointer shrink-0"
+                onclick="closeIframe(); window.scrollTo({top:0, behavior:'smooth'})">
+                <span class="text-2xl leading-none select-none">🦉</span>
+                <div class="flex flex-col justify-center">
+                    <div class="text-base font-black tracking-tighter leading-none">
+                        <span class="text-[#003399]">OWL</span><span class="text-[#D4AF37]">ERGY</span>
+                    </div>
+                    <!-- Ajuste en tracking-tighter o valores negativos personalizados -->
+                    <div id="nav-smart-energy"
+                        class="text-[7px] uppercase tracking-[-0.02em] font-light text-slate-400 mt-1 leading-none inline-block origin-left scale-y-[1.5]">
+                        Microgrid Intelligence
+                    </div>
+                </div>
+            </div>
+
             <!-- IMPORTANTE: Este contenedor DEBE existir para que aparezcan los menús -->
-            <div id="nav-content" class="hidden sm:flex items-center h-full"></div>
+            <div id="nav-content" class="hidden sm:flex items-center h-full ml-6"></div>
 
             <!-- Zona Derecha: Idiomas + Acciones -->
             <div class="flex items-center gap-3 ml-auto">
@@ -1036,6 +1052,10 @@
                     class="bg-slate-100 text-slate-600 hover:bg-[#003399] hover:text-white transition flex items-center justify-center rounded-full h-8 w-8">
                     <i class="material-icons text-[16px]">send</i>
                 </button>
+                <button onclick="openLogin()"
+                    class="bg-slate-100 text-slate-600 hover:bg-[#003399] hover:text-white transition flex items-center justify-center rounded-full h-8 w-8">
+                    <i class="material-icons text-[16px]">person</i>
+                </button>
             </div>
         </div>
     </nav>
@@ -1065,13 +1085,13 @@
         <!-- Título Principal Estilo Logo -->
         <h1 class="flex flex-col items-center mb-12">
             <!-- Parte Superior: OWL ERGY -->
-            <div class="text-7xl md:text-9xl font-black tracking-tighter leading-none">
+            <div class="text-6xl md:text-8xl font-black tracking-tighter leading-none">
                 <span class="text-white">OWL</span><span class="text-[#ffd700]">ERGY</span>
             </div>
 
             <!-- Microgrid Intelligence: Estirado, Fino y Pegado -->
             <span
-                class="block text-2xl md:text-3xl font-extralight uppercase tracking-[-0.02em] text-slate-300 mt-6 inline-block origin-center scale-y-[1.6]">
+                class="block text-xl md:text-2xl font-extralight uppercase tracking-[-0.02em] text-slate-300 mt-6 inline-block origin-center scale-y-[1.6]">
                 Microgrid Intelligence
             </span>
 
@@ -1086,7 +1106,7 @@
         <div class="flex flex-col items-center max-w-3xl">
             <div class="w-12 h-[2px] bg-[#ffd700] mb-8"></div>
             <p id="hero-sub"
-                class="text-white text-sm md:text-lg font-medium uppercase tracking-[0.4em] leading-relaxed opacity-90">
+                class="text-white text-xs md:text-base font-medium uppercase tracking-[0.4em] leading-relaxed opacity-90">
                 Resiliencia Energética y Control Predictivo en AC/DC
             </p>
         </div>
