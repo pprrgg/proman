@@ -31,7 +31,6 @@
     color: inherit;
     font-family: inherit;
   }
-  .actions { display: flex; gap: .6rem; flex-wrap: wrap; margin: 1rem 0; }
   button {
     cursor: pointer;
     padding: .6rem 1.1rem;
@@ -44,16 +43,134 @@
   button.secondary { background: transparent; color: inherit; }
   button.btn-mini { padding: .25rem .55rem; font-size: .75rem; }
   button:disabled { opacity: .5; cursor: wait; }
+
+  .oculto { display: none; }
+
+  .btn-flotante,
+  .btn-exportar-flotante,
+  .btn-importar-flotante,
+  .btn-descargar-flotante {
+    opacity: .55;
+    transition: opacity .2s ease;
+  }
+  .btn-flotante:hover,
+  .btn-flotante:focus-visible,
+  .btn-exportar-flotante:hover,
+  .btn-exportar-flotante:focus-visible,
+  .btn-importar-flotante:hover,
+  .btn-importar-flotante:focus-visible,
+  .btn-descargar-flotante:hover,
+  .btn-descargar-flotante:focus-visible {
+    opacity: 1;
+  }
+
+  .btn-flotante {
+    position: fixed;
+    top: 50%;
+    right: 1.2rem;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: .7rem;
+    border-radius: 999px;
+    background: Canvas;
+    color: inherit;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+  }
+  .btn-flotante svg { width: 1.5rem; height: 1.5rem; flex: none; }
+  .btn-flotante:disabled { opacity: .6; cursor: wait; }
+  .btn-flotante .etiqueta {
+    max-width: 0;
+    margin-left: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width .25s ease, opacity .2s ease, margin-left .25s ease;
+  }
+  .btn-flotante:hover .etiqueta,
+  .btn-flotante:focus-visible .etiqueta {
+    max-width: 200px;
+    margin-left: .5rem;
+    opacity: 1;
+  }
+
+  .btn-exportar-flotante {
+    position: fixed;
+    top: calc(50% - 4.4rem);
+    right: 1.2rem;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: .7rem;
+    border-radius: 999px;
+    background: Canvas;
+    color: inherit;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+  }
+  .btn-exportar-flotante svg { width: 1.4rem; height: 1.4rem; flex: none; color: #217346; }
+  .btn-exportar-flotante .etiqueta {
+    max-width: 0;
+    margin-left: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width .25s ease, opacity .2s ease, margin-left .25s ease;
+  }
+  .btn-exportar-flotante:hover .etiqueta,
+  .btn-exportar-flotante:focus-visible .etiqueta {
+    max-width: 200px;
+    margin-left: .5rem;
+    opacity: 1;
+  }
+
+  .btn-importar-flotante {
+    position: fixed;
+    top: calc(50% - 8.8rem);
+    right: 1.2rem;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: .7rem;
+    border-radius: 999px;
+    background: Canvas;
+    color: inherit;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+  }
+  .btn-importar-flotante svg { width: 1.4rem; height: 1.4rem; flex: none; color: #2563eb; }
+  .btn-importar-flotante .etiqueta {
+    max-width: 0;
+    margin-left: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width .25s ease, opacity .2s ease, margin-left .25s ease;
+  }
+  .btn-importar-flotante:hover .etiqueta,
+  .btn-importar-flotante:focus-visible .etiqueta {
+    max-width: 200px;
+    margin-left: .5rem;
+    opacity: 1;
+  }
   #estado { font-size: .9rem; margin: .5rem 0; min-height: 1.2em; }
   #estado.error { color: #dc2626; }
   #estado.ok { color: #16a34a; }
 
   .tabs {
     display: flex;
+    align-items: center;
     gap: .3rem;
     flex-wrap: wrap;
     border-bottom: 1px solid #8886;
     margin: 1rem 0 0;
+  }
+  .tabs .info-paginas {
+    margin-left: auto;
+    font-size: .85rem;
+    opacity: .75;
+    white-space: nowrap;
   }
   .tab-btn {
     background: transparent;
@@ -124,48 +241,95 @@
   details.grupo-detalle[open] > summary::before { transform: rotate(90deg); }
   .grupo-cuerpo { padding: .7rem .8rem .8rem 1.4rem; }
 
-  .visor-toolbar {
+  .btn-descargar-flotante {
+    position: fixed;
+    top: calc(50% + 4.4rem);
+    right: 1.2rem;
+    transform: translateY(-50%);
+    z-index: 1000;
     display: flex;
     align-items: center;
-    gap: .6rem;
-    padding: 0 0 .6rem;
-    flex: none;
-  }
-  .visor-toolbar span {
-    font-size: .85rem;
-    opacity: .75;
-    margin-left: auto;
-  }
-  .visor-toolbar a {
     text-decoration: none;
-    display: inline-block;
     cursor: pointer;
-    padding: .6rem 1.1rem;
+    padding: .7rem;
     font-size: .95rem;
-    border-radius: 6px;
+    font-weight: 600;
+    border-radius: 999px;
     border: 1px solid #8886;
+    background: Canvas;
     color: inherit;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+  }
+  .btn-descargar-flotante svg { width: 1.4rem; height: 1.4rem; flex: none; color: #dc2626; }
+  .btn-descargar-flotante .etiqueta {
+    max-width: 0;
+    margin-left: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width .25s ease, opacity .2s ease, margin-left .25s ease;
+  }
+  .btn-descargar-flotante:hover .etiqueta,
+  .btn-descargar-flotante:focus-visible .etiqueta {
+    max-width: 160px;
+    margin-left: .5rem;
+    opacity: 1;
   }
   #visor {
     display: block;
     width: 100%;
     height: 80vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: .6rem;
+    background: #8881;
     border: 1px solid #8886;
     border-radius: 8px;
+  }
+  #visor canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 auto .6rem;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .25);
   }
 </style>
 </head>
 <body>
 
-<h1>IND240_Implantación_de_variador_de_velocidad — Generador de informe PDF</h1>
-
-<label>URL de la API (endpoint POST /f)</label>
-<input type="url" id="apiUrl" value="http://127.0.0.1:8888/A5_Medida_de_ahorro_energético/A51_Sector_Industrial/IND240_Implantación_de_variador_de_velocidad/f">
-
-<div class="actions">
-  <button type="button" class="secondary" id="btnRecargarInputs">Recargar inputs (GET /i)</button>
-  <button type="submit" id="btnGenerar" form="formulario">Generar PDF (POST /f)</button>
+<div class="oculto">
+  <h1>IND240_Implantación_de_variador_de_velocidad — Generador de informe PDF</h1>
+  <label>URL de la API (endpoint POST /f)</label>
+  <input type="url" id="apiUrl" value="http://127.0.0.1:8888/A5_Medida_de_ahorro_energético/A51_Sector_Industrial/IND240_Implantación_de_variador_de_velocidad/f">
 </div>
+
+<button type="submit" id="btnGenerar" form="formulario" class="btn-flotante" title="Generar PDF" aria-label="Generar PDF">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="3"></circle>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+  </svg>
+  <span class="etiqueta">Actualizar Informe</span>
+</button>
+
+<button type="button" id="btnExportarExcel" class="btn-exportar-flotante" title="Exportar a Excel" aria-label="Exportar a Excel">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+    <polyline points="7 10 12 15 17 10"></polyline>
+    <line x1="12" y1="15" x2="12" y2="3"></line>
+  </svg>
+  <span class="etiqueta">Exportar Excel</span>
+</button>
+
+<button type="button" id="btnImportarExcel" class="btn-importar-flotante" title="Importar desde Excel" aria-label="Importar desde Excel">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+    <polyline points="17 8 12 3 7 8"></polyline>
+    <line x1="12" y1="3" x2="12" y2="15"></line>
+  </svg>
+  <span class="etiqueta">Importar Excel</span>
+</button>
+<input type="file" id="inputImportarExcel" accept=".xlsx,.xls" class="oculto">
 
 <form id="formulario">
 
@@ -176,6 +340,18 @@
 
 <div id="estado"></div>
 
+<!-- Render del PDF a <canvas> vía pdf.js: en móvil (iOS/Android) los navegadores no
+     traen un visor de PDF embebible (ni <iframe> ni <embed> lo muestran), así que
+     dibujamos las páginas nosotros mismos con JS en vez de delegar en el navegador. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+</script>
+
+<!-- SheetJS: exporta el JSON editado (excelData en sessionStorage) a un .xlsx real,
+     una hoja por cada clave del objeto. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 // datos[nombreHoja] = array-of-arrays, fila 0 = cabecera, resto = filas de datos.
 let datos = {};
@@ -183,17 +359,6 @@ let datos = {};
 // Misma idea que sessionStorage.setItem("excelData", ...) en AppXLS.jsx:
 // el JSON editado vive en la sesión y es la fuente de verdad al enviar a la API.
 const SESSION_KEY = 'excelData';
-const SESSION_KEY_DOC_PREFIX = `${SESSION_KEY}:`;
-
-function getSessionKey() {
-  return `${SESSION_KEY_DOC_PREFIX}${location.pathname}`;
-}
-
-function guardarEnSesion() {
-  const key = getSessionKey();
-  sessionStorage.setItem(key, JSON.stringify(datos));
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(datos));
-}
 
 function urlBase(sufijo) {
   return document.getElementById('apiUrl').value.replace(/\/f$/, sufijo);
@@ -203,6 +368,10 @@ function mostrarEstado(mensaje, tipo) {
   const el = document.getElementById('estado');
   el.textContent = mensaje;
   el.className = tipo || '';
+}
+
+function guardarEnSesion() {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(datos));
 }
 
 // ==========================================
@@ -217,17 +386,15 @@ async function cargarInputs({ forzarReset = false } = {}) {
     if (forzarReset) {
       // Reinicio explícito (botón "Recargar inputs"): descartamos la sesión
       // y volvemos a pedir los valores de fábrica al servidor.
-      sessionStorage.removeItem(getSessionKey());
       sessionStorage.removeItem(SESSION_KEY);
     } else {
       // Carga de página: si ya hay una sesión (edición previa), la reutilizamos
       // en vez de pisarla. El reinicio desde /i solo ocurre la primera vez
       // (cuando todavía no existe nada guardado en sessionStorage).
-      const sessionRaw = sessionStorage.getItem(getSessionKey());
+      const sessionRaw = sessionStorage.getItem(SESSION_KEY);
       if (sessionRaw) {
         datos = JSON.parse(sessionRaw);
         cargadoDeSesion = true;
-        guardarEnSesion();
       }
     }
 
@@ -251,22 +418,30 @@ async function cargarInputs({ forzarReset = false } = {}) {
 
 const TAB_INFORME = '__informe_pdf__';
 
-function crearTabInforme(nav, panels) {
+function crearTabInforme(panels) {
   const boton = document.createElement('button');
   boton.type = 'button';
   boton.className = 'tab-btn';
   boton.dataset.tab = TAB_INFORME;
-  boton.textContent = 'Informe PDF';
+  boton.textContent = 'Informe';
   boton.addEventListener('click', () => activarTab(TAB_INFORME));
-  nav.appendChild(boton);
 
   const panel = document.createElement('div');
   panel.className = 'tab-panel';
   panel.id = `tab-${TAB_INFORME}`;
   panel.innerHTML = `
-    <iframe id="visor"></iframe>
+    <div id="visor"></div>
+    <a id="visorDescargar" download="informe.pdf" class="btn-descargar-flotante" title="Descargar PDF">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+      </svg>
+      <span class="etiqueta">Descargar PDF</span>
+    </a>
   `;
   panels.appendChild(panel);
+
+  return boton;
 }
 
 function renderizarTabs() {
@@ -275,8 +450,9 @@ function renderizarTabs() {
   nav.innerHTML = '';
   panels.innerHTML = '';
 
-  // Pestaña fija con el informe renderizado; siempre va primero y activa por defecto.
-  crearTabInforme(nav, panels);
+  // Pestaña fija con el informe renderizado; activa por defecto, pero se coloca
+  // a la derecha del resto de pestañas.
+  const botonInforme = crearTabInforme(panels);
 
   Object.keys(datos).forEach((clave) => {
     const boton = document.createElement('button');
@@ -294,6 +470,13 @@ function renderizarTabs() {
 
     renderizarHoja(clave, panel);
   });
+
+  nav.appendChild(botonInforme);
+
+  const info = document.createElement('span');
+  info.id = 'visorInfo';
+  info.className = 'info-paginas';
+  nav.appendChild(info);
 
   activarTab(TAB_INFORME);
 }
@@ -474,16 +657,127 @@ function construirPayload() {
 }
 
 // ==========================================
+// Exportar excelData (sesión) a un .xlsx
+// ==========================================
+
+// El título del informe vive en la hoja "PDF" como fila ["", "Proyecto", "nombre", <valor>],
+// igual que ss.nombredocumento en el pipeline de Typst; si no aparece, caemos al <title>.
+function obtenerTituloProyecto(datosSesion) {
+  const filas = datosSesion.PDF || [];
+  const cabecera = filas[0] || [];
+  const idxCategoria = cabecera.indexOf('Categoría');
+  const idxVariable = cabecera.indexOf('Variable');
+  const idxValor = cabecera.indexOf('valor');
+  if (idxCategoria === -1 || idxVariable === -1 || idxValor === -1) return null;
+
+  const fila = filas
+    .slice(1)
+    .find((f) => f[idxCategoria] === 'Proyecto' && f[idxVariable] === 'nombre');
+
+  const valor = fila ? String(fila[idxValor] ?? '').trim() : '';
+  return valor || null;
+}
+
+function sanearNombreArchivo(texto) {
+  return String(texto).trim().replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, '_');
+}
+
+function exportarExcel() {
+  try {
+    const datosSesion = construirPayload();
+    const titulo = obtenerTituloProyecto(datosSesion) || document.title || 'excelData';
+
+    const wb = XLSX.utils.book_new();
+    Object.keys(datosSesion).forEach((clave) => {
+      const ws = XLSX.utils.aoa_to_sheet(datosSesion[clave] || []);
+      // Los nombres de hoja de Excel admiten máx. 31 caracteres y no : \ / ? * [ ]
+      const nombreHoja = clave.replace(/[:\\/?*[\]]/g, '_').slice(0, 31) || 'Hoja';
+      XLSX.utils.book_append_sheet(wb, ws, nombreHoja);
+    });
+
+    XLSX.writeFile(wb, `${sanearNombreArchivo(titulo)}.xlsx`);
+    mostrarEstado('Excel exportado correctamente.', 'ok');
+  } catch (e) {
+    mostrarEstado(`Error exportando Excel: ${e.message}`, 'error');
+  }
+}
+
+// ==========================================
+// Importar un .xlsx a la variable de sesión (excelData)
+// ==========================================
+
+async function importarExcel(file) {
+  mostrarEstado('Importando Excel…');
+  try {
+    const buffer = await file.arrayBuffer();
+    const wb = XLSX.read(buffer, { type: 'array' });
+
+    const nuevosDatos = {};
+    wb.SheetNames.forEach((nombreHoja) => {
+      // header: 1 -> array-of-arrays (fila 0 = cabecera), igual que el formato de /i.
+      nuevosDatos[nombreHoja] = XLSX.utils.sheet_to_json(wb.Sheets[nombreHoja], {
+        header: 1,
+        blankrows: false,
+        defval: '',
+      });
+    });
+
+    datos = nuevosDatos;
+    guardarEnSesion();
+    renderizarTabs();
+    mostrarEstado('Excel importado correctamente.', 'ok');
+
+    await generarPdf();
+  } catch (e) {
+    mostrarEstado(`Error importando Excel: ${e.message}`, 'error');
+  }
+}
+
+// ==========================================
 // Visor de PDF (pestaña "Informe PDF")
 // ==========================================
 
 let urlPdfActual = null;
 
-function mostrarPdf(blob) {
+async function mostrarPdf(blob) {
   if (urlPdfActual) URL.revokeObjectURL(urlPdfActual);
   urlPdfActual = URL.createObjectURL(blob);
 
-  document.getElementById('visor').src = urlPdfActual;
+  const enlaceDescarga = document.getElementById('visorDescargar');
+  if (enlaceDescarga) enlaceDescarga.href = urlPdfActual;
+
+  const contenedor = document.getElementById('visor');
+  if (!contenedor) return; // la pestaña "Informe PDF" aún no se ha renderizado
+  contenedor.innerHTML = '';
+
+  const infoEl = document.getElementById('visorInfo');
+  const ratio = window.devicePixelRatio || 1;
+  const arrayBuffer = await blob.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+  for (let numPagina = 1; numPagina <= pdf.numPages; numPagina++) {
+    if (infoEl) infoEl.textContent = `Renderizando página ${numPagina} de ${pdf.numPages}…`;
+
+    const pagina = await pdf.getPage(numPagina);
+    // Escalamos cada página al ancho disponible del contenedor (menos el padding).
+    const anchoDisponible = contenedor.clientWidth - 12 || 800;
+    const escala = anchoDisponible / pagina.getViewport({ scale: 1 }).width;
+    const viewport = pagina.getViewport({ scale: escala });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width * ratio;
+    canvas.height = viewport.height * ratio;
+    canvas.style.width = `${viewport.width}px`;
+    canvas.style.height = `${viewport.height}px`;
+
+    const contexto = canvas.getContext('2d');
+    contexto.scale(ratio, ratio);
+    await pagina.render({ canvasContext: contexto, viewport }).promise;
+
+    contenedor.appendChild(canvas);
+  }
+
+  if (infoEl) infoEl.textContent = `${pdf.numPages} página${pdf.numPages === 1 ? '' : 's'}`;
 }
 
 // ==========================================
@@ -509,7 +803,7 @@ async function generarPdf() {
     }
 
     const blob = await resp.blob();
-    mostrarPdf(blob);
+    await mostrarPdf(blob);
     mostrarEstado('PDF generado correctamente.', 'ok');
   } catch (e) {
     mostrarEstado(`Error: ${e.message}`, 'error');
@@ -523,7 +817,17 @@ document.getElementById('formulario').addEventListener('submit', (ev) => {
   generarPdf();
 });
 
-document.getElementById('btnRecargarInputs').addEventListener('click', () => cargarInputs({ forzarReset: true }));
+document.getElementById('btnExportarExcel').addEventListener('click', exportarExcel);
+
+document.getElementById('btnImportarExcel').addEventListener('click', () => {
+  document.getElementById('inputImportarExcel').click();
+});
+
+document.getElementById('inputImportarExcel').addEventListener('change', async (ev) => {
+  const file = ev.target.files[0];
+  ev.target.value = ''; // permite volver a importar el mismo archivo si hace falta
+  if (file) await importarExcel(file);
+});
 
 cargarInputs();
 </script>
