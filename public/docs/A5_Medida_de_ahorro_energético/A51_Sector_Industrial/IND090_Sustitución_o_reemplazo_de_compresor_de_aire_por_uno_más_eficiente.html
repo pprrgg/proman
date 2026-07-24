@@ -360,6 +360,11 @@ let datos = {};
 // el JSON editado vive en la sesión y es la fuente de verdad al enviar a la API.
 const SESSION_KEY = 'excelData';
 
+// Recuerda a qué endpoint pertenece el excelData cacheado. Cada router tiene su
+// propio esquema de inputs, así que si apiUrl cambia respecto a esta marca la
+// sesión vieja ya no es válida para el nuevo endpoint (y provocaría un 500).
+const SESSION_URL_KEY = 'excelDataUrl';
+
 function urlBase(sufijo) {
   return document.getElementById('apiUrl').value.replace(/\/f$/, sufijo);
 }
@@ -372,6 +377,7 @@ function mostrarEstado(mensaje, tipo) {
 
 function guardarEnSesion() {
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(datos));
+  sessionStorage.setItem(SESSION_URL_KEY, document.getElementById('apiUrl').value);
 }
 
 // ==========================================
@@ -381,11 +387,17 @@ function guardarEnSesion() {
 async function cargarInputs({ forzarReset = false } = {}) {
   mostrarEstado('Cargando inputs…');
   try {
+    const urlActual = document.getElementById('apiUrl').value;
+    if (sessionStorage.getItem(SESSION_URL_KEY) !== urlActual) {
+      // El excelData cacheado se guardó para otro endpoint: no sirve para este.
+      forzarReset = true;
+    }
+
     let cargadoDeSesion = false;
 
     if (forzarReset) {
-      // Reinicio explícito (botón "Recargar inputs"): descartamos la sesión
-      // y volvemos a pedir los valores de fábrica al servidor.
+      // Reinicio (endpoint distinto al de la sesión guardada): descartamos y
+      // volvemos a pedir los valores de fábrica al servidor.
       sessionStorage.removeItem(SESSION_KEY);
     } else {
       // Carga de página: si ya hay una sesión (edición previa), la reutilizamos
