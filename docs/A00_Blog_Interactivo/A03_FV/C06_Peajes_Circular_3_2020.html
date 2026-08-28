@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peajes de Transporte y Distribución · Circular 3/2020</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A121C; --bg2:#070D15; --panel:#111E2E; --panel2:#0E1826;
+    --line:#213348; --line-soft:#182739;
+    --text:#E7ECF2; --text-dim:#8FA3B8; --text-dimmer:#5B7086;
+    --amber:#FFB020; --green:#16A34A; --red:#DC2626; --cyan:#37CFFF;
+    --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif; --font-mono:'IBM Plex Mono',monospace;
+    --radius:2px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg); color:var(--text); font-family:var(--font-body); line-height:1.55; -webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--amber); color:#0A121C;}
+  .grid-bg{position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:linear-gradient(rgba(255,176,32,0.035) 1px, transparent 1px),linear-gradient(90deg, rgba(255,176,32,0.035) 1px, transparent 1px);
+    background-size:42px 42px; mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 30%, transparent 100%);}
+  a{color:inherit;}
+  .eyebrow{font-family:var(--font-mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--amber);}
+  h1,h2,h3{font-family:var(--font-display); font-weight:600; letter-spacing:-0.01em;}
+
+  .shell{max-width:1440px; margin:0 auto; position:relative; z-index:1;}
+  .tabbar-wrap{position:sticky; top:0; z-index:30; display:flex; align-items:stretch; background:var(--bg2); border-bottom:1px solid var(--line-soft);}
+  .tabbar-brand{display:flex; align-items:center; padding:0 18px; font-family:var(--font-mono); font-size:12px; color:var(--amber); font-weight:600; white-space:nowrap; flex-shrink:0; border-right:1px solid var(--line-soft);}
+  .tabbar{display:flex; overflow-x:auto; flex:1; scroll-behavior:smooth; scrollbar-width:none; -ms-overflow-style:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tabbar a{display:flex; align-items:center; gap:9px; padding:16px 20px; font-size:13px; color:var(--text-dim); text-decoration:none; white-space:nowrap; border-bottom:2px solid transparent; flex-shrink:0; transition:all .15s ease;}
+  .tabbar a .tag{font-family:var(--font-mono); font-size:10px; color:var(--text-dimmer);}
+  .tabbar a:hover{color:var(--text); background:var(--panel2);}
+  .tabbar a.active{color:var(--amber); border-bottom-color:var(--amber);}
+  .tabbar a.active .tag{color:var(--amber);}
+  .tabbar-arrow{flex-shrink:0; width:34px; background:var(--bg2); border:none; color:var(--text-dim); cursor:pointer; display:none; align-items:center; justify-content:center; padding:0;}
+  .tabbar-arrow:hover{color:var(--amber); background:var(--panel2);}
+  .tabbar-arrow svg{width:16px; height:16px;}
+  .tabbar-wrap.can-scroll-left .tabbar-arrow-left, .tabbar-wrap.can-scroll-right .tabbar-arrow-right{display:flex;}
+
+  main{flex:1; min-width:0;}
+  section{display:none; padding:88px 56px;}
+  section.tab-active{display:block;}
+  section .kicker{margin-bottom:14px;}
+  section h2{font-size:30px; margin-bottom:20px; max-width:780px;}
+  section .lede{color:var(--text-dim); max-width:680px; font-size:15px; margin-bottom:36px;}
+
+  .hero{padding:80px 56px 64px; border-bottom:1px solid var(--line-soft); position:relative; overflow:hidden;}
+  .hero h1{font-size:clamp(30px,4vw,48px); line-height:1.05; max-width:780px; margin:14px 0 20px;}
+  .hero h1 em{font-style:normal; color:var(--amber);}
+  .hero .sub{color:var(--text-dim); max-width:640px; font-size:15.5px;}
+  .stat-row{display:flex; gap:0; border-top:1px solid var(--line-soft); margin-top:40px;}
+  .stat{flex:1; padding:16px 16px; border-right:1px solid var(--line-soft);}
+  .stat:last-child{border-right:none;}
+  .stat .v{font-family:var(--font-mono); color:var(--amber); font-size:15px;}
+  .stat .l{font-size:11px; color:var(--text-dimmer); margin-top:3px;}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+  .theory-card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:20px 22px;}
+  .theory-card h3{font-size:14px; color:var(--text); margin-bottom:10px;}
+  .theory-card p{font-size:12.5px; color:var(--text-dim); margin-bottom:8px;}
+  .theory-card ul{padding-left:18px; font-size:12.5px; color:var(--text-dim);}
+  .theory-card li{margin-bottom:6px;}
+  .theory-card li b{color:var(--text);}
+  .formula-box{background:var(--panel2); border:1px solid var(--line-soft); border-radius:var(--radius); padding:14px 16px; margin:10px 0; text-align:center;}
+  .formula-box .f{font-family:var(--font-mono); font-size:13px; color:var(--amber);}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;}
+  .field input[type=text], .field input[type=number], .field select{
+    width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--text);
+    padding:9px 11px; border-radius:var(--radius); font-family:var(--font-mono); font-size:13.5px;
+  }
+  .field input:focus, .field select:focus{outline:none; border-color:var(--amber);}
+  .fieldset-title{font-family:var(--font-mono); font-size:11px; color:var(--amber); text-transform:uppercase; letter-spacing:0.06em; margin:22px 0 12px; padding-top:16px; border-top:1px solid var(--line-soft);}
+  .fieldset-title:first-child{border-top:none; padding-top:0; margin-top:0;}
+
+  .btn{font-family:var(--font-mono); font-size:13px; padding:11px 22px; border-radius:var(--radius); border:1px solid var(--amber); background:transparent; color:var(--amber); cursor:pointer; transition:all .15s ease; font-weight:600; letter-spacing:0.02em;}
+  .btn:hover{background:rgba(255,176,32,0.1);}
+  .btn.primary{background:var(--amber); color:#0A121C; border-color:var(--amber);}
+  .btn.primary:hover{background:#ffc352;}
+
+  .calculator{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:24px; margin:16px 0;}
+  .calc-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:16px; margin-bottom:16px;}
+  .result-chip{background:var(--panel2); border:1px solid var(--amber); border-radius:var(--radius); padding:16px; text-align:center;}
+  .result-chip .v{font-family:var(--font-mono); font-size:24px; color:var(--amber);}
+  .result-chip .l{font-size:11px; color:var(--text-dimmer); margin-top:6px;}
+
+  .example-card{background:linear-gradient(135deg, rgba(255,176,32,0.08) 0%, rgba(37,99,235,0.08) 100%); border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin:16px 0;}
+  .example-card h4{font-size:13px; color:var(--amber); margin-bottom:12px; font-family:var(--font-mono); text-transform:uppercase;}
+  .example-table{width:100%; font-size:12px; border-collapse:collapse;}
+  .example-table td{padding:8px; border-bottom:1px solid var(--line-soft);}
+  .example-table .label{color:var(--text-dim); width:50%;}
+  .example-table .value{color:var(--text); font-family:var(--font-mono); font-weight:600;}
+
+  .comp-card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; position:relative; overflow:hidden;}
+  .comp-card::before{content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg, var(--amber), var(--cyan));}
+  .comp-card h4{font-size:13.5px; margin-bottom:8px;}
+  .comp-card p{font-size:12px; color:var(--text-dim);}
+
+  table.data-table{width:100%; border-collapse:collapse; font-size:12px;}
+  table.data-table th{text-align:left; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dimmer); padding:8px 9px; border-bottom:1px solid var(--line);}
+  table.data-table td{padding:8px 9px; border-bottom:1px solid var(--line-soft); color:var(--text-dim);}
+  table.data-table tr:hover td{background:var(--panel2);}
+
+  .tooltip-text{font-size:11px; color:var(--text-dimmer); margin-top:4px;}
+
+  footer{padding:44px 56px; text-align:left; font-family:var(--font-mono); font-size:11px; color:var(--text-dimmer);}
+  footer a{color:var(--amber); text-decoration:none;}
+
+  .toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--panel); border:1px solid var(--amber); color:var(--text); padding:12px 22px; border-radius:var(--radius); font-family:var(--font-mono); font-size:12.5px; opacity:0; transition:all .25s ease; z-index:50; pointer-events:none;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  @media(max-width:960px){
+    .tabbar-brand{display:none;}
+    .tabbar a{padding:14px 14px;}
+    section{padding:56px 24px;}
+    .hero{padding:100px 24px 40px;}
+    .calc-row{grid-template-columns:1fr;}
+  }
+  code.inline{font-family:var(--font-mono); background:var(--panel2); padding:1px 6px; border-radius:3px; color:var(--amber); font-size:0.92em;}
+
+  .breakdown-card{background:var(--panel2); border:1px solid var(--line-soft); border-radius:var(--radius); padding:16px; margin:12px 0;}
+  .breakdown-row{display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line-soft);}
+  .breakdown-row:last-child{border-bottom:none;}
+  .breakdown-row .label{font-size:12px; color:var(--text-dim);}
+  .breakdown-row .value{font-family:var(--font-mono); font-size:13px; color:var(--amber); font-weight:600;}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="shell">
+  <div class="tabbar-wrap" id="tabbarWrap">
+    <div class="tabbar-brand">PEAJES CIRCULAR 3/2020</div>
+    <button class="tabbar-arrow tabbar-arrow-left" id="tabScrollLeft" type="button" aria-label="Desplazar pestañas a la izquierda">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <nav class="tabbar" id="sidenav">
+      <a href="#resumen" data-sec="resumen"><span class="tag">00</span>Resumen ejecutivo</a>
+      <a href="#marco" data-sec="marco"><span class="tag">01</span>Metodología regulatoria</a>
+      <a href="#componentes" data-sec="componentes"><span class="tag">02</span>Componentes de peajes</a>
+      <a href="#calculadora" data-sec="calculadora"><span class="tag">03</span>Calculadora interactiva</a>
+      <a href="#comparativa" data-sec="comparativa"><span class="tag">04</span>Análisis comparativo</a>
+    </nav>
+    <button class="tabbar-arrow tabbar-arrow-right" id="tabScrollRight" type="button" aria-label="Desplazar pestañas a la derecha">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+  </div>
+  <script>
+  (function(){
+    var wrap = document.getElementById('tabbarWrap');
+    var bar = document.getElementById('sidenav');
+    var btnL = document.getElementById('tabScrollLeft');
+    var btnR = document.getElementById('tabScrollRight');
+    function update(){
+      var maxScroll = bar.scrollWidth - bar.clientWidth;
+      wrap.classList.toggle('can-scroll-left', bar.scrollLeft > 4);
+      wrap.classList.toggle('can-scroll-right', bar.scrollLeft < maxScroll - 4);
+    }
+    btnL.addEventListener('click', function(){ bar.scrollBy({left:-220, behavior:'smooth'}); });
+    btnR.addEventListener('click', function(){ bar.scrollBy({left:220, behavior:'smooth'}); });
+    bar.addEventListener('scroll', update);
+    window.addEventListener('resize', update);
+    setTimeout(update, 0);
+  })();
+  </script>
+
+  <main>
+
+    <!-- SECCIÓN 00: RESUMEN -->
+    <section id="resumen">
+      <div class="eyebrow kicker">00 · Resumen ejecutivo</div>
+      <h2>Circular 3/2020: Peajes de transporte y distribución.</h2>
+      <p class="lede">Entiende la metodología regulatoria para el cálculo de peajes de acceso a las redes de transporte y distribución de energía eléctrica en España, con ejemplos interactivos del desglose de costes.</p>
+
+      <div class="hero">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:40px; flex-wrap:wrap;">
+          <div>
+            <h1>Del <em>generador al consumidor</em>: cada componente tiene un peaje.</h1>
+            <p class="sub">Tu factura de electricidad incluye cargos por transporte y distribución. La Circular 3/2020 establece cómo calcularlos, qué criterios se usan (potencia, energía, horario) y cómo se discrimina entre usuarios.</p>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="v">2 niveles de red</div><div class="l">Transporte (alta) y Distribución (media/baja)</div></div>
+          <div class="stat"><div class="v">3 componentes</div><div class="l">Potencia, Energía, Otros cargos</div></div>
+          <div class="stat"><div class="v">Regulación anual</div><div class="l">Metodología sometida a audiencia pública y aprobación</div></div>
+        </div>
+      </div>
+
+      <div class="eyebrow kicker" style="margin-top:40px;">¿Qué es un peaje?</div>
+      <div class="grid3">
+        <div class="comp-card">
+          <h4>Compensación de costes regulados</h4>
+          <p>El peaje remunera la inversión en infraestructura de la red (cables, subestaciones, etc.) y los costes de operación y mantenimiento.</p>
+        </div>
+        <div class="comp-card">
+          <h4>Basado en costes reales históricos</h4>
+          <p>La metodología de la Circular 3/2020 usa datos de activos, producción y demanda de años anteriores para fijar los peajes del año siguiente.</p>
+        </div>
+        <div class="comp-card">
+          <h4>Diferenciado por usuario y red</h4>
+          <p>Existen categorías distintas de tarifas para BT (baja tensión, residencial), MT (media tensión, comercial/industrial) y AT (alta tensión).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 01: MARCO REGULATORIO -->
+    <section id="marco">
+      <div class="eyebrow kicker">01 · Metodología regulatoria</div>
+      <h2>Cómo se calculan los peajes según la Circular 3/2020.</h2>
+      <p class="lede">La metodología desglosa costes históricos en componentes de potencia y energía, los distribuye entre categorías de usuarios, y aplica criterios de discriminación tarifaria para incentivar un consumo eficiente.</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:28px;">
+        <div class="theory-card">
+          <h3>Fase 1: Costes regulados totales</h3>
+          <p>La CNMC agrega todos los costes operacionales e inversiones de los distribuidores y transportistas del año anterior:</p>
+          <ul>
+            <li><b>OPEX:</b> Mantenimiento, personal, seguros</li>
+            <li><b>CAPEX:</b> Renovación de infraestructuras (amortizado)</li>
+            <li><b>Tasa de retorno:</b> Rentabilidad regulada (~6–7%)</li>
+            <li><b>Déficit tarifario:</b> Deuda acumulada (si aplica)</li>
+          </ul>
+        </div>
+        <div class="theory-card">
+          <h3>Fase 2: Segregación por nivel de red</h3>
+          <p>Los costes se reparten entre:</p>
+          <ul>
+            <li><b>Transporte (AT):</b> Red principal 220/400 kV</li>
+            <li><b>Distribución (MT):</b> Redes de media tensión 10–30 kV</li>
+            <li><b>Distribución (BT):</b> Redes de baja tensión &lt;1 kV (acometidas finales)</li>
+            <li><b>Pérdidas:</b> Coste de pérdidas técnicas en cada nivel</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
+        <div class="theory-card">
+          <h3>Fase 3: Segregación por componentes</h3>
+          <p>Dentro de cada nivel, los costes se dividen en:</p>
+          <ul>
+            <li><b>Componente potencia (€/kW):</b> Proporcional a demanda simultánea (hobbholder)</li>
+            <li><b>Componente energía (€/MWh):</b> Proporcional a volumen consumido/inyectado</li>
+            <li><b>Componente fija (€/usuario):</b> Conexión, lectura, inspección</li>
+            <li><b>Otros cargos:</b> Retirada de instalaciones, etc.</li>
+          </ul>
+        </div>
+        <div class="theory-card">
+          <h3>Fase 4: Aplicación de criterios de discriminación</h3>
+          <p>Se aplican reglas para diferenciar entre usuarios según:</p>
+          <ul>
+            <li><b>Tensión de suministro:</b> BT paga más (costes de distribución local)</li>
+            <li><b>Horario:</b> Pico vs. valle (incentivo a consumo en horas bajas)</li>
+            <li><b>Estacionalidad:</b> Invierno vs. verano</li>
+            <li><b>Factor de carga:</b> Usuarios con demanda simultánea alta pagan menos por kW</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="theory-card" style="margin-top:24px; background:linear-gradient(135deg, rgba(255,176,32,0.12) 0%, rgba(37,99,235,0.12) 100%);">
+        <h3 style="color:var(--amber);">Fórmula simplificada del peaje anual</h3>
+        <div class="formula-box">
+          <div class="f">Peaje anual = (Potencia contratada × Tarifa potencia) + (Energía consumida × Tarifa energía) + Cuota fija</div>
+        </div>
+        <p style="margin-top:12px;">Donde:</p>
+        <ul>
+          <li><b>Tarifa potencia (€/kW/año):</b> Fija en contrato, discriminada por AT/MT/BT y hora punta</li>
+          <li><b>Tarifa energía (€/MWh):</b> Se aplica al consumo real, con franjas arancelarias</li>
+          <li><b>Cuota fija:</b> No varía con consumo, cubre costes administrativos</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 02: COMPONENTES -->
+    <section id="componentes">
+      <div class="eyebrow kicker">02 · Componentes de peajes</div>
+      <h2>Desglose detallado de cada elemento tarifario.</h2>
+      <p class="lede">Los peajes mezclan componentes de capacidad, energía y servicios auxiliares. Cada uno responde a un coste distinto en la operación de la red.</p>
+
+      <table class="data-table" style="margin-top:24px;">
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th>Unidad</th>
+            <th>Base de cálculo</th>
+            <th>Qué cubre</th>
+            <th>Ejemplo valor (2024)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Peaje potencia</b></td>
+            <td>€/kW/año</td>
+            <td>Potencia contratada in hora punta</td>
+            <td>Inversión en transformadores, líneas MT, acometidas</td>
+            <td>35–50 €/kW</td>
+          </tr>
+          <tr>
+            <td><b>Peaje energía punta</b></td>
+            <td>€/MWh</td>
+            <td>kWh consumidos 12–22h (lun–vie, abr–oct)</td>
+            <td>Mantenimiento y operación de red en demanda máxima</td>
+            <td>20–30 €/MWh</td>
+          </tr>
+          <tr>
+            <td><b>Peaje energía llano</b></td>
+            <td>€/MWh</td>
+            <td>kWh consumidos en horario intermedio</td>
+            <td>Operación equilibrada de la red</td>
+            <td>10–15 €/MWh</td>
+          </tr>
+          <tr>
+            <td><b>Peaje energía valle</b></td>
+            <td>€/MWh</td>
+            <td>kWh consumidos 0–8h o 22–24h</td>
+            <td>Recuperación parcial de costes fijos (Discriminación horaria)</td>
+            <td>3–8 €/MWh</td>
+          </tr>
+          <tr>
+            <td><b>Cuota fija</b></td>
+            <td>€/mes</td>
+            <td>Número de usuarios conectados</td>
+            <td>Lectura de contador, inspección, gestión administrativo</td>
+            <td>0,50–2,00 €/mes</td>
+          </tr>
+          <tr>
+            <td><b>Margen de comercialización</b></td>
+            <td>€/MWh</td>
+            <td>Energía total</td>
+            <td>Retribución de la comercializadora (no es peaje, pero aparece en la factura)</td>
+            <td>3–8 €/MWh</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:32px;">
+        <div class="eyebrow kicker">Ejemplo: desglose mensual para BT residencial</div>
+        <div class="example-card">
+          <h4>Hogar medio: 300 kWh/mes, 3,45 kW contratados</h4>
+          <table class="example-table">
+            <tr>
+              <td class="label">Peaje potencia (3,45 kW × 40 €/kW/año ÷ 12)</td>
+              <td class="value">11,50 €</td>
+            </tr>
+            <tr>
+              <td class="label">Peaje energía punta (100 kWh × 25 €/MWh)</td>
+              <td class="value">2,50 €</td>
+            </tr>
+            <tr>
+              <td class="label">Peaje energía llano (120 kWh × 12 €/MWh)</td>
+              <td class="value">1,44 €</td>
+            </tr>
+            <tr>
+              <td class="label">Peaje energía valle (80 kWh × 5 €/MWh)</td>
+              <td class="value">0,40 €</td>
+            </tr>
+            <tr>
+              <td class="label">Cuota fija (acceso a red)</td>
+              <td class="value">1,20 €</td>
+            </tr>
+            <tr style="border-top:2px solid var(--line-soft);">
+              <td class="label"><b>Total peaje + acceso (sin energía ni impuestos)</b></td>
+              <td class="value"><b>17,04 €</b></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="theory-card" style="margin-top:24px;">
+        <h3>¿Por qué se discrimina horariamente?</h3>
+        <p style="margin:12px 0;">Incentivar el desplazamiento de consumo desde horas punta: si todos consum consumieramos al máximo a la vez, la red sería muy cara. Desplazando demanda a horas bajas (carga de coches, lavadora, bomba solar) se aprovecha mejor la infraestructura.</p>
+        <p style="margin:12px 0;"><b>Impacto en instalaciones FV:</b> Una bomba de riego solar que funciona de día está en el horario "punta" o "llano" (dependiendo del mes). Si inyecta en red, el distribuidor se beneficia (la demanda externa baja). La compensación por inyectados también está basada en estos peajes: no se compensa el 100% porque la inyección "solo" evita algunos costes (por ejemplo, no evita costes de distribución capilar BT).</p>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 03: CALCULADORA -->
+    <section id="calculadora">
+      <div class="eyebrow kicker">03 · Calculadora interactiva</div>
+      <h2>Calcula tu peaje anual según tus parámetros.</h2>
+      <p class="lede">Introduce consumo, potencia contratada y tu tipo de usuario para ver el desglose completo de peajes de transporte y distribución.</p>
+
+      <div class="calculator">
+        <div style="font-family:var(--font-mono); font-size:11px; color:var(--amber); text-transform:uppercase; margin-bottom:16px;">Simulador de peajes · Usuario residencial (BT)</div>
+        <div class="calc-row">
+          <div class="field">
+            <label>Potencia contratada (kW)</label>
+            <input type="number" id="calc_potencia" value="3.45" min="1.15" max="15" step="0.1">
+            <div class="tooltip-text">Típicamente 3,45 kW (residencias)</div>
+          </div>
+          <div class="field">
+            <label>Consumo mensual punta (kWh)</label>
+            <input type="number" id="calc_punta" value="100" min="0" max="1000" step="10">
+            <div class="tooltip-text">kWh en horas 12–22h (temporada punta)</div>
+          </div>
+          <div class="field">
+            <label>Consumo mensual llano (kWh)</label>
+            <input type="number" id="calc_llano" value="120" min="0" max="1000" step="10">
+          </div>
+          <div class="field">
+            <label>Consumo mensual valle (kWh)</label>
+            <input type="number" id="calc_valle" value="80" min="0" max="1000" step="10">
+            <div class="tooltip-text">kWh entre 0–8h y 22–24h</div>
+          </div>
+        </div>
+
+        <div class="calc-row">
+          <div class="field">
+            <label>Tarifa peaje potencia (€/kW/año)</label>
+            <input type="number" id="calc_tarifa_pot" value="40" min="20" max="70" step="1">
+            <div class="tooltip-text">Valor medio 2024, depende del distribuidor y nivel de red</div>
+          </div>
+          <div class="field">
+            <label>Tarifa peaje energía punta (€/MWh)</label>
+            <input type="number" id="calc_tarifa_punta" value="25" min="10" max="50" step="1">
+          </div>
+          <div class="field">
+            <label>Tarifa peaje energía llano (€/MWh)</label>
+            <input type="number" id="calc_tarifa_llano" value="12" min="5" max="30" step="1">
+          </div>
+          <div class="field">
+            <label>Tarifa peaje energía valle (€/MWh)</label>
+            <input type="number" id="calc_tarifa_valle" value="5" min="1" max="15" step="1">
+          </div>
+          <div class="field">
+            <label>Cuota fija mensual (€)</label>
+            <input type="number" id="calc_cuota" value="1.20" min="0.5" max="3" step="0.1">
+          </div>
+        </div>
+
+        <button class="btn primary" onclick="calcularPeaje()" style="width:100%; margin-bottom:16px;">Calcular peaje mensual y anual</button>
+
+        <div id="calc_resultado" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:12px; margin-bottom:16px;">
+          <div class="result-chip">
+            <div class="l">Peaje potencia</div>
+            <div class="v" id="calc_res_pot">11,50 €</div>
+          </div>
+          <div class="result-chip">
+            <div class="l">Peaje energía punta</div>
+            <div class="v" id="calc_res_punta">2,50 €</div>
+          </div>
+          <div class="result-chip">
+            <div class="l">Peaje energía llano</div>
+            <div class="v" id="calc_res_llano">1,44 €</div>
+          </div>
+          <div class="result-chip">
+            <div class="l">Peaje energía valle</div>
+            <div class="v" id="calc_res_valle">0,40 €</div>
+          </div>
+          <div class="result-chip">
+            <div class="l">Cuota fija</div>
+            <div class="v" id="calc_res_cuota">1,20 €</div>
+          </div>
+          <div class="result-chip">
+            <div class="l"><b>Total mensual</b></div>
+            <div class="v" id="calc_res_mensual" style="color:var(--green);"><b>17,04 €</b></div>
+          </div>
+          <div class="result-chip" style="grid-column:1/-1;">
+            <div class="l">Total anual (peaje + acceso)</div>
+            <div class="v" id="calc_res_anual" style="color:var(--green);">204 €</div>
+          </div>
+        </div>
+
+        <div class="breakdown-card">
+          <div style="font-family:var(--font-mono); font-size:10px; color:var(--amber); text-transform:uppercase; margin-bottom:8px;">Desglose anual</div>
+          <div class="breakdown-row">
+            <div class="label">Peaje potencia (anual)</div>
+            <div class="value" id="breakdown_pot">138,00 €</div>
+          </div>
+          <div class="breakdown-row">
+            <div class="label">Peaje energía (anual)</div>
+            <div class="value" id="breakdown_energia">53,04 €</div>
+          </div>
+          <div class="breakdown-row">
+            <div class="label">Cuota fija (anual)</div>
+            <div class="value" id="breakdown_cuota">14,40 €</div>
+          </div>
+          <div class="breakdown-row" style="border-top:2px solid var(--line-soft); padding-top:12px;">
+            <div class="label"><b>Total anual</b></div>
+            <div class="value" id="breakdown_total"><b>205,44 €</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:48px; border-top:1px solid var(--line-soft); padding-top:24px;">
+        <div class="eyebrow kicker">Formularios de cálculo para componentes específicos</div>
+        <p style="font-size:12px; color:var(--text-dim); margin-top:12px; margin-bottom:24px;">Desglosa cada componente tarifario de forma independiente. Útil para analizar presupuestos o comparar escenarios.</p>
+
+        <!-- TABS PARA FORMULARIOS -->
+        <div style="display:flex; gap:0; border-bottom:1px solid var(--line-soft); margin-bottom:24px; overflow-x:auto; scrollbar-width:none;">
+          <button class="form-tab active" onclick="irAFormulario('form1')" data-form="form1" style="font-family:var(--font-mono); font-size:12px; padding:12px 18px; border:none; background:transparent; color:var(--text-dim); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; white-space:nowrap;">
+            <span style="color:var(--amber);">01</span> Potencia
+          </button>
+          <button class="form-tab" onclick="irAFormulario('form2')" data-form="form2" style="font-family:var(--font-mono); font-size:12px; padding:12px 18px; border:none; background:transparent; color:var(--text-dim); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; white-space:nowrap;">
+            <span style="color:var(--cyan);">02</span> Energía reactiva
+          </button>
+          <button class="form-tab" onclick="irAFormulario('form3')" data-form="form3" style="font-family:var(--font-mono); font-size:12px; padding:12px 18px; border:none; background:transparent; color:var(--text-dim); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; white-space:nowrap;">
+            <span style="color:var(--green);">03</span> Pérdidas
+          </button>
+          <button class="form-tab" onclick="irAFormulario('form4')" data-form="form4" style="font-family:var(--font-mono); font-size:12px; padding:12px 18px; border:none; background:transparent; color:var(--text-dim); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; white-space:nowrap;">
+            <span style="color:var(--red);">04</span> Horario
+          </button>
+        </div>
+
+        <style>
+          .form-tab.active { color:var(--amber); border-bottom-color:var(--amber); }
+          .form-tab:hover { background:var(--panel2); }
+          .form-content { display:none; }
+          .form-content.active { display:block; }
+        </style>
+
+        <!-- FORMULARIO 1: PEAJE DE POTENCIA PURA -->
+        <div class="form-content active" id="form1">
+        <div class="calculator" style="background:linear-gradient(135deg, rgba(255,176,32,0.08) 0%, rgba(55,207,255,0.08) 100%); border-left:3px solid var(--amber);">
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--amber); text-transform:uppercase; margin-bottom:16px;">Formulario 1 · Potencia + exceso de potencia (Circular 1/2025)</div>
+          <div class="calc-row">
+            <div class="field">
+              <label>Potencia demandada máxima (kW)</label>
+              <input type="number" id="f1_potencia" value="12" min="0.1" max="500" step="0.1">
+              <div class="tooltip-text">Pmax del período de facturación (maxímetro)</div>
+            </div>
+            <div class="field">
+              <label>Potencia contratada (kW)</label>
+              <input type="number" id="f1_potencia_contratada" value="10" min="0.1" max="500" step="0.1">
+              <div class="tooltip-text">Pc: potencia contratada del suministro</div>
+            </div>
+            <div class="field">
+              <label>Tarifa 2025</label>
+              <select id="f1_tarifa_2025">
+                <option value="2.0 TD">2.0 TD</option>
+                <option value="3.0 TD">3.0 TD</option>
+                <option value="6.1 TD" selected>6.1 TD</option>
+                <option value="6.2 TD">6.2 TD</option>
+                <option value="6.3 TD">6.3 TD</option>
+                <option value="6.4 TD">6.4 TD</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Días del periodo</label>
+              <input type="number" id="f1_dias" value="30" min="1" max="31" step="1">
+              <div class="tooltip-text">Máximo 31 días; suele ser 30 o 31</div>
+            </div>
+          </div>
+          <button class="btn primary" onclick="calcularPeajePotencia()" style="width:100%; margin-bottom:16px;">Calcular potencia + exceso</button>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:12px; margin-bottom:16px;">
+            <div class="result-chip">
+              <div class="l">Término de potencia</div>
+              <div class="v" id="f1_resultado_base">0,00 €</div>
+            </div>
+            <div class="result-chip">
+              <div class="l">Exceso de potencia</div>
+              <div class="v" id="f1_resultado_exceso">0,00 €</div>
+            </div>
+            <div class="result-chip">
+              <div class="l"><b>Total anual</b></div>
+              <div class="v" id="f1_resultado" style="color:var(--green);"><b>0,00 €</b></div>
+            </div>
+          </div>
+          <div class="breakdown-card" style="margin-top:12px;">
+            <div class="breakdown-row">
+              <div class="label">Potencia demandada máxima</div>
+              <div class="value" id="f1_break_pot">12,0 kW</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="label">Potencia contratada</div>
+              <div class="value" id="f1_break_pc">10,0 kW</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="label">Exceso de potencia</div>
+              <div class="value" id="f1_break_exceso">2,0 kW</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="label">Tpp 2025</div>
+              <div class="value" id="f1_break_tarifa">0 €/kW·año</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="label">tep 2025</div>
+              <div class="value" id="f1_break_tep">0 €/kW·día</div>
+            </div>
+            <div class="breakdown-row" style="border-top:2px solid var(--line-soft); padding-top:12px;">
+              <div class="label"><b>Total del periodo</b></div>
+              <div class="value" id="f1_break_total"><b>0,00 €</b></div>
+            </div>
+          </div>
+        </div>
+        </div><!-- FIN FORM 1 -->
+
+        <!-- FORMULARIO 2: PEAJE DE ENERGÍA REACTIVA -->
+        <div class="form-content" id="form2">
+        <div class="calculator" style="background:linear-gradient(135deg, rgba(55,207,255,0.08) 0%, rgba(22,163,74,0.08) 100%); border-left:3px solid var(--cyan);">
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--cyan); text-transform:uppercase; margin-bottom:16px;">Formulario 2 · Peaje por energía reactiva</div>
+          <p style="font-size:11px; color:var(--text-dimmer); margin-bottom:16px;"><b>Nota:</b> La energía reactiva (kVAr) es penalizada si excede cierto factor de potencia (típicamente >0,95). Genera peaje adicional.</p>
+          <div class="calc-row">
+            <div class="field">
+              <label>Energía activa consumida (MWh/año)</label>
+              <input type="number" id="f2_activa" value="50" min="1" max="1000" step="1">
+            </div>
+            <div class="field">
+              <label>Factor de potencia real (sin decimales 0–1)</label>
+              <input type="number" id="f2_fp" value="0.92" min="0.5" max="1" step="0.01">
+              <div class="tooltip-text">Típico: 0,90–0,95. Valor 1 = perfecto</div>
+            </div>
+            <div class="field">
+              <label>Factor de potencia límite (tolerancia)</label>
+              <input type="number" id="f2_fp_limite" value="0.95" min="0.8" max="1" step="0.01">
+            </div>
+            <div class="field">
+              <label>Tarifa energía reactiva (€/kVArh)</label>
+              <input type="number" id="f2_tarifa_reactiva" value="0.05" min="0.01" max="0.15" step="0.01">
+              <div class="tooltip-text">Sanción por exceso de reactiva</div>
+            </div>
+          </div>
+          <button class="btn primary" onclick="calcularEnergiaReactiva()" style="width:100%; margin-bottom:16px;">Calcular coste de energía reactiva</button>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="result-chip">
+              <div class="l">Energía reactiva excedida</div>
+              <div class="v" id="f2_reactiva_exceso">2,90 kVArh</div>
+            </div>
+            <div class="result-chip">
+              <div class="l">Coste anual (sanción)</div>
+              <div class="v" id="f2_resultado">145,00 €</div>
+            </div>
+          </div>
+          <div class="breakdown-card" style="margin-top:12px;">
+            <div class="breakdown-row">
+              <div class="label">Energía activa</div>
+              <div class="value" id="f2_break_activa">50 MWh</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="label">FP actual (tangente)</div>
+              <div class="value" id="f2_break_tan_actual">0,428</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="label">FP permitido (tangente)</div>
+              <div class="value" id="f2_break_tan_limite">0,329</div>
+            </div>
+            <div class="breakdown-row" style="border-top:2px solid var(--line-soft); padding-top:12px;">
+              <div class="label"><b>Energía reactiva penalizada</b></div>
+              <div class="value" id="f2_break_reactiva"><b>2,90 MWh</b></div>
+            </div>
+          </div>
+        </div>
+        </div><!-- FIN FORM 2 -->
+
+        <!-- FORMULARIO 3: PEAJE DE POTENCIA DE PÉRDIDAS -->
+        <div class="form-content" id="form3">
+        <div class="calculator" style="background:linear-gradient(135deg, rgba(22,163,74,0.08) 0%, rgba(220,38,38,0.08) 100%); border-left:3px solid var(--green);">
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--green); text-transform:uppercase; margin-bottom:16px;">Formulario 3 · Peaje de potencia de pérdidas</div>
+          <p style="font-size:11px; color:var(--text-dimmer); margin-bottom:16px;"><b>Nota:</b> Las pérdidas técnicas en la red (efecto Joule) se reparten entre usuarios según demanda. Se añade un peaje para compensarlas.</p>
+          <div class="calc-row">
+            <div class="field">
+              <label>Potencia demanda punta (kW)</label>
+              <input type="number" id="f3_potencia" value="15" min="1" max="100" step="0.1">
+            </div>
+            <div class="field">
+              <label>Pérdidas % en red (típico: 3–6%)</label>
+              <input type="number" id="f3_perdidas_pct" value="4.5" min="1" max="10" step="0.1">
+              <div class="tooltip-text">Distribuidores típicos: 4–5%</div>
+            </div>
+            <div class="field">
+              <label>Horas equivalentes punta (h/año)</label>
+              <input type="number" id="f3_horas" value="2500" min="1000" max="5000" step="100">
+            </div>
+            <div class="field">
+              <label>Tarifa de potencia pérdidas (€/kW/año)</label>
+              <input type="number" id="f3_tarifa_perdidas" value="20" min="5" max="50" step="1">
+            </div>
+          </div>
+          <button class="btn primary" onclick="calcularPeajePerdidas()" style="width:100%; margin-bottom:16px;">Calcular peaje de pérdidas</button>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="result-chip">
+              <div class="l">Potencia pérdidas (atribuida)</div>
+              <div class="v" id="f3_pot_perdidas">0,68 kW</div>
+            </div>
+            <div class="result-chip">
+              <div class="l">Coste anual por pérdidas</div>
+              <div class="v" id="f3_resultado">13,50 €</div>
+            </div>
+          </div>
+          <div class="breakdown-card" style="margin-top:12px;">
+            <div class="breakdown-row">
+              <div class="label">Potencia usuario (punta)</div>
+              <div class="value" id="f3_break_pot">15 kW</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="label">Pérdidas atribuidas (%) </div>
+              <div class="value" id="f3_break_perdidas">4,5 %</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="label">Potencia pérdidas equivalente</div>
+              <div class="value" id="f3_break_equiv">0,68 kW</div>
+            </div>
+            <div class="breakdown-row" style="border-top:2px solid var(--line-soft); padding-top:12px;">
+              <div class="label"><b>Tarifa potencia pérdidas</b></div>
+              <div class="value" id="f3_break_tarifa"><b>20 €/kW/año</b></div>
+            </div>
+          </div>
+        </div>
+        </div><!-- FIN FORM 3 -->
+
+        <!-- FORMULARIO 4: ANÁLISIS COMPARATIVO DE TARIFICACIÓN HORARIA -->
+        <div class="form-content" id="form4">
+        <div class="calculator" style="background:linear-gradient(135deg, rgba(220,38,38,0.08) 0%, rgba(255,176,32,0.08) 100%); border-left:3px solid var(--red);">
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--red); text-transform:uppercase; margin-bottom:16px;">Formulario 4 · Impacto de tarifa discriminada por horario</div>
+          <p style="font-size:11px; color:var(--text-dimmer); margin-bottom:16px;"><b>Nota:</b> Compara coste total si consumes en Punta vs Valle. Util para decisiones de desplazamiento de carga (bombas solares, contadores inteligentes).</p>
+          <div class="calc-row">
+            <div class="field">
+              <label>Consumo flexible (kWh/año)</label>
+              <input type="number" id="f4_consumo" value="3000" min="100" max="50000" step="100">
+              <div class="tooltip-text">Carga que puede trasladarse (bomba, lavadora, carga vehículo)</div>
+            </div>
+            <div class="field">
+              <label>Tarifa Punta (€/MWh)</label>
+              <input type="number" id="f4_punta" value="25" min="10" max="60" step="1">
+            </div>
+            <div class="field">
+              <label>Tarifa Llano (€/MWh)</label>
+              <input type="number" id="f4_llano" value="12" min="5" max="30" step="1">
+            </div>
+            <div class="field">
+              <label>Tarifa Valle (€/MWh)</label>
+              <input type="number" id="f4_valle" value="5" min="1" max="15" step="1">
+            </div>
+          </div>
+          <button class="btn primary" onclick="calcularComparativaHoraria()" style="width:100%; margin-bottom:16px;">Comparar costes por horario</button>
+          <table class="data-table" style="margin-bottom:16px;">
+            <thead>
+              <tr>
+                <th>Escenario de consumo</th>
+                <th>Coste anual</th>
+                <th>€/MWh efectivo</th>
+                <th>Ahorro vs Punta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>100% en Punta</b></td>
+                <td id="f4_res_punta">75,00 €</td>
+                <td id="f4_res_punta_media">25,00</td>
+                <td>—</td>
+              </tr>
+              <tr style="background:rgba(255,176,32,0.15);">
+                <td><b>100% en Llano</b></td>
+                <td id="f4_res_llano"><b>36,00 €</b></td>
+                <td id="f4_res_llano_media"><b>12,00</b></td>
+                <td id="f4_ahorro_llano"><b>39,0 €</b></td>
+              </tr>
+              <tr style="background:rgba(22,163,74,0.15);">
+                <td><b>100% en Valle</b></td>
+                <td id="f4_res_valle"><b>15,00 €</b></td>
+                <td id="f4_res_valle_media"><b>5,00</b></td>
+                <td id="f4_ahorro_valle"><b>60,0 €</b></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="comp-card">
+            <h4>Recomendación</h4>
+            <p id="f4_recomendacion">Si puedes desplazar consumo a Valle (tarifa roja nocional), ahorras hasta 60 € al año en este ejemplo. Es especialmente interesante para bombas solares controladas por horario o carga de vehículos eléctricos.</p>
+          </div>
+        </div>
+        </div><!-- FIN FORM 4 -->
+
+      </div>
+
+      <div style="margin-top:32px;">
+        <div class="eyebrow kicker">¿Cuánto cuesta acceder a la red?</div>
+        <p style="font-size:12px; color:var(--text-dim); margin-top:12px; margin-bottom:16px;">En el contexto de una instalación solar con autoconsumo compensado o productor: los peajes de transporte y distribución son un coste adicional. La factura de energía que "ahorras" con solar se reduce por estos peajes. Por eso es importante reducir la potencia contratada o desplazar consumo a Valle (tarifa roja nocional) cuando hay generación solar.</p>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 04: COMPARATIVA -->
+    <section id="comparativa">
+      <div class="eyebrow kicker">04 · Análisis comparativo</div>
+      <h2>Peajes según nivel de red y tipo de usuario.</h2>
+      <p class="lede">Los peajes varían significativamente entre BT (residencial), MT (comercial) e industria. Esta sección compara costes normalizados.</p>
+
+      <table class="data-table" style="margin-top:24px;">
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>Potencia típica</th>
+            <th>Peaje potencia (€/kW/año)</th>
+            <th>Peaje energía medio (€/MWh)</th>
+            <th>Cuota fija (€/mes)</th>
+            <th>Coste anual típico (300 kWh/mes)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>BT Residencial</b></td>
+            <td>3,45 kW</td>
+            <td>38–45</td>
+            <td>12–15</td>
+            <td>1,00–1,50</td>
+            <td>180–220 €</td>
+          </tr>
+          <tr>
+            <td><b>BT Pequeño comercio</b></td>
+            <td>6–10 kW</td>
+            <td>38–45</td>
+            <td>12–16</td>
+            <td>2,00–3,50</td>
+            <td>450–650 €</td>
+          </tr>
+          <tr>
+            <td><b>MT Comercial (20–100 kW)</b></td>
+            <td>50 kW</td>
+            <td>30–38</td>
+            <td>10–13</td>
+            <td>5,00–10,00</td>
+            <td>2500–3500 €</td>
+          </tr>
+          <tr>
+            <td><b>MT Industrial (100–500 kW)</b></td>
+            <td>200 kW</td>
+            <td>25–32</td>
+            <td>8–11</td>
+            <td>20,00–50,00</td>
+            <td>7500–10000 €</td>
+          </tr>
+          <tr>
+            <td><b>AT Alta tensión (&gt;10 MW)</b></td>
+            <td>5000 kW</td>
+            <td>15–20</td>
+            <td>6–9</td>
+            <td>500+</td>
+            <td>150000+ €</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:32px;">
+        <div class="eyebrow kicker">Impacto de picos de demanda simultánea</div>
+        <div class="example-card">
+          <h4>Efecto del factor de carga en tarifa MT</h4>
+          <table class="example-table">
+            <tr>
+              <td class="label">Potencia contratada</td>
+              <td class="value">50 kW (fija)</td>
+            </tr>
+            <tr>
+              <td class="label">Consumo anual</td>
+              <td class="value">150 MWh</td>
+            </tr>
+            <tr>
+              <td class="label">Peaje potencia (50 kW × 32 €/kW/año)</td>
+              <td class="value">1600 €</td>
+            </tr>
+            <tr>
+              <td class="label">Peaje energía (150 MWh × 10 €/MWh medio)</td>
+              <td class="value">1500 €</td>
+            </tr>
+            <tr style="border-top:2px solid var(--line-soft);">
+              <td class="label"><b>Total anual</b></td>
+              <td class="value"><b>3100 €</b></td>
+            </tr>
+            <tr style="background:rgba(255,176,32,0.1);">
+              <td class="label"><b>€/MWh de acceso (peaje/consumo)</b></td>
+              <td class="value"><b>20,67 €/MWh</b></td>
+            </tr>
+          </table>
+          <p style="font-size:11px; color:var(--text-dimmer); margin-top:12px;">Nota: Si el factor de carga fuese el doble (300 MWh), el coste de acceso bajaría a ~15,33 €/MWh. Esto incentiva la plenificación de la demanda.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:32px;">
+        <div class="eyebrow kicker">Sensibilidad: impacto de reducir potencia contratada (caso solar)</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Potencia contratada (kW)</th>
+              <th>Consumo anual red (MWh)</th>
+              <th>Peaje anual (€)</th>
+              <th>Ahorro potencial</th>
+              <th>Riesgo: caídas por baja capacidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>10 kW (estándar)</td>
+              <td>50 MWh</td>
+              <td>625 €</td>
+              <td>—</td>
+              <td>Bajo</td>
+            </tr>
+            <tr style="background:rgba(255,176,32,0.08);">
+              <td><b>7 kW (reducida solar)</b></td>
+              <td>50 MWh (consumo neto igual)</td>
+              <td><b>437 €</b></td>
+              <td><b>188 € (30%)</b></td>
+              <td>Bajo-Medio</td>
+            </tr>
+            <tr style="background:rgba(255,176,32,0.15);">
+              <td><b>5 kW (solar máximo)</b></td>
+              <td>50 MWh (consumo neto igual)</td>
+              <td><b>312 €</b></td>
+              <td><b>313 € (50%)</b></td>
+              <td>Medio (caídas en invierno)</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:11px; color:var(--text-dimmer); margin-top:12px;">Una instalación solar que reduzca la potencia contratada evita peaje de potencia (el componente fijo). Pero si hace tan frío que solar no genera y demanda de simultaneidad sube (calefacción), la distribuidora activa un control de demanda y corta el suministro. Por eso es recomendable bajar solo 20–30% de la potencia original.</p>
+      </div>
+    </section>
+
+    <footer>
+      Herramienta educativa basada en la Circular 3/2020 de la CNMC. Los valores aquí mostrados son orientativos; consulta tu distribuidor para tarifas reales. La metodología se revisa anualmente. Última actualización: 2026 — proxima revisión de tarifa: vigentes desde enero de 2027.
+    </footer>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===================== NAV COMO TABS =====================
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.tabbar a');
+const SECCION_POR_DEFECTO = 'resumen';
+
+function activarSeccion(id){
+  if(!document.getElementById(id)) id = SECCION_POR_DEFECTO;
+  sections.forEach(s=>s.classList.toggle('tab-active', s.id===id));
+  navLinks.forEach(l=>l.classList.toggle('active', l.dataset.sec===id));
+  window.scrollTo({top:0, left:0, behavior:'auto'});
+}
+
+function irASeccion(hash){
+  const id = hash.replace('#','');
+  if(!document.getElementById(id)) return;
+  activarSeccion(id);
+  history.pushState(null, '', hash);
+}
+
+navLinks.forEach(link=>{
+  link.addEventListener('click', (e)=>{
+    e.preventDefault();
+    irASeccion(link.getAttribute('href'));
+  });
+});
+
+window.addEventListener('popstate', ()=>{
+  const id = location.hash.replace('#','') || SECCION_POR_DEFECTO;
+  activarSeccion(id);
+});
+
+activarSeccion(location.hash.replace('#','') || SECCION_POR_DEFECTO);
+
+// ===================== UTILIDADES =====================
+function fmtNum(n, d=2){ return isFinite(n) ? n.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d}) : '—'; }
+function showToast(msg){ const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(window._toastTimer); window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2600); }
+
+// ===================== CALCULADORA DE PEAJES =====================
+function calcularPeaje(){
+  const potencia = parseFloat(document.getElementById('calc_potencia').value) || 0;
+  const punta = parseFloat(document.getElementById('calc_punta').value) || 0;
+  const llano = parseFloat(document.getElementById('calc_llano').value) || 0;
+  const valle = parseFloat(document.getElementById('calc_valle').value) || 0;
+  const tarifaPot = parseFloat(document.getElementById('calc_tarifa_pot').value) || 0;
+  const tarifaPunta = parseFloat(document.getElementById('calc_tarifa_punta').value) || 0;
+  const tarifaLlano = parseFloat(document.getElementById('calc_tarifa_llano').value) || 0;
+  const tarifaValle = parseFloat(document.getElementById('calc_tarifa_valle').value) || 0;
+  const cuota = parseFloat(document.getElementById('calc_cuota').value) || 0;
+
+  // Cálculos mensuales
+  const peajePot = (potencia * tarifaPot) / 12;
+  const peajePunta = (punta * tarifaPunta) / 1000;
+  const peajeLlano = (llano * tarifaLlano) / 1000;
+  const peajeValle = (valle * tarifaValle) / 1000;
+  const energiaTotal = peajePunta + peajeLlano + peajeValle;
+  const totalMensual = peajePot + energiaTotal + cuota;
+
+  // Anuales
+  const peajePotAnual = potencia * tarifaPot;
+  const energiaAnual = energiaTotal * 12;
+  const cuotaAnual = cuota * 12;
+  const totalAnual = peajePotAnual + energiaAnual + cuotaAnual;
+
+  // Mostrar resultados
+  document.getElementById('calc_res_pot').textContent = fmtNum(peajePot, 2) + ' €';
+  document.getElementById('calc_res_punta').textContent = fmtNum(peajePunta, 2) + ' €';
+  document.getElementById('calc_res_llano').textContent = fmtNum(peajeLlano, 2) + ' €';
+  document.getElementById('calc_res_valle').textContent = fmtNum(peajeValle, 2) + ' €';
+  document.getElementById('calc_res_cuota').textContent = fmtNum(cuota, 2) + ' €';
+  document.getElementById('calc_res_mensual').textContent = fmtNum(totalMensual, 2) + ' €';
+  document.getElementById('calc_res_anual').textContent = fmtNum(totalAnual, 2) + ' €';
+
+  // Desglose anual
+  document.getElementById('breakdown_pot').textContent = fmtNum(peajePotAnual, 2) + ' €';
+  document.getElementById('breakdown_energia').textContent = fmtNum(energiaAnual, 2) + ' €';
+  document.getElementById('breakdown_cuota').textContent = fmtNum(cuotaAnual, 2) + ' €';
+  document.getElementById('breakdown_total').textContent = fmtNum(totalAnual, 2) + ' €';
+
+  showToast('Peaje calculado correctamente.');
+}
+
+// ===================== NAVEGACIÓN DE FORMULARIOS COMO TABS =====================
+function irAFormulario(formId){
+  // Ocultar todos los formularios
+  const forms = document.querySelectorAll('.form-content');
+  forms.forEach(f => f.classList.remove('active'));
+  
+  // Mostrar el formulario seleccionado
+  document.getElementById(formId).classList.add('active');
+  
+  // Actualizar tabs activos
+  const tabs = document.querySelectorAll('.form-tab');
+  tabs.forEach(tab => {
+    tab.classList.remove('active');
+    if(tab.dataset.form === formId) tab.classList.add('active');
+  });
+  
+  // Hacer scroll hasta los formularios
+  document.querySelector('[data-form]').closest('div').scrollIntoView({behavior: 'smooth'});
+}
+
+// ===================== FORMULARIO 1: PEAJE DE POTENCIA PURA =====================
+function calcularPeajePotencia(){
+  const potencia = parseFloat(document.getElementById('f1_potencia').value) || 0;
+  const potenciaContratada = parseFloat(document.getElementById('f1_potencia_contratada').value) || 0;
+  const tarifa2025 = document.getElementById('f1_tarifa_2025').value;
+  const dias = parseFloat(document.getElementById('f1_dias').value) || 30;
+
+  // Obtener tarifas según selección
+  const tarifas = {
+    '2.0 TD': { tpp: 0, tep: 0.051, potenciaMin: 3.45 },
+    '3.0 TD': { tpp: 0, tep: 0.045, potenciaMin: 10 },
+    '6.1 TD': { tpp: 38.8, tep: 0.051, potenciaMin: 10 },
+    '6.2 TD': { tpp: 38.8, tep: 0.045, potenciaMin: 10 },
+    '6.3 TD': { tpp: 38.8, tep: 0.040, potenciaMin: 10 },
+    '6.4 TD': { tpp: 38.8, tep: 0.035, potenciaMin: 10 }
+  };
+
+  const { tpp, tep, potenciaMin } = tarifas[tarifa2025] || {};
+  if(!tpp) {
+    showToast('Selecciona una tarifa válida para el cálculo.');
+    return;
+  }
+
+  // Cálculo de término de potencia
+  const potenciaExceso = Math.max(0, potencia - potenciaMin);
+  const terminoPotencia = (potenciaMin * tpp) + (potenciaExceso * tep);
+
+  // Mostrar resultados
+  document.getElementById('f1_resultado_base').textContent = fmtNum(terminoPotencia, 2) + ' €';
+  document.getElementById('f1_resultado_exceso').textContent = fmtNum(potenciaExceso * tep, 2) + ' €';
+  document.getElementById('f1_resultado').textContent = fmtNum(terminoPotencia, 2) + ' €';
+
+  // Desglose
+  document.getElementById('f1_break_pot').textContent = fmtNum(potencia, 1) + ' kW';
+  document.getElementById('f1_break_pc').textContent = fmtNum(potenciaContratada, 1) + ' kW';
+  document.getElementById('f1_break_exceso').textContent = fmtNum(potenciaExceso, 1) + ' kW';
+  document.getElementById('f1_break_tarifa').textContent = fmtNum(tpp, 0) + ' €/kW·año';
+  document.getElementById('f1_break_tep').textContent = fmtNum(tep, 3) + ' €/kW·día';
+  document.getElementById('f1_break_total').textContent = fmtNum(terminoPotencia, 2) + ' €';
+
+  showToast('Cálculo de peaje de potencia actualizado a Circular 1/2025.');
+}
+
+// ===================== FORMULARIO 2: ENERGÍA REACTIVA =====================
+function calcularEnergiaReactiva(){
+  const activa = parseFloat(document.getElementById('f2_activa').value) || 0;
+  const fp = parseFloat(document.getElementById('f2_fp').value) || 0.92;
+  const fpLimite = parseFloat(document.getElementById('f2_fp_limite').value) || 0.95;
+  const tarifaReactiva = parseFloat(document.getElementById('f2_tarifa_reactiva').value) || 0.05;
+
+  // Cálculo de reactiva: Q = P * tan(arccos(FP))
+  const tanActual = Math.sqrt(1 - fp * fp) / fp;
+  const tanLimite = Math.sqrt(1 - fpLimite * fpLimite) / fpLimite;
+
+  const reactivaExceso = Math.max(0, (tanActual - tanLimite) * activa);
+  const costeAnual = reactivaExceso * tarifaReactiva * 1000; // Convertir a kVArh
+
+  document.getElementById('f2_reactiva_exceso').textContent = fmtNum(reactivaExceso * 1000, 0) + ' kVArh';
+  document.getElementById('f2_resultado').textContent = fmtNum(costeAnual, 2) + ' €';
+  
+  document.getElementById('f2_break_activa').textContent = fmtNum(activa, 0) + ' MWh';
+  document.getElementById('f2_break_tan_actual').textContent = fmtNum(tanActual, 3);
+  document.getElementById('f2_break_tan_limite').textContent = fmtNum(tanLimite, 3);
+  document.getElementById('f2_break_reactiva').textContent = fmtNum(reactivaExceso, 3) + ' MWh';
+
+  showToast('Energía reactiva calculada.');
+}
+
+// ===================== FORMULARIO 3: PEAJE DE PÉRDIDAS =====================
+function calcularPeajePerdidas(){
+  const potencia = parseFloat(document.getElementById('f3_potencia').value) || 0;
+  const perdidasPct = parseFloat(document.getElementById('f3_perdidas_pct').value) || 4.5;
+  const horas = parseFloat(document.getElementById('f3_horas').value) || 2500;
+  const tarifaPerdidas = parseFloat(document.getElementById('f3_tarifa_perdidas').value) || 20;
+
+  // Pérdidas atribuidas al usuario
+  const potenciaPerdidas = potencia * (perdidasPct / 100);
+  const costeAnual = potenciaPerdidas * tarifaPerdidas;
+
+  document.getElementById('f3_pot_perdidas').textContent = fmtNum(potenciaPerdidas, 2) + ' kW';
+  document.getElementById('f3_resultado').textContent = fmtNum(costeAnual, 2) + ' €';
+
+  document.getElementById('f3_break_pot').textContent = fmtNum(potencia, 1) + ' kW';
+  document.getElementById('f3_break_perdidas').textContent = fmtNum(perdidasPct, 1) + ' %';
+  document.getElementById('f3_break_equiv').textContent = fmtNum(potenciaPerdidas, 2) + ' kW';
+  document.getElementById('f3_break_tarifa').textContent = fmtNum(tarifaPerdidas, 0) + ' €/kW/año';
+
+  showToast('Peaje de pérdidas calculado.');
+}
+
+// ===================== FORMULARIO 4: COMPARATIVA HORARIA =====================
+function calcularComparativaHoraria(){
+  const consumo = parseFloat(document.getElementById('f4_consumo').value) || 0;
+  const tarifaPunta = parseFloat(document.getElementById('f4_punta').value) || 25;
+  const tarifaLlano = parseFloat(document.getElementById('f4_llano').value) || 12;
+  const tarifaValle = parseFloat(document.getElementById('f4_valle').value) || 5;
+
+  // Cálculos de coste
+  const costePunta = (consumo / 1000) * tarifaPunta;
+  const costeLlano = (consumo / 1000) * tarifaLlano;
+  const costeValle = (consumo / 1000) * tarifaValle;
+
+  const mediaPunta = tarifaPunta;
+  const mediaLlano = tarifaLlano;
+  const mediaValle = tarifaValle;
+
+  const ahorroLlano = costePunta - costeLlano;
+  const ahorroValle = costePunta - costeValle;
+
+  // Mostrar resultados
+  document.getElementById('f4_res_punta').textContent = fmtNum(costePunta, 2) + ' €';
+  document.getElementById('f4_res_punta_media').textContent = fmtNum(mediaPunta, 2);
+  
+  document.getElementById('f4_res_llano').textContent = fmtNum(costeLlano, 2) + ' €';
+  document.getElementById('f4_res_llano_media').textContent = fmtNum(mediaLlano, 2);
+  document.getElementById('f4_ahorro_llano').textContent = fmtNum(ahorroLlano, 2) + ' €';
+  
+  document.getElementById('f4_res_valle').textContent = fmtNum(costeValle, 2) + ' €';
+  document.getElementById('f4_res_valle_media').textContent = fmtNum(mediaValle, 2);
+  document.getElementById('f4_ahorro_valle').textContent = fmtNum(ahorroValle, 2) + ' €';
+
+  // Recomendación dinámica
+  let recomendacion = '';
+  if(ahorroValle > ahorroLlano * 1.5){
+    recomendacion = '💡 <b>Súper recomendado</b>: Si puedes desplazar consumo a Valle, ahorras ' + fmtNum(ahorroValle, 0) + ' € al año en este ejemplo. Es especialmente interesante para bombas solares controladas por horario o carga de vehículos eléctricos.';
+  } else if(ahorroValle > 0){
+    recomendacion = '⚡ <b>Recomendado</b>: Desplazar consumo a Valle ahorra aproximadamente ' + fmtNum(ahorroValle, 0) + ' €/año. Considera automatizar equipos para horas valle.';
+  } else {
+    recomendacion = 'ℹ️ No hay diferencia significativa entre franjas horarias.';
+  }
+  document.getElementById('f4_recomendacion').innerHTML = recomendacion;
+
+  showToast('Comparativa horaria calculada.');
+}
+
+// Cálculo inicial general
+calcularPeaje();
+calcularPeajePotencia();
+calcularEnergiaReactiva();
+calcularPeajePerdidas();
+calcularComparativaHoraria();
+</script>
+</body>
+</html>
