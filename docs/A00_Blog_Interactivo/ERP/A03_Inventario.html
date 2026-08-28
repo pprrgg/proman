@@ -302,6 +302,33 @@
     font-size:14px;
     padding:5px 7px;
   }
+  .row .cantidad{
+    flex-shrink:0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--ink-dim);
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:4px 8px;
+    cursor:text;
+    white-space:nowrap;
+  }
+  .row .cantidad.empty{
+    color:var(--copper-dim);
+    border-style:dashed;
+    font-style:italic;
+  }
+  .row .cantidad input{
+    width:54px;
+    background:var(--bg);
+    border:1px solid var(--copper);
+    border-radius:3px;
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    padding:4px 6px;
+  }
   .del-btn{
     flex-shrink:0;
     background:none;
@@ -378,6 +405,16 @@
       </div>
     </div>
 
+    <div class="field">
+      <label for="input-cantidad">Cantidad <span style="text-transform:none; letter-spacing:0; opacity:.7;">(opcional)</span></label>
+      <div class="field-row">
+        <input type="text" id="input-cantidad" placeholder="ej. 12" inputmode="numeric" autocomplete="off">
+        <button class="mic-btn" id="mic-cantidad" type="button" aria-label="Dictar cantidad">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+        </button>
+      </div>
+    </div>
+
     <div class="scope" id="scope" aria-hidden="true">
       <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
@@ -424,9 +461,11 @@
   const STORAGE_KEY = 'component-pairs';
   let pairs = [];
   let editingId = null;
+  let editingField = null;
 
   const cajonInput = document.getElementById('input-cajon');
   const componenteInput = document.getElementById('input-componente');
+  const cantidadInput = document.getElementById('input-cantidad');
   const saveBtn = document.getElementById('save-btn');
   const listArea = document.getElementById('list-area');
   const searchInput = document.getElementById('search');
@@ -437,6 +476,7 @@
   const noSupport = document.getElementById('no-support');
   const micCajon = document.getElementById('mic-cajon');
   const micComponente = document.getElementById('mic-componente');
+  const micCantidad = document.getElementById('mic-cantidad');
   const micSearch = document.getElementById('mic-search');
   const searchBtn = document.getElementById('search-btn');
   const copyBtn = document.getElementById('copy-btn');
@@ -474,11 +514,12 @@
     }
   }
 
-  function addPair(cajon, componente){
+  function addPair(cajon, componente, cantidad){
     pairs.unshift({
-      id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+      id: makeId(),
       cajon: cajon.trim(),
       componente: componente.trim(),
+      cantidad: (cantidad || '').trim(),
       ts: Date.now()
     });
     persist();
@@ -491,13 +532,18 @@
     render();
   }
 
-  function updateComponente(id, newVal){
+  function updateField(id, field, newVal){
     const p = pairs.find(p => p.id === id);
     if(p){
-      p.componente = newVal.trim() || p.componente;
+      if(field === 'cantidad'){
+        p.cantidad = newVal.trim();
+      } else {
+        p.componente = newVal.trim() || p.componente;
+      }
       persist();
     }
     editingId = null;
+    editingField = null;
     render();
   }
 
@@ -526,14 +572,20 @@
   }
 
   function rowHtml(p, query){
-    const isEditing = editingId === p.id;
-    const componenteCell = isEditing
-      ? '<input type="text" class="edit-input" data-id="' + p.id + '" value="' + escapeAttr(p.componente) + '">'
+    const editingComponente = editingId === p.id && editingField === 'componente';
+    const editingCantidad = editingId === p.id && editingField === 'cantidad';
+    const componenteCell = editingComponente
+      ? '<input type="text" class="edit-input" data-id="' + p.id + '" data-field="componente" value="' + escapeAttr(p.componente) + '">'
       : highlightMatch(p.componente, query);
     const cajonCell = highlightMatch(p.cajon, query);
+    const cantidadValue = p.cantidad || '';
+    const cantidadCell = editingCantidad
+      ? '<input type="text" class="edit-input" data-id="' + p.id + '" data-field="cantidad" placeholder="cant." value="' + escapeAttr(cantidadValue) + '">'
+      : (cantidadValue ? escapeHtml(cantidadValue) : '+');
     return '<div class="row" data-id="' + p.id + '">' +
       '<span class="badge">' + cajonCell + '</span>' +
-      '<span class="componente" data-id="' + p.id + '">' + componenteCell + '</span>' +
+      '<span class="componente" data-id="' + p.id + '" data-field="componente">' + componenteCell + '</span>' +
+      '<span class="cantidad' + (cantidadValue || editingCantidad ? '' : ' empty') + '" data-id="' + p.id + '" data-field="cantidad" title="Cantidad (opcional)">' + cantidadCell + '</span>' +
       '<button class="del-btn" data-id="' + p.id + '" aria-label="Eliminar">×</button>' +
       '</div>';
   }
@@ -559,21 +611,22 @@
     listArea.querySelectorAll('.del-btn').forEach(btn=>{
       btn.addEventListener('click', ()=> deletePair(btn.dataset.id));
     });
-    listArea.querySelectorAll('.componente').forEach(cell=>{
-      if(editingId === cell.dataset.id) return;
+    listArea.querySelectorAll('.componente, .cantidad').forEach(cell=>{
+      if(editingId === cell.dataset.id && editingField === cell.dataset.field) return;
       cell.addEventListener('click', ()=>{
         editingId = cell.dataset.id;
+        editingField = cell.dataset.field;
         render();
-        const inp = listArea.querySelector('.edit-input[data-id="'+editingId+'"]');
+        const inp = listArea.querySelector('.edit-input[data-id="'+editingId+'"][data-field="'+editingField+'"]');
         if(inp){ inp.focus(); inp.select(); }
       });
     });
     listArea.querySelectorAll('.edit-input').forEach(inp=>{
       inp.addEventListener('keydown', (e)=>{
-        if(e.key === 'Enter'){ updateComponente(inp.dataset.id, inp.value); }
-        if(e.key === 'Escape'){ editingId = null; render(); }
+        if(e.key === 'Enter'){ updateField(inp.dataset.id, inp.dataset.field, inp.value); }
+        if(e.key === 'Escape'){ editingId = null; editingField = null; render(); }
       });
-      inp.addEventListener('blur', ()=> updateComponente(inp.dataset.id, inp.value));
+      inp.addEventListener('blur', ()=> updateField(inp.dataset.id, inp.dataset.field, inp.value));
     });
   }
 
@@ -595,9 +648,10 @@
 
   saveBtn.addEventListener('click', ()=>{
     if(!cajonInput.value.trim() || !componenteInput.value.trim()) return;
-    addPair(cajonInput.value, componenteInput.value);
+    addPair(cajonInput.value, componenteInput.value, cantidadInput.value);
     cajonInput.value = '';
     componenteInput.value = '';
+    cantidadInput.value = '';
     updateSaveState();
     cajonInput.focus();
     showToast('Par guardado');
@@ -605,10 +659,10 @@
 
   copyBtn.addEventListener('click', async ()=>{
     if(pairs.length === 0){ showToast('No hay nada que copiar'); return; }
-    const text = pairs.map(p => p.cajon + '\t' + p.componente).join('\n');
+    const text = pairs.map(p => p.cajon + '\t' + p.componente + '\t' + (p.cantidad || '')).join('\n');
     try{
       await navigator.clipboard.writeText(text);
-      showToast('Copiado (formato Ubicación - componente)');
+      showToast('Copiado (formato Ubicación · componente · cantidad)');
     }catch(e){
       showToast('No se pudo copiar');
     }
@@ -622,7 +676,7 @@
 
   downloadBtn.addEventListener('click', ()=>{
     if(pairs.length === 0){ showToast('No hay nada que descargar'); return; }
-    const data = JSON.stringify(pairs.map(p => ({cajon: p.cajon, componente: p.componente})), null, 2);
+    const data = JSON.stringify(pairs.map(p => ({cajon: p.cajon, componente: p.componente, cantidad: p.cantidad || ''})), null, 2);
     const blob = new Blob([data], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -657,16 +711,26 @@
       if(Array.isArray(json)){
         items = json.map(x => ({
           cajon: String(x.cajon || x.Cajon || x.CAJON || x.Ubicación || '').trim(),
-          componente: String(x.componente || x.Componente || '').trim()
+          componente: String(x.componente || x.Componente || '').trim(),
+          cantidad: String(x.cantidad || x.Cantidad || x.CANTIDAD || '').trim()
         })).filter(x => x.cajon && x.componente);
       }
     }catch(e){
       const lines = text.split(/\r?\n/).filter(l => l.trim());
       items = lines.map(line => {
-        const parts = line.includes('\t') ? line.split('\t') : line.split(',');
+        if(line.includes('\t')){
+          const parts = line.split('\t');
+          return {
+            cajon: (parts[0] || '').trim(),
+            componente: (parts[1] || '').trim(),
+            cantidad: (parts[2] || '').trim()
+          };
+        }
+        const parts = line.split(',');
         return {
           cajon: (parts[0] || '').trim(),
-          componente: (parts.slice(1).join(',') || '').trim()
+          componente: (parts.slice(1).join(',') || '').trim(),
+          cantidad: ''
         };
       }).filter(x => x.cajon && x.componente);
     }
@@ -685,7 +749,7 @@
       'Cancelar = combinar con la lista actual (sin duplicar).'
     );
     if(replace){
-      pairs = items.map(it => ({ id: makeId(), cajon: it.cajon, componente: it.componente, ts: Date.now() }));
+      pairs = items.map(it => ({ id: makeId(), cajon: it.cajon, componente: it.componente, cantidad: it.cantidad || '', ts: Date.now() }));
       persist();
       render();
       showToast('Lista reemplazada (' + pairs.length + ' pares)');
@@ -695,7 +759,7 @@
       items.forEach(it => {
         const key = (it.cajon + '|' + it.componente).toLowerCase();
         if(!existingKeys.has(key)){
-          pairs.unshift({ id: makeId(), cajon: it.cajon, componente: it.componente, ts: Date.now() });
+          pairs.unshift({ id: makeId(), cajon: it.cajon, componente: it.componente, cantidad: it.cantidad || '', ts: Date.now() });
           existingKeys.add(key);
           added++;
         }
@@ -712,6 +776,7 @@
   if(!SpeechRecognition){
     micCajon.style.display = 'none';
     micComponente.style.display = 'none';
+    micCantidad.style.display = 'none';
     micSearch.style.display = 'none';
     noSupport.style.display = 'block';
   } else {
@@ -725,6 +790,7 @@
     const statusLabels = {
       cajon: 'Escuchando Ubicación...',
       componente: 'Escuchando componente...',
+      cantidad: 'Escuchando cantidad...',
       search: 'Escuchando búsqueda...'
     };
 
@@ -742,6 +808,8 @@
       } else if(activeField === 'componente'){
         componenteInput.value = transcript;
         updateSaveState();
+      } else if(activeField === 'cantidad'){
+        cantidadInput.value = transcript;
       } else if(activeField === 'search'){
         searchInput.value = transcript;
         render();
@@ -767,6 +835,7 @@
 
     micCajon.addEventListener('click', ()=> startListening('cajon', micCajon));
     micComponente.addEventListener('click', ()=> startListening('componente', micComponente));
+    micCantidad.addEventListener('click', ()=> startListening('cantidad', micCantidad));
     micSearch.addEventListener('click', ()=> startListening('search', micSearch));
   }
 
