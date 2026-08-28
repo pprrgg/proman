@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "predeploy": "scripts/set-docs-url.sh prod && astro build && rm -rf dist/docs/A00_Blog_Interactivo/z",
+    "predeploy": "scripts/set-docs-url.sh prod && astro build",
     "deploy": "gh-pages -d dist --dotfiles",
     "postdeploy": "scripts/set-docs-url.sh local"
   },
