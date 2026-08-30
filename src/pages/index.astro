@@ -10,6 +10,12 @@ function escapeHtml(text: string) {
 const CARET_SVG =
   '<svg aria-hidden="true" class="caret" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg>';
 
+const FOLDER_SVG =
+  '<svg aria-hidden="true" class="node-icon folder-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2Z"/></svg>';
+
+const FILE_SVG =
+  '<svg aria-hidden="true" class="node-icon file-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M13 2v6h6"/></svg>';
+
 function buildMenuHtml(items: DocNode[], level = 0): string {
   let html = '';
   for (const item of items) {
@@ -18,13 +24,13 @@ function buildMenuHtml(items: DocNode[], level = 0): string {
       if (item.title && item.title.toLowerCase() === 'index') {
         continue;
       }
-      html += `<li class="folder"><details${level === 0 ? ' open' : ''}><summary><span class="group-label"><span class="${level === 0 ? 'large' : ''}">${escapeHtml(item.title)}</span></span>${CARET_SVG}</summary><ul>${buildMenuHtml(item.children, level + 1)}</ul></details></li>`;
+      html += `<li class="folder" data-level="${level}"><details${level === 0 ? ' open' : ''}><summary><span class="group-label">${FOLDER_SVG}<span class="label-text">${escapeHtml(item.title)}</span></span>${CARET_SVG}</summary><ul>${buildMenuHtml(item.children, level + 1)}</ul></details></li>`;
     } else {
       // Si es un archivo y su URL termina en 'index.html', lo omitimos del menú
       if (item.url && item.url.endsWith('index.html')) {
         continue;
       }
-      html += `<li class="file"><a class="doc-link" href="${escapeHtml(item.url)}"><span>${escapeHtml(item.title)}</span></a></li>`;
+      html += `<li class="file" data-level="${level}"><a class="doc-link" href="${escapeHtml(item.url)}">${FILE_SVG}<span class="label-text">${escapeHtml(item.title)}</span></a></li>`;
     }
   }
   return html;
@@ -328,13 +334,16 @@ const DEFAULT_DOC_URL = '/docs/A00_Blog_Interactivo/index/index.html';
         }
       }
       .menu :global(a) {
-        display: block;
-        color: var(--color-gray-2);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--color-gray-3);
         text-decoration: none;
         padding: 0.3em var(--sl-sidebar-item-padding-inline);
         border-radius: 0.25rem;
         line-height: 1.4;
-        font-size: 0.9375rem;
+        font-size: 0.85rem;
+        font-weight: 400;
       }
       .menu :global(a:hover),
       .menu :global(a:focus) {
@@ -344,6 +353,10 @@ const DEFAULT_DOC_URL = '/docs/A00_Blog_Interactivo/index/index.html';
         color: var(--color-accent-low);
         background-color: var(--color-text-accent);
         font-weight: 600;
+      }
+      .menu :global(a.active .file-icon) {
+        color: var(--color-accent-low);
+        opacity: 1;
       }
       /* Carpetas */
       .menu :global(summary) {
@@ -361,21 +374,68 @@ const DEFAULT_DOC_URL = '/docs/A00_Blog_Interactivo/index/index.html';
       .menu :global(summary::-webkit-details-marker) {
         display: none;
       }
-      .menu :global(.group-label) {
-        color: var(--color-gray-2);
+      /* Icono compartido para carpetas y archivos */
+      .menu :global(.node-icon) {
+        flex-shrink: 0;
       }
-      .menu :global(.group-label .large) {
-        font-size: 1.125rem;
+      .menu :global(.folder-icon) {
+        color: var(--color-gray-3);
+      }
+      .menu :global(.file-icon) {
+        color: var(--color-gray-4);
+        opacity: 0.8;
+      }
+      .menu :global(details[open] > summary .folder-icon) {
+        color: var(--color-accent);
+      }
+      .menu :global(.label-text) {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+      /* Tipografía por nivel: distingue visualmente la profundidad de cada carpeta */
+      .menu :global(.group-label) {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 0;
+        color: var(--color-gray-2);
+        font-size: 0.8125rem;
+        font-weight: 500;
+      }
+      .menu :global(li.folder[data-level='0'] > details > summary .group-label) {
+        font-size: 1.0625rem;
+        font-weight: 700;
         color: var(--color-white);
+        letter-spacing: -0.01em;
+      }
+      .menu :global(li.folder[data-level='0'] > details > summary .folder-icon) {
+        color: var(--color-text-accent);
+      }
+      .menu :global(li.folder[data-level='1'] > details > summary .group-label) {
+        font-size: 0.9375rem;
         font-weight: 600;
+        color: var(--color-gray-1);
       }
       @media (min-width: 800px) {
-        .menu :global(.group-label .large) {
-          font-size: 1rem;
+        .menu :global(li.folder[data-level='0'] > details > summary .group-label) {
+          font-size: 0.9375rem;
         }
-        .menu :global(a) {
+        .menu :global(li.folder[data-level='1'] > details > summary .group-label) {
           font-size: 0.875rem;
         }
+        .menu :global(a) {
+          font-size: 0.8125rem;
+        }
+      }
+      /* Líneas guía: más marcadas cuanto más profunda es la carpeta */
+      .menu :global(li[data-level='1']) {
+        border-inline-start-color: var(--color-gray-5);
+      }
+      .menu :global(li[data-level='2']) {
+        border-inline-start-color: var(--color-gray-4);
+      }
+      .menu :global(li[data-level='3']) {
+        border-inline-start-color: var(--color-gray-3);
       }
       .menu :global(.caret) {
         flex-shrink: 0;
