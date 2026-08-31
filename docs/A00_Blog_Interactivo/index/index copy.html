@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vatia&Co — Cuaderno de un ingeniero jubilado</title>
+<title>Vatia&Co — Gestión energética</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -146,6 +146,49 @@
     font-size:17px; color:var(--text-dim); max-width:520px; margin-bottom:34px;
   }
 
+  /* ---------- single-line diagram (signature) ---------- */
+  .diagram-panel{
+    background:var(--panel);
+    backdrop-filter:blur(10px);
+    border:1px solid var(--line-strong);
+    border-radius:6px;
+    padding:26px 20px 18px;
+    position:relative;
+    overflow:hidden;
+  }
+  .diagram-panel::before{
+    content:"ESQUEMA UNIFILAR — INSTALACIÓN TIPO";
+    position:absolute; top:12px; left:20px;
+    font-family:var(--mono); font-size:10px; letter-spacing:0.14em; color:var(--text-faint);
+  }
+  .diagram-panel::after{
+    content:"VC-01";
+    position:absolute; top:12px; right:20px;
+    font-family:var(--mono); font-size:10px; letter-spacing:0.1em; color:var(--text-faint);
+  }
+  .diagram-svg{width:100%; height:auto; margin-top:20px;}
+  .flow-line{
+    fill:none; stroke:var(--line-strong); stroke-width:2;
+  }
+  .flow-line.live{
+    stroke:var(--copper); stroke-dasharray:6 7; stroke-linecap:round;
+    animation:dash 1.6s linear infinite;
+  }
+  .flow-line.live.green{stroke:var(--green);}
+  .node-box{fill:var(--panel-2); stroke:var(--line-strong); stroke-width:1.3;}
+  .node-label{font-family:var(--mono); font-size:9.5px; fill:var(--text-dim); letter-spacing:0.04em;}
+  .node-value{font-family:var(--mono); font-size:11px; fill:var(--copper-bright); font-weight:600;}
+  .pulse-dot{fill:var(--green);}
+  .pulse-dot.ring{
+    fill:none; stroke:var(--green); stroke-width:1.5; opacity:0.7;
+    animation:pulse-ring 2.4s ease-out infinite;
+  }
+  @keyframes dash{ to{ stroke-dashoffset:-26; } }
+  @keyframes pulse-ring{
+    0%{r:10; opacity:0.6;}
+    100%{r:22; opacity:0;}
+  }
+
   /* ---------- section shell ---------- */
   section{position:relative; z-index:1; padding:86px 0; display:none;}
   section.tab-active{display:block;}
@@ -155,14 +198,6 @@
     margin:16px 0 12px; letter-spacing:-0.01em;
   }
   .section-head p{color:var(--text-dim); font-size:15.5px;}
-
-  /* ---------- bio panel ---------- */
-  .bio-panel{
-    background:var(--panel); backdrop-filter:blur(10px); border:1px solid var(--line-strong); border-radius:10px;
-    padding:32px 34px; max-width:760px; margin-bottom:40px;
-  }
-  .bio-panel p{font-size:15px; color:var(--text-dim);}
-  .bio-panel p + p{margin-top:16px;}
 
   /* ---------- services: breaker panel ---------- */
   .services-grid{
@@ -235,6 +270,7 @@
   </button>
   <nav class="tabbar" id="sidenav">
     <a href="#inicio" data-sec="inicio">Inicio</a>
+    <a href="#servicios" data-sec="servicios">Servicios</a>
     <a class="js-open-blog-menu" href="/" target="_top">Blog interactivo</a>
     <a href="#contacto" data-sec="contacto">Contacto</a>
   </nav>
@@ -266,51 +302,99 @@
   <section class="hero" id="inicio">
     <div class="wrap">
       <div class="hero-top">
-        <span class="tape">Cuaderno personal — Vatia&amp;Co</span>
+        <span class="tape">Panel principal — Vatia&amp;Co</span>
         <h1>Cada vatio,<br><span class="accent">bajo control.</span></h1>
-        <p class="lead">Soy ingeniero, jubilado, y llevo toda la vida trabajando con instalaciones eléctricas. Ahora dedico mi tiempo a escribir sobre lo que siempre me ha apasionado — la eficiencia energética, las energías renovables y el control de la energía — con artículos técnicos y herramientas interactivas de cálculo, sin prisas ni clientes de por medio.</p>
+        <p class="lead">Monitorización en tiempo real, reparto de excedentes y recarga inteligente de vehículo eléctrico, para comunidades energéticas y autoconsumo — sobre una plataforma que no depende de ningún fabricante.</p>
       </div>
 
-      <div class="bio-panel">
-        <p>Pasé buena parte de mi vida profesional diseñando, calculando y poniendo en marcha instalaciones eléctricas — cuadros, líneas, protecciones y, en los últimos años, cada vez más generación fotovoltaica y sistemas de control de la energía. Ahora que estoy jubilado sigo haciendo casi lo mismo: entender una instalación hasta el último detalle y explicarla con el mismo rigor con el que antes firmaba un proyecto.</p>
-        <p>Vatia&amp;Co es el cuaderno donde reúno ese trabajo: artículos técnicos y calculadoras interactivas sobre auditoría energética, dimensionado fotovoltaico, autoconsumo, recarga de vehículo eléctrico y comunidades energéticas — con normativa real y cálculos verificables, no folletos.</p>
-      </div>
+      <div class="diagram-panel">
+        <svg class="diagram-svg" viewBox="0 0 1100 260" xmlns="http://www.w3.org/2000/svg">
+          <!-- PV node -->
+          <rect class="node-box" x="30" y="40" width="120" height="56" rx="3"/>
+          <text class="node-label" x="42" y="60">GENERACIÓN FV</text>
+          <text class="node-value" x="42" y="82">4.8 kW</text>
 
-      <div class="section-head" style="margin-top:56px;">
-        <span class="tape">Cuadro personal</span>
-        <h2>De qué escribo aquí</h2>
-        <p>Seis temas, los mismos con los que he trabajado toda la vida.</p>
+          <!-- EV node -->
+          <rect class="node-box" x="30" y="160" width="120" height="56" rx="3"/>
+          <text class="node-label" x="42" y="180">RECARGA VE</text>
+          <text class="node-value" x="42" y="202">7.2 kW</text>
+
+          <!-- inverter/control hub -->
+          <circle class="pulse-dot ring" cx="330" cy="128" r="10"/>
+          <circle class="pulse-dot" cx="330" cy="128" r="5"/>
+          <rect class="node-box" x="270" y="98" width="120" height="60" rx="3"/>
+          <text class="node-label" x="282" y="120">CONTROL VATIA</text>
+          <text class="node-value" x="282" y="142">en vivo</text>
+
+          <!-- battery node -->
+          <rect class="node-box" x="530" y="40" width="120" height="56" rx="3"/>
+          <text class="node-label" x="542" y="60">BATERÍA</text>
+          <text class="node-value" x="542" y="82">62 %</text>
+
+          <!-- home node -->
+          <rect class="node-box" x="530" y="160" width="120" height="56" rx="3"/>
+          <text class="node-label" x="542" y="180">CONSUMO HOGAR</text>
+          <text class="node-value" x="542" y="202">2.1 kW</text>
+
+          <!-- community/grid node -->
+          <rect class="node-box" x="850" y="98" width="140" height="60" rx="3"/>
+          <text class="node-label" x="862" y="120">COMUNIDAD / RED</text>
+          <text class="node-value" x="862" y="142">excedente</text>
+
+          <!-- lines -->
+          <path class="flow-line live green" d="M150 68 H270"/>
+          <path class="flow-line live" d="M150 188 H270"/>
+          <path class="flow-line live green" d="M390 118 H530 M530 118 V68"/>
+          <path class="flow-line live" d="M390 138 H530 M530 138 V188"/>
+          <path class="flow-line live green" d="M650 68 H770 V128 H850"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="servicios">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="tape">Cuadro de servicios</span>
+        <h2>Lo que hace la plataforma</h2>
+        <p>Siete circuitos, cada uno resolviendo un problema concreto de gestión energética.</p>
       </div>
       <div class="services-grid">
         <div class="svc">
           <div class="svc-top"><span class="svc-ct">CT-01</span><span class="svc-led"></span></div>
-          <h3>Eficiencia y auditoría energética</h3>
-          <p>Balances energéticos, indicadores de desempeño (EnPI) y benchmarks sectoriales, conforme a ISO 50002 y RETScreen.</p>
+          <h3>Monitorización en tiempo real</h3>
+          <p>Generación, consumo y batería, actualizados al minuto — sin esperar a la lectura oficial.</p>
         </div>
         <div class="svc">
           <div class="svc-top"><span class="svc-ct">CT-02</span><span class="svc-led"></span></div>
-          <h3>Energías renovables y autoconsumo FV</h3>
-          <p>Dimensionado de sistemas fotovoltaicos, generación, facturación y presupuestos, partida por partida.</p>
+          <h3>Gestión de comunidades energéticas</h3>
+          <p>Reparto automático de excedentes según coeficientes, con registro auditable para cada vecino.</p>
         </div>
         <div class="svc">
           <div class="svc-top"><span class="svc-ct">CT-03</span><span class="svc-led"></span></div>
-          <h3>Control y monitorización de la energía</h3>
-          <p>Cómo leer una instalación en tiempo real y tomar decisiones con esos datos, no a ojo.</p>
+          <h3>Recarga inteligente de VE</h3>
+          <p>El vehículo carga cuando sobra sol o baja el precio, sin que nadie tenga que estar pendiente.</p>
         </div>
         <div class="svc">
           <div class="svc-top"><span class="svc-ct">CT-04</span><span class="svc-led"></span></div>
-          <h3>Vehículo eléctrico y recarga inteligente</h3>
-          <p>Qué vehículo conviene, cómo dimensionar la recarga y cómo aprovechar el sol para cargarlo.</p>
+          <h3>Optimización de baterías y cargas</h3>
+          <p>Decide cada día cuándo cargar, descargar o esperar, según previsión de sol y precio.</p>
         </div>
         <div class="svc">
           <div class="svc-top"><span class="svc-ct">CT-05</span><span class="svc-led"></span></div>
-          <h3>Comunidades energéticas</h3>
-          <p>Reparto de excedentes, coeficientes e inventario técnico para proyectos colectivos de autoconsumo.</p>
+          <h3>Integración abierta</h3>
+          <p>Se conecta a inversores, contadores y cargadores de cualquier fabricante. Nada de islas cerradas.</p>
         </div>
         <div class="svc">
           <div class="svc-top"><span class="svc-ct">CT-06</span><span class="svc-led"></span></div>
-          <h3>Normativa e instalaciones</h3>
-          <p>REBT, IDAE, CNMC y tramitación — la letra pequeña que hace que una instalación sea legal, no solo funcional.</p>
+          <h3>Cumplimiento y facturación</h3>
+          <p>Datos listos para reparto, auditoría y facturación — sin hojas de cálculo a mano.</p>
+        </div>
+        <div class="svc">
+          <div class="svc-top"><span class="svc-ct">CT-07</span><span class="svc-led"></span></div>
+          <h3>Un panel para cada perfil</h3>
+          <p>Comunidades energéticas, instaladores, flotas con VE y autoconsumo particular: el mismo panel de control, adaptado a cada uno.</p>
         </div>
       </div>
     </div>
@@ -320,7 +404,7 @@
   <section id="contacto">
     <div class="wrap">
       <div class="final-cta">
-        <h2>¿Alguna pregunta, una corrección técnica o simplemente te apetece hablar de energía? Escríbeme.</h2>
+        <h2>¿Instalación con generación, batería o cargador de VE? Vamos a verla juntos.</h2>
         <div class="final-cta-actions">
           <a class="btn btn-primary" href="mailto:hola@vatiaco.es">Escribir a hola@vatiaco.es</a>
           <a class="btn btn-ghost" href="tel:+34951733491">951 733 491</a>
@@ -334,11 +418,11 @@
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-col">
-        <p style="max-width:280px;">Cuaderno personal de un ingeniero jubilado, sobre eficiencia energética, energías renovables y control de la energía. Escrito desde Andalucía.</p>
+        <p style="max-width:280px;">Gestión energética para comunidades, autoconsumo y recarga de vehículo eléctrico. Con sede en Andalucía.</p>
       </div>
       <div class="footer-col">
-        <h5>Vatia&amp;Co</h5>
-        <a href="#inicio">Sobre mí</a>
+        <h5>Plataforma</h5>
+        <a href="#servicios">Servicios</a>
         <a class="js-open-blog-menu" href="/" target="_top">Blog interactivo</a>
       </div>
       <div class="footer-col">
@@ -349,8 +433,8 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 VATIA&amp;CO — CUADERNO PERSONAL DE INGENIERÍA ENERGÉTICA</span>
-      <span>CUADERNO V.1.0 — TODOS LOS CIRCUITOS EN ORDEN</span>
+      <span>© 2026 VATIA&amp;CO — GESTIÓN ENERGÉTICA</span>
+      <span>PANEL V.1.0 — TODOS LOS CIRCUITOS OPERATIVOS</span>
     </div>
   </div>
 </footer>
