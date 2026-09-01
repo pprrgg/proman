@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vatia&Co — Cuaderno de un ingeniero jubilado</title>
+<title>Vatia&Co — Cuaderno personal de un ingeniero</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -156,6 +156,32 @@
   }
   .section-head p{color:var(--text-dim); font-size:15.5px;}
 
+  /* ---------- video cards ---------- */
+  /* La card se ajusta al aspect-ratio real de cada video (por eso va inline, por
+     video, en vez de fijo aqui) y align-items:start evita que grid estire una card
+     panoramica hasta la altura de una vertical, o al reves. */
+  .video-cards{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:16px;
+    max-width:760px; margin-bottom:40px; align-items:start;
+  }
+  .video-cards:empty{display:none;}
+  .video-card{
+    position:relative; background:#000; border:1px solid var(--line-strong); border-radius:10px;
+    overflow:hidden; cursor:pointer;
+  }
+  .video-card video{width:100%; height:100%; display:block; object-fit:cover;}
+  .video-card .vc-play{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    background:rgba(10,15,26,0.28); color:#fff; opacity:1; transition:opacity .15s ease; pointer-events:none;
+  }
+  .video-card .vc-play svg{width:34px; height:34px; filter:drop-shadow(0 1px 4px rgba(0,0,0,0.5));}
+  .video-card.is-playing .vc-play{opacity:0;}
+  .video-card .vc-meta{
+    position:absolute; left:0; right:0; bottom:0; padding:6px 10px;
+    font-family:var(--mono); font-size:10px; color:#fff; display:flex; justify-content:space-between; gap:8px;
+    background:linear-gradient(0deg, rgba(0,0,0,0.6), transparent); pointer-events:none;
+  }
+
   /* ---------- bio panel ---------- */
   .bio-panel{
     background:var(--panel); backdrop-filter:blur(10px); border:1px solid var(--line-strong); border-radius:10px;
@@ -268,11 +294,13 @@
       <div class="hero-top">
         <span class="tape">Cuaderno personal — Vatia&amp;Co</span>
         <h1>Cada vatio,<br><span class="accent">bajo control.</span></h1>
-        <p class="lead">Soy ingeniero, jubilado, y llevo toda la vida trabajando con instalaciones eléctricas. Ahora dedico mi tiempo a escribir sobre lo que siempre me ha apasionado — la eficiencia energética, las energías renovables y el control de la energía — con artículos técnicos y herramientas interactivas de cálculo, sin prisas ni clientes de por medio.</p>
+        <p class="lead">Soy ingeniero y llevo toda la vida trabajando con instalaciones eléctricas. En mi tiempo libre escribo sobre lo que siempre me ha apasionado — la eficiencia energética, las energías renovables y el control de la energía — con artículos técnicos y herramientas interactivas de cálculo, sin prisas ni clientes de por medio.</p>
       </div>
 
+      <div class="video-cards" id="videoCards"></div>
+
       <div class="bio-panel">
-        <p>Pasé buena parte de mi vida profesional diseñando, calculando y poniendo en marcha instalaciones eléctricas — cuadros, líneas, protecciones y, en los últimos años, cada vez más generación fotovoltaica y sistemas de control de la energía. Ahora que estoy jubilado sigo haciendo casi lo mismo: entender una instalación hasta el último detalle y explicarla con el mismo rigor con el que antes firmaba un proyecto.</p>
+        <p>Llevo buena parte de mi vida profesional diseñando, calculando y poniendo en marcha instalaciones eléctricas — cuadros, líneas, protecciones y, cada vez más, generación fotovoltaica y sistemas de control de la energía. En mi tiempo libre sigo haciendo casi lo mismo, pero sin la presión de un cliente esperando: entender una instalación hasta el último detalle y explicarla con el mismo rigor con el que firmaría un proyecto.</p>
         <p>Vatia&amp;Co es el cuaderno donde reúno ese trabajo: artículos técnicos y calculadoras interactivas sobre auditoría energética, dimensionado fotovoltaico, autoconsumo, recarga de vehículo eléctrico y comunidades energéticas — con normativa real y cálculos verificables, no folletos.</p>
       </div>
 
@@ -334,7 +362,7 @@
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-col">
-        <p style="max-width:280px;">Cuaderno personal de un ingeniero jubilado, sobre eficiencia energética, energías renovables y control de la energía. Escrito desde Andalucía.</p>
+        <p style="max-width:280px;">Cuaderno personal de un ingeniero, escrito en el tiempo libre, sobre eficiencia energética, energías renovables y control de la energía. Escrito desde Andalucía.</p>
       </div>
       <div class="footer-col">
         <h5>Vatia&amp;Co</h5>
@@ -388,6 +416,65 @@
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.querySelector('.bg-video')?.pause();
   }
+
+  // ===================== VIDEO CARDS (manifiesto generado en build, sin nombres fijos) =====================
+  // videos.json lo genera scripts/generate-video-manifest.mjs antes de cada dev/build,
+  // escaneando esta misma carpeta (excluye el video de fondo). Así la página nunca tiene
+  // que saber de antemano qué videos hay ni cuántos son.
+  (function(){
+    const cont = document.getElementById('videoCards');
+    if(!cont) return;
+    const PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    fetch('videos.json', {cache:'no-store'})
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        const videos = (data && Array.isArray(data.videos)) ? data.videos : [];
+        if(!videos.length){ cont.remove(); return; }
+        cont.innerHTML = videos.map(v => {
+          const mb = (v.sizeBytes/1024/1024).toFixed(1)+' MB';
+          const dur = (typeof v.duration === 'number')
+            ? Math.floor(v.duration/60)+':'+String(v.duration%60).padStart(2,'0')
+            : '';
+          const src = encodeURI(v.file);
+          // La card usa el aspect-ratio real del video (si ffprobe lo pudo leer al
+          // generar el manifiesto) para no recortar ni dejar barras negras; 16/9 es
+          // solo el respaldo si esa info faltara.
+          const ratio = (v.width && v.height) ? (v.width+'/'+v.height) : '16/9';
+          return '<div class="video-card" style="aspect-ratio:'+ratio+';">'
+            + '<video muted loop playsinline preload="auto"><source src="'+src+'"></video>'
+            + '<div class="vc-play">'+PLAY_ICON+'</div>'
+            + '<div class="vc-meta"><span>'+dur+'</span><span>'+mb+'</span></div>'
+            + '</div>';
+        }).join('');
+
+        // Primer fotograma visible desde el principio: con preload="auto" el propio
+        // navegador ya pinta el fotograma 0 en cuanto tiene datos suficientes, sin
+        // necesidad de forzar un seek con JS. (Se probó a forzar video.currentTime en
+        // "loadeddata" para adelantarlo, pero en la práctica eso disparaba un fallo real
+        // del pipeline de vídeo -"demuxer seek failed"- que dejaba el <video> en estado
+        // de error permanente: a partir de ahí ningún play() volvía a funcionar, ni con
+        // hover ni con click. Cuanto menos se manipule el <video> antes de que el propio
+        // navegador lo tenga listo, más fiable es.)
+        cont.querySelectorAll('.video-card').forEach(card => {
+          const video = card.querySelector('video');
+          video.playbackRate = 4;
+          // Algunos navegadores restablecen playbackRate a 1 al (re)cargar la fuente;
+          // se vuelve a fijar cada vez que arranca la reproducción para que no se pierda.
+          video.addEventListener('play', () => { video.playbackRate = 4; });
+          video.addEventListener('play', () => card.classList.add('is-playing'));
+          video.addEventListener('pause', () => card.classList.remove('is-playing'));
+          card.addEventListener('mouseenter', () => { video.play().catch(()=>{}); });
+          card.addEventListener('mouseleave', () => { video.pause(); });
+          // No alterna play/pause: en ratón, "mouseenter" ya se dispara justo antes que
+          // "click", así que si el click alternara, apagaría lo que el hover acababa de
+          // encender (parecía que el click "no hacía nada"). El click simplemente
+          // garantiza que se reproduzca, tanto si ya estaba sonando (hover) como si es
+          // la primera interacción (tap en móvil, sin hover previo).
+          card.addEventListener('click', () => { video.play().catch(()=>{}); });
+        });
+      })
+      .catch(() => { cont.remove(); });
+  })();
 
   document.querySelectorAll('.js-open-blog-menu').forEach(link => {
     link.addEventListener('click', (event) => {
