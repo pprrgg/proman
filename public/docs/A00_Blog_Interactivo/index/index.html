@@ -447,23 +447,30 @@
             + '</div>';
         }).join('');
 
-        // Primer fotograma visible desde el principio (si no, algunos navegadores
-        // dejan el cuadro en negro hasta reproducir), y reproducción al pasar el
-        // ratón (hover) o al tocar/hacer click (móvil y escritorio).
+        // Primer fotograma visible desde el principio: con preload="auto" el propio
+        // navegador ya pinta el fotograma 0 en cuanto tiene datos suficientes, sin
+        // necesidad de forzar un seek con JS. (Se probó a forzar video.currentTime en
+        // "loadeddata" para adelantarlo, pero en la práctica eso disparaba un fallo real
+        // del pipeline de vídeo -"demuxer seek failed"- que dejaba el <video> en estado
+        // de error permanente: a partir de ahí ningún play() volvía a funcionar, ni con
+        // hover ni con click. Cuanto menos se manipule el <video> antes de que el propio
+        // navegador lo tenga listo, más fiable es.)
         cont.querySelectorAll('.video-card').forEach(card => {
           const video = card.querySelector('video');
-          // 'loadeddata' (no 'loadedmetadata'): hay que esperar a que exista al menos
-          // un fotograma decodificado antes de buscar en el, o el seek se queda colgado
-          // sin pintar nada (pantalla negra) en vez de mostrar el primer fotograma.
-          video.addEventListener('loadeddata', () => { try{ if(video.currentTime < 0.01) video.currentTime = 0.01; }catch(e){} });
+          video.playbackRate = 4;
+          // Algunos navegadores restablecen playbackRate a 1 al (re)cargar la fuente;
+          // se vuelve a fijar cada vez que arranca la reproducción para que no se pierda.
+          video.addEventListener('play', () => { video.playbackRate = 4; });
           video.addEventListener('play', () => card.classList.add('is-playing'));
           video.addEventListener('pause', () => card.classList.remove('is-playing'));
           card.addEventListener('mouseenter', () => { video.play().catch(()=>{}); });
-          card.addEventListener('mouseleave', () => { video.pause(); try{ video.currentTime = 0.01; }catch(e){} });
-          card.addEventListener('click', () => {
-            if(video.paused) video.play().catch(()=>{});
-            else { video.pause(); try{ video.currentTime = 0.01; }catch(e){} }
-          });
+          card.addEventListener('mouseleave', () => { video.pause(); });
+          // No alterna play/pause: en ratón, "mouseenter" ya se dispara justo antes que
+          // "click", así que si el click alternara, apagaría lo que el hover acababa de
+          // encender (parecía que el click "no hacía nada"). El click simplemente
+          // garantiza que se reproduzca, tanto si ya estaba sonando (hover) como si es
+          // la primera interacción (tap en móvil, sin hover previo).
+          card.addEventListener('click', () => { video.play().catch(()=>{}); });
         });
       })
       .catch(() => { cont.remove(); });
