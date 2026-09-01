@@ -6,6 +6,7 @@
 <title>Estudio del Recurso Eólico · España</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
@@ -152,6 +153,12 @@
 
   .chart-wrap{background:var(--panel2); border:1px solid var(--line-soft); border-radius:var(--radius); padding:14px; margin:12px 0;}
   .chart-wrap svg{width:100%; height:auto; display:block;}
+
+  /* ---------- mapa de ubicación (Leaflet + OSM) ---------- */
+  #mapaUbicacion{height:360px; border-radius:var(--radius); border:1px solid var(--line); overflow:hidden; margin-bottom:16px; background:var(--panel2);}
+  .leaflet-popup-content-wrapper{background:var(--panel); color:var(--text); font-family:var(--font-body); border:1px solid var(--line);}
+  .leaflet-popup-tip{background:var(--panel);}
+  .leaflet-popup-content{font-size:12.5px; font-family:var(--font-mono);}
   .legend-row{display:flex; flex-wrap:wrap; gap:14px; margin-top:8px; font-size:11px; color:var(--text-dim);}
   .legend-row .li{display:flex; align-items:center; gap:6px;}
   .legend-row .sw{width:10px; height:10px; border-radius:2px; flex-shrink:0;}
@@ -368,9 +375,11 @@
       <div class="quickpick" id="quickpickZonas"></div>
 
       <div class="calculator">
+        <p class="tooltip-text" style="margin-top:0; margin-bottom:10px;">Haz clic en el mapa o arrastra el marcador para fijar la ubicación; los campos de latitud/longitud se actualizan solos (y también puedes escribirlos directamente).</p>
+        <div id="mapaUbicacion"></div>
         <div class="calc-row">
-          <div class="field"><label>Latitud</label><input type="number" id="u_lat" value="36.0014" min="35" max="44" step="0.0001"></div>
-          <div class="field"><label>Longitud</label><input type="number" id="u_lng" value="-5.6096" min="-10" max="4" step="0.0001"></div>
+          <div class="field"><label>Latitud</label><input type="number" id="u_lat" value="36.0014" min="-90" max="90" step="0.0001"></div>
+          <div class="field"><label>Longitud</label><input type="number" id="u_lng" value="-5.6096" min="-180" max="180" step="0.0001"></div>
         </div>
         <div class="btn-row">
           <button class="btn primary" id="btnObtenerPvgis">⟳ Obtener datos PVGIS (TMY)</button>
@@ -518,6 +527,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 // ===================== NAV COMO TABS =====================
 const sections = document.querySelectorAll('section[id]');
@@ -529,6 +539,11 @@ function activarSeccion(id){
   sections.forEach(s=>s.classList.toggle('tab-active', s.id===id));
   navLinks.forEach(l=>l.classList.toggle('active', l.dataset.sec===id));
   window.scrollTo({top:0, left:0, behavior:'auto'});
+  // El mapa Leaflet se crea mientras su pestaña esta oculta (display:none), asi que
+  // calcula mal su tamano hasta que se le pide que lo recalcule una vez visible.
+  if(id==='ubicacion' && window.mapaUbicacionInstancia){
+    setTimeout(()=>window.mapaUbicacionInstancia.invalidateSize(), 60);
+  }
 }
 function irASeccion(hash){
   const id = hash.replace('#','');
@@ -558,7 +573,7 @@ function varianza(arr){ if(!arr.length) return 0; const m=media(arr); return arr
 const ZONAS_EJEMPLO = [
   {nombre:'Tarifa / Estrecho de Gibraltar', lat:36.0014, lng:-5.6096},
   {nombre:'Estaca de Bares (Galicia)', lat:43.7871, lng:-7.6852},
-  {nombre:'Cabo de Gata (Almería)', lat:36.7202, lng:-2.1962},
+  {nombre:'Cabo de Gata (Almería)', lat:36.7236, lng:-2.1924},
   {nombre:'Empordà (Girona)', lat:42.2833, lng:3.0833},
   {nombre:'Sierra del Perdón (Navarra)', lat:42.6608, lng:-1.6474},
   {nombre:'Meseta de Soria', lat:41.7666, lng:-2.4790},
@@ -615,8 +630,54 @@ function usarZonaEjemplo(i){
   const z = ZONAS_EJEMPLO[i];
   document.getElementById('u_lat').value = z.lat;
   document.getElementById('u_lng').value = z.lng;
+  moverMarcadorUbicacionDesdeInputs(true);
   showToast('Coordenadas de "'+z.nombre+'" cargadas. Pulsa "Obtener datos PVGIS".');
 }
+
+// ===================== MAPA DE UBICACIÓN (Leaflet + OpenStreetMap) =====================
+// Un solo marcador arrastrable: clic en el mapa o arrastrarlo fija la coordenada, y
+// escribir directamente en los campos de latitud/longitud mueve el marcador. Sin esto,
+// el mapa y los campos numéricos serían dos formas de entrada desconectadas entre sí.
+let marcadorUbicacion = null;
+function inicializarMapaUbicacion(){
+  const latInicial = parseFloat(document.getElementById('u_lat').value) || 36.0014;
+  const lngInicial = parseFloat(document.getElementById('u_lng').value) || -5.6096;
+
+  const mapa = L.map('mapaUbicacion', {zoomControl:true}).setView([latInicial, lngInicial], 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:19,
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+  }).addTo(mapa);
+
+  marcadorUbicacion = L.marker([latInicial, lngInicial], {draggable:true}).addTo(mapa);
+
+  function fijarDesdeLatLng(latlng){
+    document.getElementById('u_lat').value = latlng.lat.toFixed(4);
+    document.getElementById('u_lng').value = latlng.lng.toFixed(4);
+  }
+  marcadorUbicacion.on('dragend', ()=>fijarDesdeLatLng(marcadorUbicacion.getLatLng()));
+  mapa.on('click', (e)=>{ marcadorUbicacion.setLatLng(e.latlng); fijarDesdeLatLng(e.latlng); });
+
+  // El mapa se crea con su pestaña ("Ubicación y datos PVGIS") todavía oculta
+  // (display:none en la sección), así que Leaflet mide un contenedor de tamaño 0 en este
+  // punto; activarSeccion() llama a invalidateSize() la primera vez que se muestra la
+  // pestaña, usando esta misma instancia guardada en window.
+  window.mapaUbicacionInstancia = mapa;
+}
+inicializarMapaUbicacion();
+
+function moverMarcadorUbicacionDesdeInputs(recentrar){
+  if(!marcadorUbicacion) return;
+  const lat = parseFloat(document.getElementById('u_lat').value);
+  const lng = parseFloat(document.getElementById('u_lng').value);
+  if(!isFinite(lat) || !isFinite(lng)) return;
+  const latlng = L.latLng(lat, lng);
+  marcadorUbicacion.setLatLng(latlng);
+  if(recentrar) window.mapaUbicacionInstancia.setView(latlng, Math.max(window.mapaUbicacionInstancia.getZoom(), 7));
+}
+['u_lat','u_lng'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', ()=>moverMarcadorUbicacionDesdeInputs(true));
+});
 
 function poblarSelect(id, arr, labelFn){
   const sel = document.getElementById(id);
