@@ -3,10 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node scripts/generate-video-manifest.mjs",
     "dev": "astro dev",
+    "prebuild": "node scripts/generate-video-manifest.mjs",
     "build": "astro build",
     "preview": "astro preview",
-    "predeploy": "scripts/set-docs-url.sh prod && astro build",
+    "predeploy": "node scripts/generate-video-manifest.mjs && scripts/set-docs-url.sh prod && astro build",
     "deploy": "gh-pages -d dist --dotfiles",
     "postdeploy": "scripts/set-docs-url.sh local"
   },

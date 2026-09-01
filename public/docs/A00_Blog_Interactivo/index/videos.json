@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-09-01T13:00:47.654Z",
+  "videos": [
+    {
+      "file": "v13.webm",
+      "sizeBytes": 570748,
+      "width": 876,
+      "height": 790,
+      "duration": 14
+    },
+    {
+      "file": "v2.webm",
+      "sizeBytes": 909487,
+      "width": 376,
+      "height": 728,
+      "duration": 38
+    }
+  ]
+}

@@ -219,7 +219,7 @@
     <section id="resumen">
       <div class="eyebrow kicker">00 · Resumen ejecutivo</div>
       <h2>Simulador de rehabilitación energética de edificios, para cualquier punto de España.</h2>
-      <p class="lede">Herramienta interactiva inspirada en simuladores autonómicos de rehabilitación de edificios (como el del ICAEN en Cataluña), pero construida sobre el sistema de <b>zonas climáticas del CTE DB-HE</b>, válido para las 12 zonas climáticas peninsulares y de referencia para todo el territorio nacional. Introduce las características de tu edificio, elige las medidas de rehabilitación que te interesan y compara al instante la demanda, el consumo, el coste y las emisiones antes y después, con un informe final descargable.</p>
+      <p class="lede">Herramienta interactiva  de rehabilitación de edificios construida sobre el sistema de <b>zonas climáticas del CTE DB-HE</b>, válido para las 12 zonas climáticas peninsulares y de referencia para todo el territorio nacional. Introduce las características de tu edificio, elige las medidas de rehabilitación que te interesan y compara al instante la demanda, el consumo, el coste y las emisiones antes y después, con un informe final descargable.</p>
 
       <div class="hero">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:40px; flex-wrap:wrap;">
@@ -332,6 +332,18 @@
         <div class="f">Calificación ≈ f(emisiones de CO₂ totales / superficie útil), por tipo de edificio</div>
       </div>
       <p class="tooltip-text">Escala orientativa de sensibilización con la misma forma que la escala oficial de certificación energética (A a G), pero con umbrales aproximados propios de esta herramienta. Para un certificado válido a efectos legales (compraventa, alquiler, ayudas), es necesario un procedimiento reconocido (CE3, CE3X, CERMA, HULC) realizado por un técnico competente.</p>
+
+      <div class="fieldset-title">Guías técnicas IDAE de referencia (rehabilitación de la envolvente)</div>
+      <p class="lede" style="margin-bottom:16px;">Las soluciones de aislamiento y acristalamiento que se pueden elegir en la sección 05 "Escenario de rehabilitación" están inspiradas en la colección de <b>Guías Técnicas para la Rehabilitación de la Envolvente Térmica de los Edificios</b> del IDAE (Instituto para la Diversificación y Ahorro de la Energía). Los porcentajes de ahorro y los costes de esta herramienta son estimaciones propias orientativas; las guías originales no fijan un porcentaje de ahorro único, sino criterios de diseño, ejecución y detalles constructivos.</p>
+      <div class="grid3">
+        <div class="comp-card"><h4>SATE — aislamiento térmico exterior</h4><p>Guías IDAE 002: "Sistemas de Aislamiento Térmico Exterior (SATE) para la Rehabilitación de la Envolvente Térmica de los Edificios" (2012). Aislamiento continuo por el exterior, elimina puentes térmicos.</p></div>
+        <div class="comp-card"><h4>Acristalamiento y cerramientos</h4><p>"Soluciones de acristalamiento y cerramiento acristalado" (2019). Tipos de vidrio (doble, bajo emisivo, triple), carpinterías y rotura de puente térmico.</p></div>
+        <div class="comp-card"><h4>Aislamiento con lana mineral</h4><p>"Soluciones de aislamiento con lana mineral" (2008). Paneles y rollos de lana de vidrio o roca para fachada, cubierta y cámaras.</p></div>
+        <div class="comp-card"><h4>Poliestireno expandido (EPS)</h4><p>"Soluciones de aislamiento con poliestireno expandido (EPS)" (2008). Paneles rígidos para trasdosados, cubiertas y SATE.</p></div>
+        <div class="comp-card"><h4>Poliestireno extruido (XPS)</h4><p>"Soluciones de aislamiento con poliestireno extruido (XPS)" (2008). Mayor resistencia a la humedad; cubiertas invertidas y soleras.</p></div>
+        <div class="comp-card"><h4>Poliuretano proyectado</h4><p>"Soluciones de aislamiento con poliuretano" (2008). Espuma rígida proyectada in situ, menor conductividad térmica del grupo.</p></div>
+        <div class="comp-card"><h4>Espumas flexibles</h4><p>"Soluciones de aislamiento con espumas flexibles" (2008). Aislamiento de tuberías y conductos de ACS y climatización, reduce pérdidas de distribución.</p></div>
+      </div>
 
       <div class="fieldset-title">Limitaciones del modelo</div>
       <div class="grid3">
@@ -468,8 +480,12 @@
       <div class="check-row">
         <input type="checkbox" id="r_fachada" checked>
         <div class="cr-body">
-          <div class="cr-title">Aislamiento de fachada (SATE / cámara insuflada / trasdosado)</div>
-          <div class="cr-meta">Reduce la demanda de calefacción ~18% y de refrigeración ~7%. Coste orientativo: 65 €/m² de fachada.</div>
+          <div class="cr-title">Aislamiento de fachada</div>
+          <div class="cr-meta">Reduce la demanda de calefacción y refrigeración según el sistema elegido, inspirado en las guías técnicas del IDAE. Coste por m² de fachada.</div>
+          <div class="cr-inputs">
+            <div class="field"><label>Sistema de aislamiento de fachada</label><select id="r_fachada_tipo"></select></div>
+          </div>
+          <div class="tooltip-text" id="r_fachada_meta"></div>
         </div>
       </div>
 
@@ -477,15 +493,31 @@
         <input type="checkbox" id="r_cubierta">
         <div class="cr-body">
           <div class="cr-title">Aislamiento de cubierta</div>
-          <div class="cr-meta">Reduce la demanda de calefacción ~10% y de refrigeración ~5%. Coste orientativo: 45 €/m² de cubierta.</div>
+          <div class="cr-meta">Reduce la demanda de calefacción y refrigeración según el material aislante elegido. Coste por m² de cubierta.</div>
+          <div class="cr-inputs">
+            <div class="field"><label>Material aislante de cubierta</label><select id="r_cubierta_tipo"></select></div>
+          </div>
+          <div class="tooltip-text" id="r_cubierta_meta"></div>
         </div>
       </div>
 
       <div class="check-row">
         <input type="checkbox" id="r_ventanas" checked>
         <div class="cr-body">
-          <div class="cr-title">Sustitución de ventanas (doble/triple vidrio bajo emisivo, rotura de puente térmico)</div>
-          <div class="cr-meta">Reduce la demanda de calefacción ~14% y de refrigeración ~9%. Coste orientativo: 420 €/m² de hueco.</div>
+          <div class="cr-title">Sustitución de ventanas</div>
+          <div class="cr-meta">Reduce la demanda de calefacción y refrigeración según el tipo de acristalamiento elegido. Coste por m² de hueco.</div>
+          <div class="cr-inputs">
+            <div class="field"><label>Tipo de acristalamiento</label><select id="r_ventanas_tipo"></select></div>
+          </div>
+          <div class="tooltip-text" id="r_ventanas_meta"></div>
+        </div>
+      </div>
+
+      <div class="check-row">
+        <input type="checkbox" id="r_tuberias">
+        <div class="cr-body">
+          <div class="cr-title">Aislamiento de tuberías de ACS y climatización (espumas flexibles)</div>
+          <div class="cr-meta">Reduce las pérdidas de distribución de ACS y climatización un ~6%. Coste orientativo según tipo de edificio.</div>
         </div>
       </div>
 
@@ -637,9 +669,9 @@ const ZONAS = [
 function getZona(id){ return ZONAS.find(z=>z.id===id) || ZONAS[10]; }
 
 const TIPOS = [
-  {id:'unifamiliar', label:'Vivienda unifamiliar (aislada o adosada)', base:150, shareCalef:0.60, shareRefrig:0.08, shareAcs:0.17, shareOtros:0.15, califMult:1.0, costeSistema:{mantener:0,condensacion:4500,bdc:9000,biomasa:8000}, costeSolar:3200, costeFvKwp:1100},
-  {id:'bloque', label:'Vivienda en bloque de pisos', base:120, shareCalef:0.55, shareRefrig:0.07, shareAcs:0.20, shareOtros:0.18, califMult:1.0, costeSistema:{mantener:0,condensacion:7000,bdc:14000,biomasa:12000}, costeSolar:5000, costeFvKwp:1100},
-  {id:'oficina', label:'Oficina / terciario administrativo', base:100, shareCalef:0.35, shareRefrig:0.25, shareAcs:0.05, shareOtros:0.35, califMult:1.35, costeSistema:{mantener:0,condensacion:10000,bdc:20000,biomasa:16000}, costeSolar:6000, costeFvKwp:1050},
+  {id:'unifamiliar', label:'Vivienda unifamiliar (aislada o adosada)', base:150, shareCalef:0.60, shareRefrig:0.08, shareAcs:0.17, shareOtros:0.15, califMult:1.0, costeSistema:{mantener:0,condensacion:4500,bdc:9000,biomasa:8000}, costeSolar:3200, costeFvKwp:1100, costeTuberias:350},
+  {id:'bloque', label:'Vivienda en bloque de pisos', base:120, shareCalef:0.55, shareRefrig:0.07, shareAcs:0.20, shareOtros:0.18, califMult:1.0, costeSistema:{mantener:0,condensacion:7000,bdc:14000,biomasa:12000}, costeSolar:5000, costeFvKwp:1100, costeTuberias:900},
+  {id:'oficina', label:'Oficina / terciario administrativo', base:100, shareCalef:0.35, shareRefrig:0.25, shareAcs:0.05, shareOtros:0.35, califMult:1.35, costeSistema:{mantener:0,condensacion:10000,bdc:20000,biomasa:16000}, costeSolar:6000, costeFvKwp:1050, costeTuberias:1200},
 ];
 function getTipo(id){ return TIPOS.find(t=>t.id===id) || TIPOS[0]; }
 
@@ -685,6 +717,28 @@ const SIST_NUEVO = [
   {id:'biomasa', label:'Caldera de biomasa (calefacción + ACS)', rendCalef:0.85, rendAcs:0.80, comb:'biomasa', meta:'Sustituye calefacción y ACS por caldera de pellets. No cambia el sistema de refrigeración.'},
 ];
 
+// Sistemas de aislamiento de fachada, inspirados en las guías técnicas del IDAE
+// (Guías IDAE 002 - SATE, y las guías "Soluciones de aislamiento con..." de 2008).
+const FACHADA_TIPOS = [
+  {id:'sate', label:'SATE — aislamiento térmico exterior (Guía IDAE 002)', reduceCalef:22, reduceRefrig:9, costeM2:85, meta:'Aislamiento continuo por el exterior; elimina puentes térmicos. Guías IDAE 002 (2012).'},
+  {id:'camara_lana', label:'Aislamiento en cámara con lana mineral insuflada', reduceCalef:15, reduceRefrig:6, costeM2:38, meta:'Solo aplicable si la fachada tiene cámara de aire. "Soluciones de aislamiento con lana mineral" (IDAE, 2008).'},
+  {id:'trasdosado_eps', label:'Trasdosado interior con poliestireno (EPS/XPS)', reduceCalef:13, reduceRefrig:5, costeM2:50, meta:'Reduce ligeramente la superficie útil interior. "Soluciones de aislamiento con EPS/XPS" (IDAE, 2008).'},
+  {id:'poliuretano', label:'Poliuretano proyectado (cámara o interior)', reduceCalef:19, reduceRefrig:7, costeM2:62, meta:'Menor conductividad térmica del grupo. "Soluciones de aislamiento con poliuretano" (IDAE, 2008).'},
+];
+// Materiales de aislamiento de cubierta, mismas guías IDAE de soluciones de aislamiento (2008).
+const CUBIERTA_TIPOS = [
+  {id:'lana_mineral', label:'Lana mineral (rollos o paneles)', reduceCalef:10, reduceRefrig:5, costeM2:40, meta:'"Soluciones de aislamiento con lana mineral" (IDAE, 2008).'},
+  {id:'eps', label:'Poliestireno expandido (EPS)', reduceCalef:9, reduceRefrig:4, costeM2:38, meta:'"Soluciones de aislamiento con poliestireno expandido (EPS)" (IDAE, 2008).'},
+  {id:'xps', label:'Poliestireno extruido (XPS)', reduceCalef:11, reduceRefrig:5, costeM2:48, meta:'Mayor resistencia a la humedad; habitual en cubiertas invertidas. "Soluciones de aislamiento con XPS" (IDAE, 2008).'},
+  {id:'poliuretano', label:'Poliuretano proyectado', reduceCalef:13, reduceRefrig:6, costeM2:55, meta:'"Soluciones de aislamiento con poliuretano" (IDAE, 2008).'},
+];
+// Tipos de acristalamiento, inspirados en "Soluciones de acristalamiento y cerramiento acristalado" (IDAE, 2019).
+const VENTANA_TIPOS = [
+  {id:'doble_estandar', label:'Doble acristalamiento estándar (4/12/4)', reduceCalef:8, reduceRefrig:5, costeM2:280, meta:'Mejora básica frente al vidrio simple. "Soluciones de acristalamiento y cerramiento acristalado" (IDAE, 2019).'},
+  {id:'doble_bajo_emisivo', label:'Doble bajo emisivo + cámara de argón', reduceCalef:14, reduceRefrig:9, costeM2:420, meta:'Solución habitual en rehabilitación con rotura de puente térmico. IDAE (2019).'},
+  {id:'triple', label:'Triple acristalamiento bajo emisivo', reduceCalef:18, reduceRefrig:11, costeM2:560, meta:'Máximo rendimiento térmico; recomendable en zonas climáticas D/E. IDAE (2019).'},
+];
+
 // Producción FV específica (kWh/kWp·año) orientativa según severidad de verano de la zona (más sol/calor => más producción)
 const FV_YIELD = {1:1250, 2:1400, 3:1550, 4:1650};
 
@@ -711,11 +765,17 @@ poblarSelect('d_sist_calef', SIST_CALEF, s=>s.label);
 poblarSelect('d_sist_refrig', SIST_REFRIG, s=>s.label);
 poblarSelect('d_sist_acs', SIST_ACS, s=>s.label);
 poblarSelect('r_sistema', SIST_NUEVO, s=>s.label);
+poblarSelect('r_fachada_tipo', FACHADA_TIPOS, s=>s.label);
+poblarSelect('r_cubierta_tipo', CUBIERTA_TIPOS, s=>s.label);
+poblarSelect('r_ventanas_tipo', VENTANA_TIPOS, s=>s.label);
 document.getElementById('d_zona').value = 'D3';
 document.getElementById('d_sist_calef').value = 'gas_estandar';
 document.getElementById('d_sist_refrig').value = 'split_estandar';
 document.getElementById('d_sist_acs').value = 'gas';
 document.getElementById('r_sistema').value = 'bdc';
+document.getElementById('r_fachada_tipo').value = 'sate';
+document.getElementById('r_cubierta_tipo').value = 'lana_mineral';
+document.getElementById('r_ventanas_tipo').value = 'doble_bajo_emisivo';
 
 function actualizarMetaSistemaNuevo(){
   const s = SIST_NUEVO.find(x=>x.id===document.getElementById('r_sistema').value);
@@ -723,6 +783,15 @@ function actualizarMetaSistemaNuevo(){
 }
 document.getElementById('r_sistema').addEventListener('change', actualizarMetaSistemaNuevo);
 actualizarMetaSistemaNuevo();
+
+function actualizarMetaEnvolvente(selectId, metaId, arr){
+  const s = arr.find(x=>x.id===document.getElementById(selectId).value);
+  document.getElementById(metaId).textContent = s ? s.meta : '';
+}
+[['r_fachada_tipo','r_fachada_meta',FACHADA_TIPOS],['r_cubierta_tipo','r_cubierta_meta',CUBIERTA_TIPOS],['r_ventanas_tipo','r_ventanas_meta',VENTANA_TIPOS]].forEach(([selectId,metaId,arr])=>{
+  document.getElementById(selectId).addEventListener('change', ()=>actualizarMetaEnvolvente(selectId,metaId,arr));
+  actualizarMetaEnvolvente(selectId,metaId,arr);
+});
 
 // ===================== TABLA DE ZONAS (SECCIÓN 03) =====================
 document.querySelector('#tablaZonas tbody').innerHTML = ZONAS.map(z=>`
@@ -752,16 +821,18 @@ function calcularEscenario(area, tipo, periodo, zona, sistCalefActual, sistRefri
   const demAcsM2 = base * tipo.shareAcs;
   const demOtrosM2 = base * tipo.shareOtros;
 
-  let multCalef = 1, multRefrig = 1;
+  let multCalef = 1, multRefrig = 1, multAcs = 1;
   let acsCubiertaSolar = 0;
   if(medidas){
-    if(medidas.fachada){ multCalef *= (1-0.18); multRefrig *= (1-0.07); }
-    if(medidas.cubierta){ multCalef *= (1-0.10); multRefrig *= (1-0.05); }
-    if(medidas.ventanas){ multCalef *= (1-0.14); multRefrig *= (1-0.09); }
+    if(medidas.fachadaTipo){ multCalef *= (1-medidas.fachadaTipo.reduceCalef/100); multRefrig *= (1-medidas.fachadaTipo.reduceRefrig/100); }
+    if(medidas.cubiertaTipo){ multCalef *= (1-medidas.cubiertaTipo.reduceCalef/100); multRefrig *= (1-medidas.cubiertaTipo.reduceRefrig/100); }
+    if(medidas.ventanaTipo){ multCalef *= (1-medidas.ventanaTipo.reduceCalef/100); multRefrig *= (1-medidas.ventanaTipo.reduceRefrig/100); }
+    if(medidas.tuberias){ multAcs *= (1-0.06); }
     if(medidas.solar){ acsCubiertaSolar = 0.55; }
   }
   demCalefM2 *= multCalef;
   demRefrigM2 *= multRefrig;
+  const demAcsM2Ajustada = demAcsM2 * multAcs;
 
   let sistCalef = sistCalefActual, sistRefrig = sistRefrigActual, sistAcs = sistAcsActual;
   if(medidas && medidas.sistemaNuevo && medidas.sistemaNuevo.id !== 'mantener'){
@@ -773,7 +844,7 @@ function calcularEscenario(area, tipo, periodo, zona, sistCalefActual, sistRefri
 
   const demCalef = demCalefM2 * area;
   const demRefrig = demRefrigM2 * area;
-  const demAcs = demAcsM2 * area;
+  const demAcs = demAcsM2Ajustada * area;
   const demOtros = demOtrosM2 * area;
 
   const consCalef = sistCalef.rend>0 ? demCalef/sistCalef.rend : 0;
@@ -808,7 +879,7 @@ function calcularEscenario(area, tipo, periodo, zona, sistCalefActual, sistRefri
   const calif = calificar(co2/area, tipo.califMult);
 
   return {
-    demanda: { calef:demCalefM2, refrig:demRefrigM2, acsTotal:demAcsM2, otros:demOtrosM2, totalM2: demandaTotal/area, total: demandaTotal },
+    demanda: { calef:demCalefM2, refrig:demRefrigM2, acsTotal:demAcsM2Ajustada, otros:demOtrosM2, totalM2: demandaTotal/area, total: demandaTotal },
     consumo: { elec:porComb.elec, gas:porComb.gas, gasoleo:porComb.gasoleo, biomasa:porComb.biomasa, total: consumoTotal },
     coste, co2Kg: co2, co2Ton: co2/1000, calif, fvProduccionUtil, fvInversion,
   };
@@ -839,21 +910,26 @@ function calcularSimulacion(){
   const medFachada = document.getElementById('r_fachada').checked;
   const medCubierta = document.getElementById('r_cubierta').checked;
   const medVentanas = document.getElementById('r_ventanas').checked;
+  const medTuberias = document.getElementById('r_tuberias').checked;
   const medSolar = document.getElementById('r_solar').checked;
   const medFv = document.getElementById('r_fv').checked;
   const fvKwp = parseFloat(document.getElementById('r_fv_kwp').value) || 0;
   const sistemaNuevo = SIST_NUEVO.find(s=>s.id===document.getElementById('r_sistema').value);
+  const fachadaTipo = medFachada ? FACHADA_TIPOS.find(s=>s.id===document.getElementById('r_fachada_tipo').value) : null;
+  const cubiertaTipo = medCubierta ? CUBIERTA_TIPOS.find(s=>s.id===document.getElementById('r_cubierta_tipo').value) : null;
+  const ventanaTipo = medVentanas ? VENTANA_TIPOS.find(s=>s.id===document.getElementById('r_ventanas_tipo').value) : null;
 
   const actual = calcularEscenario(area, tipo, periodo, zona, sistCalefActual, sistRefrigActual, sistAcsActual, null);
   const reforma = calcularEscenario(area, tipo, periodo, zona, sistCalefActual, sistRefrigActual, sistAcsActual, {
-    fachada:medFachada, cubierta:medCubierta, ventanas:medVentanas, solar:medSolar, fv:medFv, fvKwp, sistemaNuevo,
+    fachadaTipo, cubiertaTipo, ventanaTipo, tuberias:medTuberias, solar:medSolar, fv:medFv, fvKwp, sistemaNuevo,
   });
 
   let inversion = 0;
   const medidasResumen = [];
-  if(medFachada){ inversion += fachadaArea*65; medidasResumen.push({n:'Aislamiento de fachada', c:fachadaArea*65}); }
-  if(medCubierta){ inversion += cubiertaArea*45; medidasResumen.push({n:'Aislamiento de cubierta', c:cubiertaArea*45}); }
-  if(medVentanas){ inversion += huecosArea*420; medidasResumen.push({n:'Sustitución de ventanas', c:huecosArea*420}); }
+  if(fachadaTipo){ const c = fachadaArea*fachadaTipo.costeM2; inversion += c; medidasResumen.push({n:'Aislamiento de fachada — '+fachadaTipo.label, c}); }
+  if(cubiertaTipo){ const c = cubiertaArea*cubiertaTipo.costeM2; inversion += c; medidasResumen.push({n:'Aislamiento de cubierta — '+cubiertaTipo.label, c}); }
+  if(ventanaTipo){ const c = huecosArea*ventanaTipo.costeM2; inversion += c; medidasResumen.push({n:'Sustitución de ventanas — '+ventanaTipo.label, c}); }
+  if(medTuberias){ inversion += tipo.costeTuberias; medidasResumen.push({n:'Aislamiento de tuberías de ACS y climatización (espumas flexibles)', c:tipo.costeTuberias}); }
   if(sistemaNuevo.id!=='mantener'){ const c = tipo.costeSistema[sistemaNuevo.id]||0; inversion += c; medidasResumen.push({n:sistemaNuevo.label, c}); }
   if(medSolar){ inversion += tipo.costeSolar; medidasResumen.push({n:'Solar térmica ACS', c:tipo.costeSolar}); }
   if(medFv){ inversion += reforma.fvInversion; medidasResumen.push({n:`Fotovoltaica autoconsumo (${fmtNum(fvKwp,1)} kWp)`, c:reforma.fvInversion}); }
@@ -863,7 +939,7 @@ function calcularSimulacion(){
   const payback = ahorroEur>0 ? inversion/ahorroEur : Infinity;
 
   sim = { nombre, tipo, zona, periodo, area, fachadaArea, cubiertaArea, huecosArea, actual, reforma, inversion, ahorroEur, ahorroCo2, payback, medidasResumen,
-    sistCalefActual, sistRefrigActual, sistAcsActual, sistemaNuevo, medFachada, medCubierta, medVentanas, medSolar, medFv, fvKwp };
+    sistCalefActual, sistRefrigActual, sistAcsActual, sistemaNuevo, fachadaTipo, cubiertaTipo, ventanaTipo, medTuberias, medSolar, medFv, fvKwp };
 
   renderResultados();
   showToast('Simulación calculada.');
@@ -1036,6 +1112,8 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
     ['Consumo de energía final','Energía que hay que aportar realmente, según el rendimiento del sistema','kWh/año'],
     ['ACS','Agua Caliente Sanitaria','-'],
     ['SATE','Sistema de Aislamiento Térmico por el Exterior','-'],
+    ['EPS','Poliestireno expandido (aislamiento térmico)','-'],
+    ['XPS','Poliestireno extruido (aislamiento térmico)','-'],
     ['COP','Coeficiente de rendimiento de una bomba de calor en modo calefacción','-'],
     ['EER','Ratio de eficiencia energética de un equipo en modo refrigeración','-'],
     ['kWp','Potencia pico de una instalación fotovoltaica','kWp'],
@@ -1144,6 +1222,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
     y = H.sectionTitle(y, '2.', 'Metodología y marco normativo', collect);
     y = H.paragraph(y, 'Simulación simplificada basada en demandas de referencia por tipología de edificio, ajustadas por periodo constructivo y por la severidad climática de la zona '+sim.zona.id+' del CTE DB-HE (invierno '+INVIERNO_DESC[sim.zona.invierno]+', verano '+VERANO_DESC[sim.zona.verano]+'). La demanda de cada uso (calefacción, refrigeración, ACS) se transforma en consumo de energía final dividiendo por el rendimiento del sistema que la cubre.');
     y = H.paragraph(y, 'Los principios de cálculo de la envolvente y las necesidades energéticas de un edificio, en un proyecto real, se rigen por normas como ISO 52016-1 (necesidades energéticas de calefacción y refrigeración), ISO 6946 (transmitancia térmica de elementos constructivos) e ISO 52000-1 (marco general de evaluación energética de edificios), junto con el CTE DB-HE en España. Esta herramienta se inspira en esos principios con un modelo agregado y simplificado, y no implementa el cálculo detallado (hora a hora o por elemento constructivo) que exigen dichas normas.');
+    y = H.paragraph(y, 'Las soluciones de aislamiento de fachada y cubierta, y los tipos de acristalamiento disponibles en el escenario de rehabilitación, están inspirados en la colección de Guías Técnicas para la Rehabilitación de la Envolvente Térmica de los Edificios del IDAE (ver Referencias, sección 8): Guías IDAE 002 (SATE), y las guías de soluciones de aislamiento con lana mineral, EPS, XPS, poliuretano y espumas flexibles (para tuberías y conductos).');
     y = H.paragraph(y, 'Este informe no sustituye a un certificado de eficiencia energética oficial (procedimientos CE3, CE3X, CERMA/HULC) ni a un proyecto de rehabilitación firmado por un técnico competente.');
 
     y = H.sectionTitle(y, '3.', 'Datos del edificio', collect);
@@ -1203,6 +1282,13 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
       'ISO 52016-1:2017 — Energy performance of buildings — Energy needs for heating and cooling, internal temperatures and sensible and latent heat loads.',
       'ISO 6946:2017 — Building components and building elements — Thermal resistance and thermal transmittance — Calculation methods.',
       'ISO 52000-1:2017 — Energy performance of buildings — Overarching EPB assessment — General framework and procedures.',
+      'IDAE. Guías IDAE 002 — Sistemas de Aislamiento Térmico Exterior (SATE) para la Rehabilitación de la Envolvente Térmica de los Edificios (2012).',
+      'IDAE. Soluciones de acristalamiento y cerramiento acristalado (2019).',
+      'IDAE. Soluciones de aislamiento con lana mineral (2008).',
+      'IDAE. Soluciones de aislamiento con poliestireno expandido (EPS) (2008).',
+      'IDAE. Soluciones de aislamiento con poliestireno extruido (XPS) (2008).',
+      'IDAE. Soluciones de aislamiento con poliuretano (2008).',
+      'IDAE. Soluciones de aislamiento con espumas flexibles (2008).',
     ];
     refs.forEach((r,i)=>{ y = H.paragraph(y, (i+1)+'. '+r); });
 
