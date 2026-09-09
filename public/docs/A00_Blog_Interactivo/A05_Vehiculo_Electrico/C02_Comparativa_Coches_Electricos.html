@@ -108,17 +108,24 @@
   }
 
   .brand-filter{margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--line-soft);}
-  .brand-filter-head{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px 14px; margin-bottom:10px;}
+  .brand-filter-head{margin-bottom:10px;}
   .brand-filter-head label{font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em;}
-  .brand-filter-actions{display:flex; gap:14px;}
   .link-action{background:none; border:none; padding:0; font-family:var(--font-mono); font-size:11px; color:var(--cyan); cursor:pointer; text-decoration:underline; text-underline-offset:2px;}
   .link-action:hover{color:#7fe1ff;}
-  .brand-chips{display:flex; flex-wrap:wrap; gap:7px;}
-  .brand-chip{display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11.5px; padding:6px 11px; border-radius:20px; border:1px solid var(--line); background:var(--panel2); color:var(--text-dimmer); cursor:pointer; transition:all .15s ease;}
-  .brand-chip:hover{border-color:var(--text-dim); color:var(--text-dim);}
-  .brand-chip .chip-count{opacity:0.7;}
-  .brand-chip.active{border-color:var(--cyan); color:var(--text); background:rgba(55,207,255,0.1);}
-  .brand-chip.active .chip-count{opacity:1; color:var(--cyan);}
+  .brand-dropdown{position:relative; max-width:360px;}
+  .brand-dropdown-toggle{display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--text); padding:10px 12px; border-radius:var(--radius); font-family:var(--font-mono); font-size:12.5px; cursor:pointer; transition:border-color .15s ease;}
+  .brand-dropdown-toggle:hover{border-color:var(--text-dim);}
+  .brand-dropdown-toggle.open{border-color:var(--cyan);}
+  .brand-dropdown-toggle .chev{width:12px; height:12px; flex-shrink:0; color:var(--text-dimmer); transition:transform .15s ease;}
+  .brand-dropdown-toggle.open .chev{transform:rotate(180deg);}
+  .brand-dropdown-menu{position:absolute; z-index:30; top:calc(100% + 6px); left:0; width:100%; min-width:260px; max-height:320px; overflow-y:auto; background:var(--bg2); border:1px solid var(--line); border-radius:var(--radius); box-shadow:0 10px 30px rgba(0,0,0,0.45);}
+  .brand-dropdown-actions{position:sticky; top:0; z-index:1; display:flex; gap:14px; padding:9px 10px; background:var(--bg2); border-bottom:1px solid var(--line-soft);}
+  .brand-dropdown-options{padding:6px;}
+  .brand-option{display:flex; align-items:center; gap:9px; padding:7px 8px; border-radius:2px; font-family:var(--font-mono); font-size:12px; color:var(--text-dim); cursor:pointer; transition:background .12s ease;}
+  .brand-option:hover{background:var(--panel2);}
+  .brand-option input{accent-color:var(--cyan); cursor:pointer; flex-shrink:0;}
+  .brand-option .brand-name{flex:1; color:var(--text);}
+  .brand-option .chip-count{opacity:0.6; font-size:11px;}
 
   .chart-hint{font-size:12px; color:var(--text-dimmer); margin-bottom:10px;}
 
@@ -240,7 +247,6 @@
           </div>
           <div class="btn-group">
             <button class="btn ghost" id="btnSwap" type="button">⇄ Intercambiar ejes</button>
-            <button class="btn ghost" id="btnResetZoom" type="button" hidden>↺ Restablecer zoom</button>
           </div>
         </div>
 
@@ -260,15 +266,15 @@
         <div class="brand-filter">
           <div class="brand-filter-head">
             <label>Filtrar por marca</label>
-            <span class="brand-filter-actions">
-              <button type="button" class="link-action btn-brands-all">Todas</button>
-              <button type="button" class="link-action btn-brands-none">Ninguna</button>
-            </span>
           </div>
-          <div class="brand-chips"></div>
+          <div class="brand-dropdown">
+            <button type="button" class="brand-dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+              <span class="brand-dropdown-label"></span>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="brand-dropdown-menu" hidden></div>
+          </div>
         </div>
-
-        <p class="chart-hint">Arrastra sobre el gráfico para hacer zoom a una zona · doble clic o "Restablecer zoom" para deshacerlo.</p>
 
         <div class="chart-wrap" id="chartWrap">
           <canvas id="scatterCanvas"></canvas>
@@ -279,7 +285,7 @@
 
         <div class="pdf-row">
           <button class="btn primary" id="btnPdf" type="button">&#8681; Generar informe PDF</button>
-          <span class="pdf-hint">Incluye el gráfico tal como se ve (filtro de precio y zoom aplicados) y la tabla de los modelos visibles.</span>
+          <span class="pdf-hint">Incluye el gráfico tal como se ve (filtro de precio aplicado) y la tabla de los modelos visibles.</span>
         </div>
       </div>
     </section>
@@ -304,12 +310,14 @@
         <div class="brand-filter">
           <div class="brand-filter-head">
             <label>Filtrar por marca</label>
-            <span class="brand-filter-actions">
-              <button type="button" class="link-action btn-brands-all">Todas</button>
-              <button type="button" class="link-action btn-brands-none">Ninguna</button>
-            </span>
           </div>
-          <div class="brand-chips"></div>
+          <div class="brand-dropdown">
+            <button type="button" class="brand-dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+              <span class="brand-dropdown-label"></span>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="brand-dropdown-menu" hidden></div>
+          </div>
         </div>
 
         <div style="overflow-x:auto;">
@@ -3170,12 +3178,27 @@ function getBrands(){
 }
 function renderBrandFilter(){
   const brands = getBrands();
-  const html = brands.map(b=>{
+  const activeCount = brands.filter(b=>!deselectedBrands.has(b)).length;
+
+  const optionsHtml = brands.map(b=>{
     const active = !deselectedBrands.has(b);
     const count = DATA.filter(d=>d.marca===b).length;
-    return `<button type="button" class="brand-chip${active?' active':''}" data-brand="${esc(b)}">${esc(b)} <span class="chip-count">(${count})</span></button>`;
+    return `<label class="brand-option"><input type="checkbox" value="${esc(b)}"${active?' checked':''}><span class="brand-name">${esc(b)}</span><span class="chip-count">(${count})</span></label>`;
   }).join('');
-  document.querySelectorAll('.brand-chips').forEach(el=> el.innerHTML = html);
+  const menuHtml = `<div class="brand-dropdown-actions">
+      <button type="button" class="link-action btn-brands-all">Todas</button>
+      <button type="button" class="link-action btn-brands-none">Ninguna</button>
+    </div>
+    <div class="brand-dropdown-options">${optionsHtml}</div>`;
+  document.querySelectorAll('.brand-dropdown-menu').forEach(el=> el.innerHTML = menuHtml);
+
+  let labelText;
+  if(brands.length === 0) labelText = 'Sin marcas';
+  else if(activeCount === brands.length) labelText = 'Todas las marcas';
+  else if(activeCount === 0) labelText = 'Ninguna marca';
+  else if(activeCount === 1) labelText = brands.find(b=>!deselectedBrands.has(b));
+  else labelText = `${activeCount} de ${brands.length} marcas`;
+  document.querySelectorAll('.brand-dropdown-label').forEach(el=> el.textContent = labelText);
 }
 function onBrandFilterChanged(){
   renderBrandFilter();
@@ -3183,12 +3206,21 @@ function onBrandFilterChanged(){
   drawChart();
   renderFicha();
 }
+function closeBrandDropdowns(){
+  document.querySelectorAll('.brand-dropdown-menu').forEach(el=> el.hidden = true);
+  document.querySelectorAll('.brand-dropdown-toggle').forEach(btn=>{ btn.classList.remove('open'); btn.setAttribute('aria-expanded','false'); });
+}
 document.addEventListener('click', e=>{
-  const chip = e.target.closest('.brand-chip');
-  if(chip){
-    const b = chip.dataset.brand;
-    if(deselectedBrands.has(b)) deselectedBrands.delete(b); else deselectedBrands.add(b);
-    onBrandFilterChanged();
+  const toggle = e.target.closest('.brand-dropdown-toggle');
+  if(toggle){
+    const menu = toggle.nextElementSibling;
+    const willOpen = menu.hidden;
+    closeBrandDropdowns();
+    if(willOpen){
+      menu.hidden = false;
+      toggle.classList.add('open');
+      toggle.setAttribute('aria-expanded','true');
+    }
     return;
   }
   if(e.target.closest('.btn-brands-all')){
@@ -3199,7 +3231,16 @@ document.addEventListener('click', e=>{
   if(e.target.closest('.btn-brands-none')){
     getBrands().forEach(b=> deselectedBrands.add(b));
     onBrandFilterChanged();
+    return;
   }
+  if(!e.target.closest('.brand-dropdown')) closeBrandDropdowns();
+});
+document.addEventListener('change', e=>{
+  const input = e.target.closest('.brand-option input[type="checkbox"]');
+  if(!input) return;
+  const b = input.value;
+  if(input.checked) deselectedBrands.delete(b); else deselectedBrands.add(b);
+  onBrandFilterChanged();
 });
 renderBrandFilter();
 
@@ -3416,16 +3457,10 @@ selY.innerHTML = optsHtml;
 selX.value = 'kwh';
 selY.value = 'precio';
 
-selX.addEventListener('change', ()=>{ zoomDomain = null; updateZoomResetVisibility(); drawChart(); });
-selY.addEventListener('change', ()=>{ zoomDomain = null; updateZoomResetVisibility(); drawChart(); });
+selX.addEventListener('change', ()=>{ drawChart(); });
+selY.addEventListener('change', ()=>{ drawChart(); });
 document.getElementById('btnSwap').addEventListener('click', ()=>{
   const tmp = selX.value; selX.value = selY.value; selY.value = tmp;
-  zoomDomain = null; updateZoomResetVisibility();
-  drawChart();
-});
-document.getElementById('btnResetZoom').addEventListener('click', ()=>{
-  zoomDomain = null;
-  updateZoomResetVisibility();
   drawChart();
 });
 
@@ -3453,16 +3488,7 @@ renderLegend();
 const canvas = document.getElementById('scatterCanvas');
 const ctx = canvas.getContext('2d');
 const tooltip = document.getElementById('tooltip');
-const btnResetZoom = document.getElementById('btnResetZoom');
 let points = []; // {x,y,cx,cy,d}
-let chartGeom = null; // {padL,padT,plotW,plotH,fromX,fromY} del último render
-let zoomDomain = null; // {xLo,xHi,yLo,yHi} en unidades de datos, o null = auto
-let isDragging = false;
-let dragStartPx = null, dragCurrentPx = null;
-
-function updateZoomResetVisibility(){
-  btnResetZoom.hidden = !zoomDomain;
-}
 
 function niceTicks(min, max, count){
   if(min === max){ min -= 1; max += 1; }
@@ -3488,7 +3514,13 @@ function linearRegression(xVals, yVals){
 }
 function fmtCoef(v){ return v.toLocaleString('es-ES', {maximumFractionDigits: Math.abs(v) < 10 ? 2 : 0}); }
 
-function drawChart(){
+const CHART_THEMES = {
+  dark:  { grid:'#182739', tick:'#5B7086', axis:'#213348', axisTitle:'#8FA3B8', trend:'#FFB020', pointStroke:'rgba(231,236,242,0.5)', empty:'#5B7086' },
+  light: { grid:'#E2E8F0', tick:'#5B6472', axis:'#C3CBD6', axisTitle:'#33404D', trend:'#B45309', pointStroke:'rgba(17,24,34,0.35)', empty:'#64748B' }
+};
+
+function drawChart(opts){
+  const theme = CHART_THEMES[opts && opts.light ? 'light' : 'dark'];
   const wrap = document.getElementById('chartWrap');
   const dpr = window.devicePixelRatio || 1;
   const cssW = wrap.clientWidth;
@@ -3499,11 +3531,14 @@ function drawChart(){
   canvas.height = Math.round(cssH * dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,cssW,cssH);
+  if(theme === CHART_THEMES.light){
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0,0,cssW,cssH);
+  }
 
   points = [];
-  chartGeom = null;
   if(DATA.length === 0){
-    ctx.fillStyle = '#5B7086';
+    ctx.fillStyle = theme.empty;
     ctx.font = "13px 'Inter', sans-serif";
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('Añade al menos un modelo en la ficha técnica para ver el gráfico.', cssW/2, cssH/2);
@@ -3512,7 +3547,7 @@ function drawChart(){
 
   const filtered = getFilteredData();
   if(filtered.length === 0){
-    ctx.fillStyle = '#5B7086';
+    ctx.fillStyle = theme.empty;
     ctx.font = "13px 'Inter', sans-serif";
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('Ningún modelo coincide con los filtros seleccionados.', cssW/2, cssH/2);
@@ -3527,30 +3562,18 @@ function drawChart(){
   const plotH = cssH - padT - padB;
 
   const xVals = filtered.map(d=>d[xKey]), yVals = filtered.map(d=>d[yKey]);
-  let xRange, yRange;
-  if(zoomDomain){
-    xRange = { lo: zoomDomain.xLo, hi: zoomDomain.xHi };
-    yRange = { lo: zoomDomain.yLo, hi: zoomDomain.yHi };
-  } else {
-    xRange = niceTicks(Math.min(...xVals), Math.max(...xVals));
-    yRange = niceTicks(Math.min(...yVals), Math.max(...yVals));
-  }
+  const xRange = niceTicks(Math.min(...xVals), Math.max(...xVals));
+  const yRange = niceTicks(Math.min(...yVals), Math.max(...yVals));
 
   function toX(v){ return padL + (v - xRange.lo) / (xRange.hi - xRange.lo) * plotW; }
   function toY(v){ return padT + plotH - (v - yRange.lo) / (yRange.hi - yRange.lo) * plotH; }
 
-  chartGeom = {
-    padL, padT, plotW, plotH,
-    fromX: px => xRange.lo + (px-padL)/plotW*(xRange.hi-xRange.lo),
-    fromY: py => yRange.lo + (padT+plotH-py)/plotH*(yRange.hi-yRange.lo)
-  };
-
   // grid + ticks
   const N_TICKS = 5;
-  ctx.strokeStyle = '#182739';
+  ctx.strokeStyle = theme.grid;
   ctx.lineWidth = 1;
   ctx.font = "11px 'IBM Plex Mono', monospace";
-  ctx.fillStyle = '#5B7086';
+  ctx.fillStyle = theme.tick;
 
   for(let i=0;i<=N_TICKS;i++){
     const v = yRange.lo + (yRange.hi - yRange.lo) * i / N_TICKS;
@@ -3568,11 +3591,11 @@ function drawChart(){
   }
 
   // axes border
-  ctx.strokeStyle = '#213348';
+  ctx.strokeStyle = theme.axis;
   ctx.strokeRect(padL, padT, plotW, plotH);
 
   // axis titles
-  ctx.fillStyle = '#8FA3B8';
+  ctx.fillStyle = theme.axisTitle;
   ctx.font = "12px 'Inter', sans-serif";
   ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
   ctx.fillText(`${xVar.label} (${xVar.unit})`, padL + plotW/2, cssH - 10);
@@ -3594,7 +3617,7 @@ function drawChart(){
     ctx.clip();
     ctx.beginPath();
     ctx.setLineDash([6,5]);
-    ctx.strokeStyle = '#FFB020';
+    ctx.strokeStyle = theme.trend;
     ctx.lineWidth = 1.8;
     ctx.moveTo(toX(xRange.lo), toY(y1));
     ctx.lineTo(toX(xRange.hi), toY(y2));
@@ -3602,14 +3625,14 @@ function drawChart(){
     ctx.setLineDash([]);
     ctx.restore();
 
-    ctx.fillStyle = '#FFB020';
+    ctx.fillStyle = theme.trend;
     ctx.font = "11px 'IBM Plex Mono', monospace";
     ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     const eqLabel = `y = ${fmtCoef(reg.m)}x ${reg.b>=0?'+':'-'} ${fmtCoef(Math.abs(reg.b))}  ·  R² = ${reg.r2.toFixed(2)}`;
     ctx.fillText(eqLabel, padL+8, padT+16);
   }
 
-  // points (recortados al área de ejes, relevante cuando hay zoom)
+  // points (recortados al área de ejes)
   ctx.save();
   ctx.beginPath();
   ctx.rect(padL, padT, plotW, plotH);
@@ -3626,30 +3649,13 @@ function drawChart(){
     ctx.fill();
     ctx.globalAlpha = 1;
     ctx.lineWidth = 1.5;
-    ctx.strokeStyle = 'rgba(231,236,242,0.5)';
+    ctx.strokeStyle = theme.pointStroke;
     ctx.stroke();
   });
   ctx.restore();
 }
 
-function drawSelectionRect(){
-  if(!dragStartPx || !dragCurrentPx) return;
-  const x = Math.min(dragStartPx.x, dragCurrentPx.x);
-  const y = Math.min(dragStartPx.y, dragCurrentPx.y);
-  const w = Math.abs(dragCurrentPx.x - dragStartPx.x);
-  const h = Math.abs(dragCurrentPx.y - dragStartPx.y);
-  ctx.save();
-  ctx.fillStyle = 'rgba(55,207,255,0.12)';
-  ctx.strokeStyle = 'rgba(55,207,255,0.8)';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([4,3]);
-  ctx.fillRect(x, y, w, h);
-  ctx.strokeRect(x, y, w, h);
-  ctx.restore();
-}
-
 function handlePointer(clientX, clientY){
-  if(isDragging) return;
   const rect = canvas.getBoundingClientRect();
   const mx = clientX - rect.left, my = clientY - rect.top;
   let nearest = null, nearestDist = 16;
@@ -3674,83 +3680,11 @@ function handlePointer(clientX, clientY){
 canvas.addEventListener('mousemove', e=> handlePointer(e.clientX, e.clientY));
 canvas.addEventListener('mouseleave', ()=> tooltip.classList.remove('show'));
 
-// ===================== ZOOM POR SELECCIÓN (arrastrar y encuadrar) =====================
-function clampToPlot(mx, my){
-  return {
-    x: Math.min(Math.max(mx, chartGeom.padL), chartGeom.padL + chartGeom.plotW),
-    y: Math.min(Math.max(my, chartGeom.padT), chartGeom.padT + chartGeom.plotH)
-  };
-}
-function pointFromEvent(clientX, clientY){
-  const rect = canvas.getBoundingClientRect();
-  return { x: clientX - rect.left, y: clientY - rect.top };
-}
-function insidePlot(p){
-  return chartGeom && p.x >= chartGeom.padL && p.x <= chartGeom.padL+chartGeom.plotW && p.y >= chartGeom.padT && p.y <= chartGeom.padT+chartGeom.plotH;
-}
-function startDrag(p){
-  isDragging = true;
-  dragStartPx = p;
-  dragCurrentPx = p;
-  tooltip.classList.remove('show');
-}
-function updateDrag(clientX, clientY){
-  if(!isDragging || !chartGeom) return;
-  dragCurrentPx = clampToPlot(clientX, clientY);
-  drawChart();
-  drawSelectionRect();
-}
-function finishDrag(){
-  if(!isDragging) return;
-  isDragging = false;
-  if(chartGeom && dragStartPx && dragCurrentPx){
-    const dx = Math.abs(dragCurrentPx.x - dragStartPx.x);
-    const dy = Math.abs(dragCurrentPx.y - dragStartPx.y);
-    if(dx > 10 && dy > 10){
-      const xA = chartGeom.fromX(dragStartPx.x), xB = chartGeom.fromX(dragCurrentPx.x);
-      const yA = chartGeom.fromY(dragStartPx.y), yB = chartGeom.fromY(dragCurrentPx.y);
-      zoomDomain = { xLo: Math.min(xA,xB), xHi: Math.max(xA,xB), yLo: Math.min(yA,yB), yHi: Math.max(yA,yB) };
-      updateZoomResetVisibility();
-    }
-  }
-  dragStartPx = null; dragCurrentPx = null;
-  drawChart();
-}
-
-// Ratón
-canvas.addEventListener('mousedown', e=>{
-  if(!chartGeom) return;
-  const p = pointFromEvent(e.clientX, e.clientY);
-  if(!insidePlot(p)) return;
-  e.preventDefault();
-  startDrag(p);
-});
-window.addEventListener('mousemove', e=> updateDrag(e.clientX, e.clientY));
-window.addEventListener('mouseup', finishDrag);
-
-// Táctil (móvil/tablet): un toque muestra el tooltip; arrastrar hace zoom.
+// Táctil (móvil/tablet): un toque muestra el tooltip.
 canvas.addEventListener('touchstart', e=>{
   if(!e.touches[0]) return;
   handlePointer(e.touches[0].clientX, e.touches[0].clientY);
-  if(!chartGeom) return;
-  const p = pointFromEvent(e.touches[0].clientX, e.touches[0].clientY);
-  if(!insidePlot(p)) return;
-  e.preventDefault();
-  startDrag(p);
 }, {passive:false});
-window.addEventListener('touchmove', e=>{
-  if(!isDragging || !e.touches[0]) return;
-  e.preventDefault();
-  updateDrag(e.touches[0].clientX, e.touches[0].clientY);
-}, {passive:false});
-window.addEventListener('touchend', finishDrag);
-window.addEventListener('touchcancel', finishDrag);
-canvas.addEventListener('dblclick', ()=>{
-  if(!zoomDomain) return;
-  zoomDomain = null;
-  updateZoomResetVisibility();
-  drawChart();
-});
 
 window.addEventListener('resize', ()=> requestAnimationFrame(drawChart));
 requestAnimationFrame(drawChart);
@@ -3819,16 +3753,17 @@ function generarPDF(){
   doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(110,118,130);
   let contexto = `Filtro de precio: ${fmtEur(priceFilterMin)} – ${fmtEur(priceFilterMax)} · ${filtered.length} de ${DATA.length} modelos incluidos`;
   if(deselectedBrands.size) contexto += ` · ${deselectedBrands.size} marca${deselectedBrands.size===1?'':'s'} excluida${deselectedBrands.size===1?'':'s'}`;
-  if(zoomDomain) contexto += ' · zoom aplicado en el gráfico';
   doc.splitTextToSize(contexto, qrX - marginX - 6).forEach(line=>{ doc.text(line, marginX, y); y += 4.2; });
   y += 3.5;
 
   if(filtered.length){
+    drawChart({ light:true });
     const imgData = canvas.toDataURL('image/png', 1.0);
+    drawChart();
     const imgW = pageW - marginX*2;
     const imgH = imgW * (canvas.clientHeight / canvas.clientWidth);
     ensureSpace(imgH + 8);
-    doc.setFillColor(10,18,28);
+    doc.setFillColor(255,255,255);
     doc.rect(marginX, y, imgW, imgH, 'F');
     doc.addImage(imgData, 'PNG', marginX, y, imgW, imgH);
     y += imgH + 10;
