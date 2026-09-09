@@ -138,6 +138,9 @@
   table.data-table th{text-align:left; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-dimmer); padding:9px 11px; border-bottom:1px solid var(--line);}
   table.data-table td{padding:10px 11px; border-bottom:1px solid var(--line-soft);}
   table.data-table tr:hover td{background:var(--panel2);}
+  .sortable-th{cursor:pointer; user-select:none; white-space:nowrap; transition:color .15s ease;}
+  .sortable-th:hover{color:var(--text-dim);}
+  .sortable-th.active{color:var(--cyan);}
   .cellnum{font-family:var(--font-mono); color:var(--cyan);}
   .model-chip{display:inline-flex; align-items:center; gap:8px; font-weight:600;}
   .model-chip .dot{width:10px; height:10px; border-radius:50%; flex-shrink:0; border:1px solid rgba(255,255,255,0.25);}
@@ -258,11 +261,11 @@
           <div class="brand-filter-head">
             <label>Filtrar por marca</label>
             <span class="brand-filter-actions">
-              <button type="button" id="btnBrandsAll" class="link-action">Todas</button>
-              <button type="button" id="btnBrandsNone" class="link-action">Ninguna</button>
+              <button type="button" class="link-action btn-brands-all">Todas</button>
+              <button type="button" class="link-action btn-brands-none">Ninguna</button>
             </span>
           </div>
-          <div class="brand-chips" id="brandChips"></div>
+          <div class="brand-chips"></div>
         </div>
 
         <p class="chart-hint">Arrastra sobre el gráfico para hacer zoom a una zona · doble clic o "Restablecer zoom" para deshacerlo.</p>
@@ -295,21 +298,32 @@
 
       <div class="eyebrow kicker">01 · Ficha técnica</div>
       <h2>Datos de partida.</h2>
-      <p class="lede">Valores orientativos de versión base por modelo (potencia, batería neta, autonomía WLTP y precio aproximado al contado), con enlace a la fuente consultada para cada uno. Haz clic en cualquier celda para corregirla o añade filas nuevas — los cambios solo viven en esta sesión, no se guardan al recargar.</p>
+      <p class="lede">Valores orientativos de versión base por modelo (potencia, batería neta, autonomía WLTP y precio aproximado al contado), con enlace a la fuente consultada para cada uno. Haz clic en cualquier celda para corregirla o añade filas nuevas — los cambios solo viven en esta sesión, no se guardan al recargar. Haz clic en el encabezado de una columna para ordenar por ese campo.</p>
 
       <div class="card">
+        <div class="brand-filter">
+          <div class="brand-filter-head">
+            <label>Filtrar por marca</label>
+            <span class="brand-filter-actions">
+              <button type="button" class="link-action btn-brands-all">Todas</button>
+              <button type="button" class="link-action btn-brands-none">Ninguna</button>
+            </span>
+          </div>
+          <div class="brand-chips"></div>
+        </div>
+
         <div style="overflow-x:auto;">
           <table class="data-table" id="fichaTable">
             <thead>
               <tr>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Potencia (kW)</th>
-                <th>Potencia (CV)</th>
-                <th>Batería neta (kWh)</th>
-                <th>Autonomía WLTP (km)</th>
-                <th>Precio aprox. (€)</th>
-                <th>Fuente</th>
+                <th class="sortable-th" data-sort="marca" data-label="Marca">Marca</th>
+                <th class="sortable-th" data-sort="modelo" data-label="Modelo">Modelo</th>
+                <th class="sortable-th" data-sort="kw" data-label="Potencia (kW)">Potencia (kW)</th>
+                <th class="sortable-th" data-sort="cv" data-label="Potencia (CV)">Potencia (CV)</th>
+                <th class="sortable-th" data-sort="kwh" data-label="Batería neta (kWh)">Batería neta (kWh)</th>
+                <th class="sortable-th" data-sort="autonomia" data-label="Autonomía WLTP (km)">Autonomía WLTP (km)</th>
+                <th class="sortable-th" data-sort="precio" data-label="Precio aprox. (€)">Precio aprox. (€)</th>
+                <th class="sortable-th" data-sort="url" data-label="Fuente">Fuente</th>
                 <th></th>
               </tr>
             </thead>
@@ -3148,8 +3162,7 @@ const VARS = {
   cv:        { label:'Potencia',       unit:'CV',  decimals:0, fmt:v=>v.toLocaleString('es-ES',{maximumFractionDigits:0})+' CV' }
 };
 
-// ===================== FILTRO DE MARCA =====================
-const brandChipsEl = document.getElementById('brandChips');
+// ===================== FILTRO DE MARCA (compartido entre Comparativa y Ficha técnica) =====================
 let deselectedBrands = new Set();
 
 function getBrands(){
@@ -3157,32 +3170,36 @@ function getBrands(){
 }
 function renderBrandFilter(){
   const brands = getBrands();
-  brandChipsEl.innerHTML = brands.map(b=>{
+  const html = brands.map(b=>{
     const active = !deselectedBrands.has(b);
     const count = DATA.filter(d=>d.marca===b).length;
     return `<button type="button" class="brand-chip${active?' active':''}" data-brand="${esc(b)}">${esc(b)} <span class="chip-count">(${count})</span></button>`;
   }).join('');
+  document.querySelectorAll('.brand-chips').forEach(el=> el.innerHTML = html);
 }
-brandChipsEl.addEventListener('click', e=>{
-  const chip = e.target.closest('[data-brand]');
-  if(!chip) return;
-  const b = chip.dataset.brand;
-  if(deselectedBrands.has(b)) deselectedBrands.delete(b); else deselectedBrands.add(b);
+function onBrandFilterChanged(){
   renderBrandFilter();
   renderLegend();
   drawChart();
-});
-document.getElementById('btnBrandsAll').addEventListener('click', ()=>{
-  deselectedBrands.clear();
-  renderBrandFilter();
-  renderLegend();
-  drawChart();
-});
-document.getElementById('btnBrandsNone').addEventListener('click', ()=>{
-  getBrands().forEach(b=> deselectedBrands.add(b));
-  renderBrandFilter();
-  renderLegend();
-  drawChart();
+  renderFicha();
+}
+document.addEventListener('click', e=>{
+  const chip = e.target.closest('.brand-chip');
+  if(chip){
+    const b = chip.dataset.brand;
+    if(deselectedBrands.has(b)) deselectedBrands.delete(b); else deselectedBrands.add(b);
+    onBrandFilterChanged();
+    return;
+  }
+  if(e.target.closest('.btn-brands-all')){
+    deselectedBrands.clear();
+    onBrandFilterChanged();
+    return;
+  }
+  if(e.target.closest('.btn-brands-none')){
+    getBrands().forEach(b=> deselectedBrands.add(b));
+    onBrandFilterChanged();
+  }
 });
 renderBrandFilter();
 
@@ -3266,11 +3283,38 @@ function renderStatRow(){
 }
 renderStatRow();
 
-// ===================== FICHA TECNICA (editable) =====================
+// ===================== FICHA TECNICA (editable, filtrable y ordenable) =====================
 const fichaBody = document.getElementById('fichaBody');
+let fichaSortField = 'precio', fichaSortDir = 'asc';
+
+function getFichaRows(){
+  const rows = DATA.map((d,i)=>({ d, i })).filter(({d})=> !deselectedBrands.has(d.marca));
+  rows.sort((a,b)=>{
+    const va = a.d[fichaSortField], vb = b.d[fichaSortField];
+    let cmp;
+    if(typeof va === 'number' && typeof vb === 'number') cmp = va - vb;
+    else cmp = String(va||'').localeCompare(String(vb||''), 'es', { numeric:true, sensitivity:'base' });
+    return fichaSortDir === 'asc' ? cmp : -cmp;
+  });
+  return rows;
+}
+
+function updateSortHeaders(){
+  document.querySelectorAll('#fichaTable thead th[data-sort]').forEach(th=>{
+    const isActive = th.dataset.sort === fichaSortField;
+    th.classList.toggle('active', isActive);
+    th.textContent = th.dataset.label + (isActive ? (fichaSortDir === 'asc' ? ' ▲' : ' ▼') : '');
+  });
+}
 
 function renderFicha(){
-  fichaBody.innerHTML = DATA.map((d,i)=>`
+  const rows = getFichaRows();
+  if(!rows.length){
+    fichaBody.innerHTML = `<tr><td colspan="9" style="color:var(--text-dimmer); text-align:center; padding:20px;">Ningún modelo coincide con el filtro de marca.</td></tr>`;
+    updateSortHeaders();
+    return;
+  }
+  fichaBody.innerHTML = rows.map(({d,i})=>`
     <tr data-idx="${i}">
       <td>
         <span class="model-chip">
@@ -3293,8 +3337,18 @@ function renderFicha(){
       <td class="actions-cell"><button class="row-remove" type="button" data-remove title="Eliminar modelo">✕</button></td>
     </tr>
   `).join('');
+  updateSortHeaders();
 }
 renderFicha();
+
+document.querySelectorAll('#fichaTable thead th[data-sort]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const field = th.dataset.sort;
+    if(fichaSortField === field){ fichaSortDir = fichaSortDir === 'asc' ? 'desc' : 'asc'; }
+    else { fichaSortField = field; fichaSortDir = 'asc'; }
+    renderFicha();
+  });
+});
 
 const TEXT_FIELDS = ['marca', 'modelo', 'url'];
 fichaBody.addEventListener('input', e=>{
@@ -3342,15 +3396,15 @@ fichaBody.addEventListener('click', e=>{
 
 document.getElementById('btnAddRow').addEventListener('click', ()=>{
   DATA.push({ marca:'Marca', modelo:'Nuevo modelo', kw:100, cv:136, kwh:50, autonomia:300, precio:25000, url:'', color: nextColor(DATA.length) });
+  const newIdx = DATA.length - 1;
   renderFicha();
   renderStatRow();
   syncPriceSliderBounds();
   renderBrandFilter();
   renderLegend();
   drawChart();
-  const rows = fichaBody.querySelectorAll('tr');
-  const lastRow = rows[rows.length-1];
-  if(lastRow){ const firstInput = lastRow.querySelector('input'); if(firstInput){ firstInput.focus(); firstInput.select(); } }
+  const newRow = fichaBody.querySelector(`tr[data-idx="${newIdx}"]`);
+  if(newRow){ const firstInput = newRow.querySelector('input'); if(firstInput){ firstInput.focus(); firstInput.select(); } }
 });
 
 // ===================== SELECTORES DE EJES =====================
