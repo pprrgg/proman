@@ -167,6 +167,34 @@
   .link-btn:disabled:hover{border-color:var(--line); color:var(--text-dimmer); background:transparent;}
   .table-actions{display:flex; justify-content:flex-start; margin-top:16px; padding-top:16px; border-top:1px solid var(--line-soft);}
 
+  .aid-block{margin-bottom:40px;}
+  .aid-block:last-child{margin-bottom:0;}
+  .aid-block h3{font-size:19px; margin-bottom:12px; color:var(--text);}
+  .aid-block > p{font-size:14px; color:var(--text-dim); max-width:760px; margin-bottom:14px;}
+  .aid-block ul{padding-left:19px; max-width:760px;}
+  .aid-block ul li{font-size:13.5px; color:var(--text-dim); margin-bottom:8px;}
+  .aid-block ul li strong{color:var(--text); font-weight:600;}
+  .aid-note{font-size:12.5px; color:var(--text-dimmer); margin-top:12px; max-width:760px;}
+
+  .aid-table-wrap{overflow-x:auto; margin-bottom:10px;}
+  table.aid-table{width:100%; border-collapse:collapse; font-size:12.5px; min-width:620px;}
+  table.aid-table th{text-align:left; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dimmer); padding:9px 14px 9px 0; border-bottom:1px solid var(--line);}
+  table.aid-table td{padding:11px 14px 11px 0; border-bottom:1px solid var(--line-soft); font-family:var(--font-mono); color:var(--text);}
+  table.aid-table td:first-child, table.aid-table th:first-child{font-family:var(--font-body); color:var(--text); font-weight:600;}
+
+  .risk-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px;}
+  .risk-box{border:1px solid var(--line); border-left:3px solid var(--amber); background:var(--panel2); border-radius:var(--radius); padding:15px 17px;}
+  .risk-box h4{font-family:var(--font-display); font-weight:600; font-size:14px; color:var(--text); margin-bottom:6px;}
+  .risk-box p{font-size:12.5px; color:var(--text-dim);}
+
+  .link-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px;}
+  .link-card{display:flex; flex-direction:column; gap:7px; padding:18px 20px; border:1px solid var(--line); border-radius:var(--radius); background:var(--panel2); text-decoration:none; transition:border-color .15s ease, background .15s ease;}
+  .link-card:hover{border-color:var(--cyan); background:rgba(55,207,255,0.06);}
+  .link-card .lc-kicker{font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:0.06em; color:var(--cyan);}
+  .link-card .lc-name{font-family:var(--font-display); font-weight:600; font-size:15.5px; color:var(--text);}
+  .link-card .lc-desc{font-size:12.5px; color:var(--text-dim);}
+  .link-card .lc-url{font-family:var(--font-mono); font-size:10.5px; color:var(--text-dimmer); word-break:break-all;}
+
   footer{padding:44px 56px; text-align:left; font-family:var(--font-mono); font-size:11px; color:var(--text-dimmer);}
   footer a{color:var(--cyan); text-decoration:none;}
 
@@ -192,6 +220,7 @@
   <nav class="tabbar" id="sidenav">
     <a href="#comparativa" data-sec="comparativa"><span class="tag">00</span>Comparativa</a>
     <a href="#ficha" data-sec="ficha"><span class="tag">01</span>Ficha técnica</a>
+    <a href="#ayudas" data-sec="ayudas"><span class="tag">02</span>Ayudas</a>
   </nav>
   <button class="tabbar-arrow tabbar-arrow-right" id="tabScrollRight" type="button" aria-label="Desplazar pestañas a la derecha">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -340,6 +369,177 @@
         </div>
         <div class="table-actions">
           <button class="btn ghost" id="btnAddRow" type="button">+ Añadir modelo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 AYUDAS -->
+    <section id="ayudas">
+      <header class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="eyebrow">Programa Auto+ · Ministerio de Industria y Turismo</div>
+            <h1>Ayudas a la compra de <em>vehículo eléctrico</em>, explicadas.</h1>
+            <p class="sub">El Programa Auto+ subvenciona la compra de coches, furgonetas, motos y cuadriciclos eléctricos o electrificados con etiqueta CERO, y además existe una deducción aparte en el IRPF gestionada por Hacienda. Aquí tienes qué cubre cada una, cuánto puedes recibir, cómo se piden y qué letra pequeña puede dejarte sin la ayuda — con enlaces directos a las fuentes oficiales.</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="eyebrow kicker">02 · Ayudas</div>
+      <h2>Programa Auto+: la ayuda estatal vigente en 2026.</h2>
+      <p class="lede">Sustituye a los antiguos planes MOVES. Está gestionado directamente por el Ministerio de Industria y Turismo y estará vigente hasta el 31 de diciembre de 2030, con una convocatoria de presupuesto distinta cada año. Esto no es asesoramiento legal ni financiero: antes de comprar o solicitar, confirma los datos en las fuentes oficiales enlazadas al final.</p>
+
+      <div class="card">
+        <div class="aid-block">
+          <h3>Quién puede pedirla y con qué coche</h3>
+          <ul>
+            <li><strong>Línea 1 (particulares):</strong> personas físicas mayores de edad, con residencia legal en España, que no ejerzan actividad económica. Máximo un vehículo subvencionado por beneficiario.</li>
+            <li><strong>Línea 2 (autónomos y empresas):</strong> empresas de cualquier tamaño y personas físicas con actividad económica. Máximo 10 vehículos por empresa o 3 por autónomo/persona física. Quedan excluidos como beneficiarios los concesionarios y puntos de venta de vehículos.</li>
+            <li><strong>Vehículos elegibles:</strong> turismos (M1), furgonetas o camiones ligeros (N1), motocicletas (L3e/L4e/L5e) y cuadriciclos (L6e/L7e), siempre que tengan la <strong>etiqueta CERO</strong> de la DGT: eléctrico puro (BEV o pila de combustible FCEV) o electrificado (híbrido enchufable PHEV o de autonomía extendida EREV).</li>
+            <li><strong>Nuevo o seminuevo:</strong> vale un vehículo nuevo matriculado a tu nombre, o uno seminuevo comprado en un concesionario del propio fabricante cuya primera matriculación tenga menos de 12 meses respecto a la fecha de factura.</li>
+          </ul>
+        </div>
+
+        <div class="aid-block">
+          <h3>Cuánto puedes recibir</h3>
+          <p>Los importes de la tabla son <strong>máximos</strong>. La ayuda real se calcula acumulando tres criterios como porcentaje de ese máximo, así que rara vez se cobra el importe completo.</p>
+          <div class="aid-table-wrap">
+            <table class="aid-table">
+              <thead>
+                <tr>
+                  <th>Tipo de vehículo</th>
+                  <th>Línea 1</th>
+                  <th>Línea 2 · autónomos / microempresa</th>
+                  <th>Línea 2 · otras empresas</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Turismos (M1)</td><td>4.500 €</td><td>6.000 €</td><td>4.500 €</td></tr>
+                <tr><td>Furgonetas (N1)</td><td>5.000 €</td><td>7.500 €</td><td>5.000 €</td></tr>
+                <tr><td>Motos (L3e/L4e/L5e)</td><td>1.100 €</td><td>1.100 €</td><td>1.100 €</td></tr>
+                <tr><td>Cuadriciclos (L6e/L7e)</td><td>1.500 €</td><td>1.500 €</td><td>1.500 €</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li><strong>Criterio eléctrico:</strong> 50% del máximo para eléctricos puros (BEV/FCEV), 25% para electrificados (PHEV/EREV).</li>
+            <li><strong>Criterio económico:</strong> 25% si el precio en factura no supera 35.000 € (turismos) o el límite equivalente de su categoría; 15% si está entre ese umbral y el precio máximo admitido. Límite de precio: 45.000 € para turismos M1 (sin límite en Línea 2 para versiones de 8-9 plazas) y 10.000 € para motos.</li>
+            <li><strong>Criterio europeo:</strong> +15% si el vehículo se monta y termina en una fábrica de la UE; +10% adicional si además la batería cumple los requisitos de origen UE fijados en las bases.</li>
+          </ul>
+          <p class="aid-note">Los vehículos PHEV/EREV no pueden financiarse con cargo al Fondo Social para el Clima: esa vía queda reservada a eléctricos puros (BEV/FCEV) de autónomos y microempresas.</p>
+        </div>
+
+        <div class="aid-block">
+          <h3>Cómo funciona la solicitud</h3>
+          <ul>
+            <li><strong>100% telemática:</strong> se tramita a través del Sistema Telemático de Gestión (STG) en la Sede Electrónica del Ministerio. No se admite papel, disquete, CD ni ningún otro soporte.</li>
+            <li><strong>Necesitas:</strong> certificado electrónico en vigor, la herramienta AutoFirma instalada y, preferiblemente, Google Chrome o Microsoft Edge actualizados.</li>
+            <li><strong>Documentación mínima:</strong> ficha técnica (ITV) definitiva, permiso de circulación definitivo, certificado bancario, factura de compra (o contrato de renting/leasing) y los justificantes que acrediten el pago completo del vehículo — todo en PDF, máximo 10 MB por archivo.</li>
+            <li><strong>Convocatoria 2026 (Línea 1):</strong> del 4 de agosto de 2026 (10:00h) al 31 de diciembre de 2026 (14:00h), con una dotación de 350 millones de euros. Tiene efecto retroactivo: cubre compras realizadas desde el 1 de enero de 2026.</li>
+            <li><strong>En factura:</strong> debe figurar un descuento de al menos 1.000 € vinculado al Programa (idealmente citando "Descuento Programa Auto+"), aunque una disposición transitoria exime de este requisito a los vehículos comprados antes de la apertura del plazo en la convocatoria de 2026.</li>
+          </ul>
+        </div>
+
+        <div class="aid-block">
+          <div class="eyebrow kicker">Otra ayuda distinta, gestionada por Hacienda</div>
+          <h3>Deducción en el IRPF por comprar el vehículo</h3>
+          <p>Además de la ayuda directa del Programa Auto+, existe una <strong>deducción fiscal en la declaración de la Renta</strong> por comprar un eléctrico, gestionada por la Agencia Tributaria y regulada aparte (disposición adicional 58ª de la Ley del IRPF). Es compatible con Auto+, pero no se calcula sobre el mismo dinero.</p>
+          <ul>
+            <li><strong>Cuánto puedes desgravar:</strong> el 15% del valor de adquisición del vehículo (precio más gastos e impuestos: IVA, impuesto de matriculación, etc.), con una base máxima de 20.000 € — hasta <strong>3.000 €</strong> de deducción en tu Renta.</li>
+            <li><strong>Vehículos y precio:</strong> turismos M1, motocicletas L3e/L4e/L5e o cuadriciclos L6e/L7e (no incluye furgonetas N1) matriculados por primera vez en España antes del 31 de diciembre de 2026, con un precio de venta dentro de los mismos límites que usa el Programa Auto+ (45.000 € en turismos, 10.000 € en motos) y que sean modelos subvencionables según esa misma normativa.</li>
+            <li><strong>Solo uso particular:</strong> el vehículo no puede estar afecto a una actividad económica. Si lo afectas más adelante, pierdes la deducción ya practicada.</li>
+            <li><strong>Dos formas de aplicarla:</strong> comprando el vehículo completo entre el 30 de junio de 2023 y el 31 de diciembre de 2026 (se desgrava en el ejercicio en que lo matriculas), o entregando una señal de al menos el 25% del precio en ese mismo plazo (se desgrava en el ejercicio del pago, con plazo hasta el segundo ejercicio siguiente para completar la compra).</li>
+            <li><strong>Un único vehículo por contribuyente</strong>, y siempre para uso propio.</li>
+          </ul>
+        </div>
+
+        <div class="aid-block">
+          <h3>Riesgos y letra pequeña</h3>
+          <p>Antes de contar con el dinero, ten en cuenta lo siguiente — está sacado directamente de las bases y de las preguntas frecuentes oficiales del programa:</p>
+          <div class="risk-grid">
+            <div class="risk-box">
+              <h4>No es un derecho garantizado</h4>
+              <p>Las ayudas se conceden por orden de presentación de solicitudes válidas hasta agotar el presupuesto de la convocatoria, y quedan condicionadas a que exista crédito presupuestario suficiente en el momento de resolver.</p>
+            </div>
+            <div class="risk-box">
+              <h4>Lista de espera sin garantías</h4>
+              <p>Una vez agotado el presupuesto, puedes seguir presentando solicitud, pero entra en una lista de espera por orden de llegada. Estar en esa lista no genera ningún derecho a cobrar.</p>
+            </div>
+            <div class="risk-box">
+              <h4>Documentación provisional no cobra</h4>
+              <p>Puedes solicitar con ficha técnica o permiso de circulación provisionales, pero la ayuda no se abona hasta aportar los documentos definitivos.</p>
+            </div>
+            <div class="risk-box">
+              <h4>No todos los errores se subsanan</h4>
+              <p>Un justificante incompleto se puede corregir. Pero un vehículo sin etiqueta CERO, una factura anterior a la fecha permitida o un pago en efectivo de 1.000 € o más excluyen la solicitud sin posibilidad de arreglo.</p>
+            </div>
+            <div class="risk-box">
+              <h4>La permuta no cuenta como pago</h4>
+              <p>Si entregas tu coche antiguo como parte del pago, ese importe no es justificable: solo cuenta el dinero que realmente pagaste con otros medios.</p>
+            </div>
+            <div class="risk-box">
+              <h4>Compatibilidad limitada</h4>
+              <p>Es compatible con otras ayudas no procedentes de fondos de la UE, siempre que la suma total no supere el 80% del coste subvencionable; en empresas aplican además los límites de las ayudas "de minimis".</p>
+            </div>
+            <div class="risk-box">
+              <h4>Auto+ reduce la base de la deducción del IRPF</h4>
+              <p>Lo que cobres de Auto+ (o de cualquier otra ayuda pública) se resta del valor de adquisición antes de calcular el 15% de la deducción fiscal. Son compatibles entre sí, pero no se aplican dos veces sobre el mismo euro.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="aid-block">
+          <h3>Enlaces oficiales: normativa, solicitud y consultas</h3>
+          <div class="link-grid">
+            <a class="link-card" href="https://www.mintur.gob.es/PortalAyudas/programa-auto/DescripcionGeneral/Paginas/descripcion.aspx" target="_blank" rel="noopener">
+              <span class="lc-kicker">Portal de Ayudas</span>
+              <span class="lc-name">Descripción general del Programa Auto+</span>
+              <span class="lc-desc">Página oficial del Ministerio de Industria y Turismo con beneficiarios, cuantías, normativa y resoluciones.</span>
+              <span class="lc-url">mintur.gob.es/PortalAyudas/programa-auto</span>
+            </a>
+            <a class="link-card" href="https://sede.serviciosmin.gob.es/es-es/procedimientoselectronicos/Paginas/detalle-procedimientos.aspx?IdProcedimiento=308" target="_blank" rel="noopener">
+              <span class="lc-kicker">Solicitud</span>
+              <span class="lc-name">Trámite en la Sede Electrónica</span>
+              <span class="lc-desc">Acceso al procedimiento con certificado electrónico para pedir la ayuda, consultar o subsanar solicitudes.</span>
+              <span class="lc-url">sede.serviciosmin.gob.es</span>
+            </a>
+            <a class="link-card" href="https://www.mintur.gob.es/PortalAyudas/programa-auto/contacto/Paginas/default.aspx" target="_blank" rel="noopener">
+              <span class="lc-kicker">Consultas</span>
+              <span class="lc-name">Contacto oficial del programa</span>
+              <span class="lc-desc">Dudas generales: 91 384 78 75 / programa.auto@mintur.es · Soporte de la plataforma: 91 349 40 05 / oficinavirtual@serviciosmin.gob.es</span>
+              <span class="lc-url">mintur.gob.es/PortalAyudas/programa-auto/contacto</span>
+            </a>
+            <a class="link-card" href="https://www.infosubvenciones.es/bdnstrans/GE/es/convocatoria/922783" target="_blank" rel="noopener">
+              <span class="lc-kicker">BDNS</span>
+              <span class="lc-name">Base de Datos Nacional de Subvenciones</span>
+              <span class="lc-desc">Convocatoria oficial 2026 de la Línea 1 (código de expediente 922783), con el extracto legal completo.</span>
+              <span class="lc-url">infosubvenciones.es · convocatoria 922783</span>
+            </a>
+            <a class="link-card" href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-16010" target="_blank" rel="noopener">
+              <span class="lc-kicker">BOE</span>
+              <span class="lc-name">Real Decreto 609/2026, de 22 de julio</span>
+              <span class="lc-desc">Texto legal completo que regula las bases y condiciones exactas del Programa Auto+.</span>
+              <span class="lc-url">boe.es · BOE-A-2026-16010</span>
+            </a>
+            <a class="link-card" href="https://www.mintur.gob.es/PortalAyudas/programa-auto/Paginas/preguntas-frecuentes.aspx" target="_blank" rel="noopener">
+              <span class="lc-kicker">FAQ</span>
+              <span class="lc-name">Preguntas frecuentes oficiales</span>
+              <span class="lc-desc">Casuística detallada: documentación, pagos, representación, criterio europeo y más.</span>
+              <span class="lc-url">mintur.gob.es/PortalAyudas/programa-auto</span>
+            </a>
+            <a class="link-card" href="https://sede.agenciatributaria.gob.es/Sede/vehiculos-embarcaciones/deduccion-irpf-adquisicion-vehiculos-electricos/deduccion-adquisicion-vehiculos-electricos-enchufables.html" target="_blank" rel="noopener">
+              <span class="lc-kicker">AEAT · Requisitos y cuantía</span>
+              <span class="lc-name">Deducción IRPF por vehículo eléctrico</span>
+              <span class="lc-desc">Página oficial de la Agencia Tributaria: requisitos del vehículo, base máxima y porcentaje de la deducción.</span>
+              <span class="lc-url">sede.agenciatributaria.gob.es</span>
+            </a>
+            <a class="link-card" href="https://sede.agenciatributaria.gob.es/Sede/irpf/campana-renta/deduccion-adquisicion-vehiculos-electricos-instalacion-recarga/deduccion-adquisicion-vehiculos-electricos-enchufables-combustible.html" target="_blank" rel="noopener">
+              <span class="lc-kicker">AEAT · Cómo declararla</span>
+              <span class="lc-name">Cumplimentar la deducción en Renta Web</span>
+              <span class="lc-desc">Guía oficial paso a paso de qué casillas rellenar en la declaración de la Renta.</span>
+              <span class="lc-url">sede.agenciatributaria.gob.es</span>
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -3067,15 +3267,17 @@ const DATA = [
   { marca:'Renault', modelo:'Twingo E-Tech', kw:60, cv:82, kwh:27.5, autonomia:263, precio:19500, url:'https://www.motor16.com/las-ultimas-noticias/renault-twingo-e-tech-electrico-2026-precio/' },
   { marca:'Citroën', modelo:'ë-C3 (44 kWh)', kw:83, cv:113, kwh:44, autonomia:315, precio:19700, url:'https://www.km77.com/coches/citroen/c3/2024/estandar/informacion/citroen-e-c3' },
   { marca:'Dacia', modelo:'Spring', kw:60, cv:82, kwh:27.5, autonomia:250, precio:19890, url:'https://www.somoselectricos.com/coches-electricos/nuevo-dacia-spring-250-km-autonomia-menos-20000-euros/20260908174006062984.html' },
+  { marca:'BYD', modelo:'Dolphin Surf (Active)', kw:65, cv:88, kwh:30, autonomia:220, precio:19990, url:'https://www.byd.com/es-es/coches-electricos/dolphin-surf' },
   { marca:'Geely', modelo:'E2 Pro', kw:85, cv:116, kwh:35, autonomia:288.5, precio:20280, url:'' },
-  { marca:'BYD', modelo:'Dolphin (Comfort)', kw:70, cv:95, kwh:44.9, autonomia:340, precio:23165, url:'https://autonomiacocheselectricos.es/articulos/byd-gama-espana-que-modelo-elegir/' },
   { marca:'Citroën', modelo:'ë-C4X (You)', kw:100, cv:136, kwh:50, autonomia:360, precio:23890, url:'https://www.motor.es/noticias/precio-citroen-c4-x-2025-2024104740.html' },
+  { marca:'BYD', modelo:'Dolphin Surf (Boost)', kw:65, cv:88, kwh:43.2, autonomia:322, precio:23990, url:'https://www.byd.com/es-es/configurador/dolphin-surf' },
   { marca:'Fiat', modelo:'500e (23 kWh)', kw:70, cv:95, kwh:21.3, autonomia:190, precio:24400, url:'https://www.autopista.es/noticias-motor/fiat-500-electrico-precios-autonomia-real-por-sigue-siendo-rey-ciudad-ecn_324912_102.html' },
   { marca:'Renault', modelo:'5 E-Tech (40 kWh)', kw:70, cv:95, kwh:40, autonomia:312, precio:24950, url:'https://prensa.renault.es/renault-5-e-tech-electrico-una-gama-ahora-completa-desde-menos-de-25000-eur/?lang=spa' },
   { marca:'Hyundai', modelo:'Inster', kw:71, cv:97, kwh:42, autonomia:327, precio:24990, url:'https://www.km77.com/coches/hyundai/inster/2025/estandar/datos' },
   { marca:'Kia', modelo:'Niro EV', kw:150, cv:204, kwh:64.8, autonomia:463, precio:25070, url:'https://www.hibridosyelectricos.com/coches/coche-electrico-mas-desconocido-kia-tiene-460-km-autonomia-solo-cuesta-22360-euros_81039_102.html' },
   { marca:'Hyundai', modelo:'Kona Electric', kw:115, cv:156, kwh:48, autonomia:377, precio:25590, url:'https://www.hyundai.com/es/es/modelos/kona-electrico.html' },
   { marca:'Leapmotor', modelo:'B05 (Life)', kw:160, cv:218, kwh:56.2, autonomia:401, precio:26200, url:'https://www.hibridosyelectricos.com/coches/leapmotor-b05-precio-medidas-motor-interior-maletero_88291_102.html' },
+  { marca:'BYD', modelo:'Dolphin Surf (Comfort)', kw:115, cv:156, kwh:43.2, autonomia:310, precio:26490, url:'https://www.byd.com/es-es/configurador/dolphin-surf' },
   { marca:'Opel', modelo:'Corsa Electric', kw:115, cv:156, kwh:51, autonomia:429, precio:27400, url:'https://carnovo.com/es/guias/opel-corsa-electric-2025/' },
   { marca:'BYD', modelo:'Atto 3', kw:150, cv:204, kwh:60.5, autonomia:510, precio:27780, url:'https://www.byd.com/es-es/news-list/el-byd-atto-3-100-electrico-ahora-desde-27-780-con-204-cv-y-hasta-565-km-de-autonomia' },
   { marca:'Mini', modelo:'Cooper Electric E', kw:135, cv:184, kwh:36.6, autonomia:305, precio:28150, url:'https://caetano.es/mini/coches-nuevos/cooper-electrico/' },
@@ -3083,10 +3285,12 @@ const DATA = [
   { marca:'MG', modelo:'S5 EV', kw:125, cv:170, kwh:49, autonomia:340, precio:28990, url:'https://movilidadelectrica.com/precios-autonomias-mg-electricos/' },
   { marca:'Leapmotor', modelo:'B10', kw:160, cv:218, kwh:56.2, autonomia:361, precio:29900, url:'https://www.carwow.es/editorial/consejos-para-elegir-coche/comparativas-coches/leapmotor-b05-b10-c10' },
   { marca:'BYD', modelo:'Seal U', kw:160, cv:218, kwh:71.8, autonomia:420, precio:29900, url:'https://www.autopista.es/noticias-motor/byd-seal-u-precios-autonomia-real-opinion-experta-comprar-suv-gran-exito-ecn_328821_102.html' },
+  { marca:'BYD', modelo:'Atto 2 (Active)', kw:130, cv:177, kwh:45.1, autonomia:312, precio:29990, url:'https://www.byd.com/es-es/configurador/atto-2' },
   { marca:'Ford', modelo:'Puma Gen-E', kw:124, cv:168, kwh:46.8, autonomia:417, precio:30584, url:'https://es.motor1.com/news/788928/comprar-suv-urbano-barato-precio-ford-puma-electrico/' },
   { marca:'Skoda', modelo:'Enyaq 60', kw:150, cv:204, kwh:59, autonomia:437, precio:31400, url:'https://www.hibridosyelectricos.com/coches/precios-skoda-enyaq-2025_78040_102.html' },
   { marca:'Renault', modelo:'5 E-Tech (150cv)', kw:110, cv:150, kwh:52, autonomia:412, precio:31632, url:'https://prensa.renault.es/renault-5-e-tech-electrico-una-gama-ahora-completa-desde-menos-de-25000-eur/?lang=spa' },
   { marca:'MG', modelo:'4 Standard', kw:125, cv:170, kwh:49, autonomia:350, precio:31690, url:'https://movilidadelectrica.com/precios-autonomias-mg-electricos/' },
+  { marca:'BYD', modelo:'Atto 2 (Boost)', kw:130, cv:177, kwh:45.1, autonomia:312, precio:31990, url:'https://www.byd.com/es-es/configurador/atto-2' },
   { marca:'Kia', modelo:'EV3 (Air Standard Range)', kw:150, cv:204, kwh:58, autonomia:436, precio:32149, url:'https://www.modrive.com/noticias/coches/marca/blog-kia/kia-ev3-precio-autonomia-caracteristicas/' },
   { marca:'Geely', modelo:'Galaxy E5 (Base)', kw:150, cv:204, kwh:60.2, autonomia:440, precio:32500, url:'' },
   { marca:'Opel', modelo:'Mokka Electric', kw:115, cv:156, kwh:54, autonomia:406, precio:32500, url:'https://movilidadelectrica.com/coches-electricos-opel-2026/' },
@@ -3103,6 +3307,7 @@ const DATA = [
   { marca:'MG', modelo:'4 Long Range', kw:125, cv:170, kwh:77, autonomia:530, precio:35800, url:'https://movilidadelectrica.com/precios-autonomias-mg-electricos/' },
   { marca:'Fiat', modelo:'600e', kw:114, cv:156, kwh:54, autonomia:409, precio:35950, url:'https://www.somoselectricos.com/coches-electricos/fiat-600e-prestaciones-precio/20230711115000046747.html' },
   { marca:'Leapmotor', modelo:'C10', kw:160, cv:218, kwh:69.9, autonomia:420, precio:36000, url:'https://www.motor.es/noticias/leapmotor-precios-espana-t03-b05-b10-c10-ofertas-mayo-2026-2026114256.html' },
+  { marca:'BYD', modelo:'Atto 2 (Comfort)', kw:150, cv:204, kwh:64.8, autonomia:430, precio:36200, url:'https://www.byd.com/es-es/configurador/atto-2' },
   { marca:'Opel', modelo:'Astra Electric', kw:115, cv:156, kwh:54, autonomia:454, precio:36499, url:'https://movilidadelectrica.com/opel-astra-electric-autonomia-versiones-precio/' },
   { marca:'Nissan', modelo:'Leaf (52 kWh)', kw:130, cv:177, kwh:52, autonomia:375, precio:36695, url:'https://somoselectricos.com/nuevo-nissan-leaf-crossover-electrico-precio-autonomia/' },
   { marca:'Honda', modelo:'e:Ny1 Elegance', kw:150, cv:204, kwh:61.9, autonomia:412, precio:37200, url:'https://www.hibridosyelectricos.com/coches/gran-rebaja-en-honda-este-suv-electrico-japones-ahora-es-11000-euros-mas-barato-ofrece-218-cv-amplio-equipamiento-serie_79746_102.html' },
