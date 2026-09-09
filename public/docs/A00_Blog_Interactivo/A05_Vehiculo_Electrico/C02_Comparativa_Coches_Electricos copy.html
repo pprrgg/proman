@@ -107,19 +107,6 @@
     .price-range-input::-moz-range-thumb{width:22px; height:22px;}
   }
 
-  .brand-filter{margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--line-soft);}
-  .brand-filter-head{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px 14px; margin-bottom:10px;}
-  .brand-filter-head label{font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em;}
-  .brand-filter-actions{display:flex; gap:14px;}
-  .link-action{background:none; border:none; padding:0; font-family:var(--font-mono); font-size:11px; color:var(--cyan); cursor:pointer; text-decoration:underline; text-underline-offset:2px;}
-  .link-action:hover{color:#7fe1ff;}
-  .brand-chips{display:flex; flex-wrap:wrap; gap:7px;}
-  .brand-chip{display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11.5px; padding:6px 11px; border-radius:20px; border:1px solid var(--line); background:var(--panel2); color:var(--text-dimmer); cursor:pointer; transition:all .15s ease;}
-  .brand-chip:hover{border-color:var(--text-dim); color:var(--text-dim);}
-  .brand-chip .chip-count{opacity:0.7;}
-  .brand-chip.active{border-color:var(--cyan); color:var(--text); background:rgba(55,207,255,0.1);}
-  .brand-chip.active .chip-count{opacity:1; color:var(--cyan);}
-
   .chart-hint{font-size:12px; color:var(--text-dimmer); margin-bottom:10px;}
 
   .chart-wrap{position:relative; margin-top:4px;}
@@ -254,17 +241,6 @@
           </div>
         </div>
 
-        <div class="brand-filter">
-          <div class="brand-filter-head">
-            <label>Filtrar por marca</label>
-            <span class="brand-filter-actions">
-              <button type="button" id="btnBrandsAll" class="link-action">Todas</button>
-              <button type="button" id="btnBrandsNone" class="link-action">Ninguna</button>
-            </span>
-          </div>
-          <div class="brand-chips" id="brandChips"></div>
-        </div>
-
         <p class="chart-hint">Arrastra sobre el gráfico para hacer zoom a una zona · doble clic o "Restablecer zoom" para deshacerlo.</p>
 
         <div class="chart-wrap" id="chartWrap">
@@ -302,7 +278,6 @@
           <table class="data-table" id="fichaTable">
             <thead>
               <tr>
-                <th>Marca</th>
                 <th>Modelo</th>
                 <th>Potencia (kW)</th>
                 <th>Potencia (CV)</th>
@@ -3041,97 +3016,97 @@ activarSeccion(location.hash.replace('#','') || SECCION_POR_DEFECTO);
 // en esta ampliación: proceden del dataset original (py/coches_benchmarking.py).
 // Precios PVP aproximados de lanzamiento en España, versión de acceso, sin ayudas Moves.
 const DATA = [
-  { marca:'Leapmotor', modelo:'T03', kw:70, cv:95, kwh:37.3, autonomia:265, precio:17900, url:'https://www.motor.es/noticias/leapmotor-precios-espana-t03-b05-b10-c10-ofertas-mayo-2026-2026114256.html' },
-  { marca:'Renault', modelo:'Twingo E-Tech', kw:60, cv:82, kwh:27.5, autonomia:263, precio:19500, url:'https://www.motor16.com/las-ultimas-noticias/renault-twingo-e-tech-electrico-2026-precio/' },
-  { marca:'Citroën', modelo:'ë-C3 (44 kWh)', kw:83, cv:113, kwh:44, autonomia:315, precio:19700, url:'https://www.km77.com/coches/citroen/c3/2024/estandar/informacion/citroen-e-c3' },
-  { marca:'Dacia', modelo:'Spring', kw:60, cv:82, kwh:27.5, autonomia:250, precio:19890, url:'https://www.somoselectricos.com/coches-electricos/nuevo-dacia-spring-250-km-autonomia-menos-20000-euros/20260908174006062984.html' },
-  { marca:'Geely', modelo:'E2 Pro', kw:85, cv:116, kwh:35, autonomia:288.5, precio:20280, url:'' },
-  { marca:'BYD', modelo:'Dolphin (Comfort)', kw:70, cv:95, kwh:44.9, autonomia:340, precio:23165, url:'https://autonomiacocheselectricos.es/articulos/byd-gama-espana-que-modelo-elegir/' },
-  { marca:'Citroën', modelo:'ë-C4X (You)', kw:100, cv:136, kwh:50, autonomia:360, precio:23890, url:'https://www.motor.es/noticias/precio-citroen-c4-x-2025-2024104740.html' },
-  { marca:'Fiat', modelo:'500e (23 kWh)', kw:70, cv:95, kwh:21.3, autonomia:190, precio:24400, url:'https://www.autopista.es/noticias-motor/fiat-500-electrico-precios-autonomia-real-por-sigue-siendo-rey-ciudad-ecn_324912_102.html' },
-  { marca:'Renault', modelo:'5 E-Tech (40 kWh)', kw:70, cv:95, kwh:40, autonomia:312, precio:24950, url:'https://prensa.renault.es/renault-5-e-tech-electrico-una-gama-ahora-completa-desde-menos-de-25000-eur/?lang=spa' },
-  { marca:'Hyundai', modelo:'Inster', kw:71, cv:97, kwh:42, autonomia:327, precio:24990, url:'https://www.km77.com/coches/hyundai/inster/2025/estandar/datos' },
-  { marca:'Kia', modelo:'Niro EV', kw:150, cv:204, kwh:64.8, autonomia:463, precio:25070, url:'https://www.hibridosyelectricos.com/coches/coche-electrico-mas-desconocido-kia-tiene-460-km-autonomia-solo-cuesta-22360-euros_81039_102.html' },
-  { marca:'Hyundai', modelo:'Kona Electric', kw:115, cv:156, kwh:48, autonomia:377, precio:25590, url:'https://www.hyundai.com/es/es/modelos/kona-electrico.html' },
-  { marca:'Leapmotor', modelo:'B05 (Life)', kw:160, cv:218, kwh:56.2, autonomia:401, precio:26200, url:'https://www.hibridosyelectricos.com/coches/leapmotor-b05-precio-medidas-motor-interior-maletero_88291_102.html' },
-  { marca:'Opel', modelo:'Corsa Electric', kw:115, cv:156, kwh:51, autonomia:429, precio:27400, url:'https://carnovo.com/es/guias/opel-corsa-electric-2025/' },
-  { marca:'BYD', modelo:'Atto 3', kw:150, cv:204, kwh:60.5, autonomia:510, precio:27780, url:'https://www.byd.com/es-es/news-list/el-byd-atto-3-100-electrico-ahora-desde-27-780-con-204-cv-y-hasta-565-km-de-autonomia' },
-  { marca:'Mini', modelo:'Cooper Electric E', kw:135, cv:184, kwh:36.6, autonomia:305, precio:28150, url:'https://caetano.es/mini/coches-nuevos/cooper-electrico/' },
-  { marca:'Peugeot', modelo:'e-208', kw:115, cv:156, kwh:51, autonomia:433, precio:28700, url:'https://forococheselectricos.com/2025/04/renovado-peugeot-e-208-433-km-autonomia-precio.html' },
-  { marca:'MG', modelo:'S5 EV', kw:125, cv:170, kwh:49, autonomia:340, precio:28990, url:'https://movilidadelectrica.com/precios-autonomias-mg-electricos/' },
-  { marca:'Leapmotor', modelo:'B10', kw:160, cv:218, kwh:56.2, autonomia:361, precio:29900, url:'https://www.carwow.es/editorial/consejos-para-elegir-coche/comparativas-coches/leapmotor-b05-b10-c10' },
-  { marca:'BYD', modelo:'Seal U', kw:160, cv:218, kwh:71.8, autonomia:420, precio:29900, url:'https://www.autopista.es/noticias-motor/byd-seal-u-precios-autonomia-real-opinion-experta-comprar-suv-gran-exito-ecn_328821_102.html' },
-  { marca:'Ford', modelo:'Puma Gen-E', kw:124, cv:168, kwh:46.8, autonomia:417, precio:30584, url:'https://es.motor1.com/news/788928/comprar-suv-urbano-barato-precio-ford-puma-electrico/' },
-  { marca:'Skoda', modelo:'Enyaq 60', kw:150, cv:204, kwh:59, autonomia:437, precio:31400, url:'https://www.hibridosyelectricos.com/coches/precios-skoda-enyaq-2025_78040_102.html' },
-  { marca:'Renault', modelo:'5 E-Tech (150cv)', kw:110, cv:150, kwh:52, autonomia:412, precio:31632, url:'https://prensa.renault.es/renault-5-e-tech-electrico-una-gama-ahora-completa-desde-menos-de-25000-eur/?lang=spa' },
-  { marca:'MG', modelo:'4 Standard', kw:125, cv:170, kwh:49, autonomia:350, precio:31690, url:'https://movilidadelectrica.com/precios-autonomias-mg-electricos/' },
-  { marca:'Kia', modelo:'EV3 (Air Standard Range)', kw:150, cv:204, kwh:58, autonomia:436, precio:32149, url:'https://www.modrive.com/noticias/coches/marca/blog-kia/kia-ev3-precio-autonomia-caracteristicas/' },
-  { marca:'Geely', modelo:'Galaxy E5 (Base)', kw:150, cv:204, kwh:60.2, autonomia:440, precio:32500, url:'' },
-  { marca:'Opel', modelo:'Mokka Electric', kw:115, cv:156, kwh:54, autonomia:406, precio:32500, url:'https://movilidadelectrica.com/coches-electricos-opel-2026/' },
-  { marca:'Citroën', modelo:'ë-C4', kw:115, cv:156, kwh:54, autonomia:420, precio:32690, url:'https://www.hibridosyelectricos.com/coches/precios-citroen-c4-e-c4-2025-espana_76520_102.html' },
-  { marca:'BYD', modelo:'Seal (RWD)', kw:230, cv:313, kwh:82.5, autonomia:570, precio:33455, url:'https://caetano.es/byd/coches-nuevos/seal/' },
-  { marca:'Hyundai', modelo:'Ioniq 6 (63 kWh)', kw:111, cv:151, kwh:63, autonomia:430, precio:34430, url:'https://www.motorpasion.com/compra-coches/hyundai-ioniq-6-2026-precio-espana' },
-  { marca:'KGM', modelo:'Torres EVX', kw:152, cv:207, kwh:80.6, autonomia:500, precio:34500, url:'https://www.cochesyconcesionarios.com/novedades/novedades/05-2025-54716.html' },
-  { marca:'Tesla', modelo:'Model 3 (RWD)', kw:208, cv:283, kwh:60, autonomia:534, precio:34575, url:'https://autonomiacocheselectricos.es/tesla/model-3/' },
-  { marca:'Peugeot', modelo:'e-2008', kw:115, cv:156, kwh:51, autonomia:406, precio:34700, url:'https://www.hibridosyelectricos.com/coches/peugeot-e-2008-2024-electrico-precio-medidas-motor-interior-maletero_78989_102.html' },
-  { marca:'Alfa Romeo', modelo:'Junior Elettrica', kw:115, cv:156, kwh:54, autonomia:410, precio:34990, url:'https://www.km77.com/coches/alfa-romeo/junior/2025/estandar/electrico/datos' },
-  { marca:'Skoda', modelo:'Elroq 50', kw:125, cv:170, kwh:52, autonomia:376, precio:35215, url:'https://es.motor1.com/news/750609/skoda-elroq-precios-equipamientos-motores/' },
-  { marca:'Renault', modelo:'Megane E-Tech', kw:162, cv:220, kwh:60, autonomia:468, precio:35251, url:'https://www.coches.com/noticias/renault-megane-e-tech-2025' },
-  { marca:'Volvo', modelo:'EX30', kw:200, cv:272, kwh:51, autonomia:344, precio:35412, url:'https://www.carwow.es/volvo/ex30' },
-  { marca:'MG', modelo:'4 Long Range', kw:125, cv:170, kwh:77, autonomia:530, precio:35800, url:'https://movilidadelectrica.com/precios-autonomias-mg-electricos/' },
-  { marca:'Fiat', modelo:'600e', kw:114, cv:156, kwh:54, autonomia:409, precio:35950, url:'https://www.somoselectricos.com/coches-electricos/fiat-600e-prestaciones-precio/20230711115000046747.html' },
-  { marca:'Leapmotor', modelo:'C10', kw:160, cv:218, kwh:69.9, autonomia:420, precio:36000, url:'https://www.motor.es/noticias/leapmotor-precios-espana-t03-b05-b10-c10-ofertas-mayo-2026-2026114256.html' },
-  { marca:'Opel', modelo:'Astra Electric', kw:115, cv:156, kwh:54, autonomia:454, precio:36499, url:'https://movilidadelectrica.com/opel-astra-electric-autonomia-versiones-precio/' },
-  { marca:'Nissan', modelo:'Leaf (52 kWh)', kw:130, cv:177, kwh:52, autonomia:375, precio:36695, url:'https://somoselectricos.com/nuevo-nissan-leaf-crossover-electrico-precio-autonomia/' },
-  { marca:'Honda', modelo:'e:Ny1 Elegance', kw:150, cv:204, kwh:61.9, autonomia:412, precio:37200, url:'https://www.hibridosyelectricos.com/coches/gran-rebaja-en-honda-este-suv-electrico-japones-ahora-es-11000-euros-mas-barato-ofrece-218-cv-amplio-equipamiento-serie_79746_102.html' },
-  { marca:'Mini', modelo:'Aceman E', kw:135, cv:184, kwh:42.5, autonomia:310, precio:37250, url:'https://soymotor.com/coches/mini/mini-aceman' },
-  { marca:'Geely', modelo:'E5 PRO', kw:160, cv:218, kwh:68.2, autonomia:475, precio:37490, url:'' },
-  { marca:'Mini', modelo:'Countryman Electric E', kw:150, cv:204, kwh:66.5, autonomia:462, precio:37820, url:'https://www.hibridosyelectricos.com/coches/mini-countryman-ev-precio-medidas-motor-interior-maletero_80237_102.html' },
-  { marca:'smart', modelo:'#1 Pro', kw:150, cv:204, kwh:47, autonomia:310, precio:37900, url:'https://es.motor1.com/news/755348/smart1-2025-precio-motores-potencia/' },
-  { marca:'Volkswagen', modelo:'ID.3 Pro', kw:150, cv:204, kwh:59, autonomia:434, precio:37990, url:'https://www.mcondevolkswagen.com/volkswagen-id3' },
-  { marca:'Jeep', modelo:'Avenger Electric', kw:115, cv:156, kwh:54, autonomia:400, precio:38000, url:'https://www.hibridosyelectricos.com/coches/este-suv-pequeno-es-superventas-su-marca-tiene-version-electrica-tiene-capacidad-off-road-notable_82484_102.html' },
-  { marca:'Cupra', modelo:'Born', kw:150, cv:204, kwh:59, autonomia:426, precio:38040, url:'https://www.autonocion.com/coches-nuevos/cupra/born/' },
-  { marca:'DS', modelo:'3 E-Tense', kw:115, cv:156, kwh:54, autonomia:402, precio:38300, url:'https://www.hibridosyelectricos.com/coches/ds3-crossback-tense-suv-electrico-320-kilometros-autonomia-costara-38300_30989_102.html' },
-  { marca:'Skoda', modelo:'Elroq 60', kw:150, cv:204, kwh:59, autonomia:429, precio:38390, url:'https://es.motor1.com/news/750609/skoda-elroq-precios-equipamientos-motores/' },
-  { marca:'Audi', modelo:'Q4 40 e-tron', kw:150, cv:204, kwh:63, autonomia:410, precio:39356, url:'https://www.lugenergy.com/audi-q4-e-tron-precio-versiones-caracteristicas/' },
-  { marca:'Opel', modelo:'Grandland Electric', kw:157, cv:213, kwh:73, autonomia:524, precio:39400, url:'https://movilidadelectrica.com/coches-electricos-opel-2026/' },
-  { marca:'smart', modelo:'#3 Pro', kw:200, cv:272, kwh:47, autonomia:325, precio:39400, url:'https://www.hibridosyelectricos.com/coches/precio-smart-3-electrico_72064_102.html' },
-  { marca:'Toyota', modelo:'bZ4X Advance', kw:167, cv:227, kwh:73, autonomia:569, precio:39500, url:'https://prensa.toyota.es/nueva-gama-toyota-bz4x-2025--desde-34500--mayor-autonomia-y-tiempo-de-carga-mas-rapido/' },
-  { marca:'Volkswagen', modelo:'ID.4 Pro', kw:210, cv:286, kwh:77, autonomia:550, precio:40820, url:'https://autonomiacocheselectricos.es/volkswagen/id4/' },
-  { marca:'Alfa Romeo', modelo:'Junior Veloce', kw:176, cv:240, kwh:54, autonomia:322, precio:41500, url:'https://www.km77.com/coches/alfa-romeo/junior/2025/estandar/electrico/datos' },
-  { marca:'Renault', modelo:'Scenic E-Tech', kw:162, cv:220, kwh:87, autonomia:625, precio:41837, url:'https://www.renault.es/electricos/scenic.html' },
-  { marca:'Tesla', modelo:'Model Y (RWD)', kw:220, cv:299, kwh:60, autonomia:534, precio:41970, url:'https://autonomiacocheselectricos.es/tesla/model-y/' },
-  { marca:'Kia', modelo:'EV6 (RWD GT-Line)', kw:168, cv:228, kwh:63, autonomia:513, precio:42790, url:'https://autonomiacocheselectricos.es/articulos/gama-electrica-kia-espana-2026-ficha-tecnica/' },
-  { marca:'Ford', modelo:'Explorer (Extended Range RWD)', kw:210, cv:286, kwh:77, autonomia:602, precio:42800, url:'https://www.motor.es/noticias/precio-ford-explorer-ev-2026-2026112405.html' },
-  { marca:'Skoda', modelo:'Enyaq 85', kw:210, cv:286, kwh:77, autonomia:586, precio:44000, url:'https://www.hibridosyelectricos.com/coches/precios-skoda-enyaq-2025_78040_102.html' },
-  { marca:'Cupra', modelo:'Tavascan Endurance', kw:210, cv:286, kwh:77, autonomia:568, precio:44500, url:'https://www.autoronda.es/cupra-tavascan-2025-fecha-de-lanzamiento-precio-y-caracteristicas/' },
-  { marca:'Hyundai', modelo:'Ioniq 5', kw:125, cv:170, kwh:63, autonomia:450, precio:44670, url:'https://www.hyundai.com/es/es/modelos/ioniq5.html' },
-  { marca:'Volvo', modelo:'EX40 Single Motor', kw:175, cv:238, kwh:69, autonomia:479, precio:46600, url:'https://www.motor.es/noticias/precio-volvo-ex40-2025-2025107083.html' },
-  { marca:'Xpeng', modelo:'G6 RWD', kw:218, cv:296, kwh:68.8, autonomia:435, precio:47990, url:'https://www.motor.es/noticias/precio-xpeng-g6-g9-2026-2025110181.html' },
-  { marca:'Peugeot', modelo:'e-3008', kw:157, cv:213, kwh:73, autonomia:525, precio:48160, url:'https://www.hibridosyelectricos.com/coches/hasta-320-cv-700-km-autonomia-peugeot-e-3008-se-renueva-dar-guerra-entre-suv-electricos_79463_102.html' },
-  { marca:'Polestar', modelo:'2', kw:170, cv:231, kwh:69, autonomia:516, precio:48200, url:'https://www.motor.es/polestar/2/' },
-  { marca:'Mercedes', modelo:'EQA 250+', kw:140, cv:190, kwh:70.5, autonomia:559, precio:49790, url:'https://www.motor.es/noticias/mercedes-eqa-eqb-2025-novedades-2024103390.html' },
-  { marca:'BMW', modelo:'iX1 eDrive20', kw:150, cv:204, kwh:64.8, autonomia:514, precio:49800, url:'https://www.autoronda.es/bmw-ix1-e-ix2-2026-mas-autonomia-carburo-de-silicio-y-precios-desde-49-800-euros-en-espana/' },
-  { marca:'Audi', modelo:'Q4 45 e-tron', kw:210, cv:286, kwh:77, autonomia:548, precio:50600, url:'https://www.lugenergy.com/audi-q4-e-tron-precio-versiones-caracteristicas/' },
-  { marca:'Peugeot', modelo:'e-5008', kw:169, cv:230, kwh:73, autonomia:504, precio:51660, url:'https://www.peugeot.es/gama/peugeot-5008/electrico.html' },
-  { marca:'Lexus', modelo:'RZ 350e', kw:165, cv:224, kwh:77, autonomia:568, precio:52000, url:'https://www.motor.es/noticias/precio-lexus-rz-2026-2025110139.html' },
-  { marca:'Volkswagen', modelo:'ID.Buzz Pro', kw:210, cv:286, kwh:79, autonomia:454, precio:52245, url:'https://autonomiacocheselectricos.es/volkswagen/id-buzz/' },
-  { marca:'Volkswagen', modelo:'ID.7 Pro', kw:210, cv:286, kwh:77, autonomia:615, precio:52652, url:'https://www.diariomotor.com/noticia/volkswagen-id-7-precio-espana/' },
-  { marca:'DS', modelo:'N°8', kw:170, cv:230, kwh:74, autonomia:425, precio:54189, url:'https://www.motor.es/noticias/precio-ds-n8-2025106568.html' },
-  { marca:'BMW', modelo:'iX2 eDrive20', kw:150, cv:204, kwh:64.8, autonomia:510, precio:56026, url:'https://www.motor.es/noticias/bmw-ix1-ix2-mejora-autonomia-2026112331.html' },
-  { marca:'BMW', modelo:'i4 eDrive35', kw:210, cv:286, kwh:67, autonomia:514, precio:58650, url:'https://www.hibridosyelectricos.com/coches/bmw-i4-electrico-mas-asequible-precio-espana_65532_102.html' },
-  { marca:'Nissan', modelo:'Ariya (4x2)', kw:178, cv:242, kwh:87, autonomia:525, precio:59350, url:'https://www.motor.es/noticias/precio-nissan-ariya-2027-2026115293.html' },
-  { marca:'Mercedes', modelo:'EQB 250+', kw:140, cv:190, kwh:66.5, autonomia:532, precio:61717, url:'https://www.motor.es/noticias/mercedes-eqa-eqb-2025-novedades-2024103390.html' },
-  { marca:'Xpeng', modelo:'G9 RWD', kw:230, cv:313, kwh:93.1, autonomia:570, precio:62990, url:'https://www.motor.es/noticias/precio-xpeng-g6-g9-2026-2025110181.html' },
-  { marca:'Polestar', modelo:'4 (Long Range Single Motor)', kw:200, cv:272, kwh:100, autonomia:620, precio:65900, url:'https://forococheselectricos.com/noticias/620-km-autonomia-polestar-4-baja-16000-euros-precio-espana-20251229-39378.html' },
-  { marca:'BMW', modelo:'i5 eDrive40', kw:250, cv:340, kwh:84.4, autonomia:582, precio:66984, url:'https://autonomiacocheselectricos.es/bmw/i5-berlina/edrive40/' },
-  { marca:'Maxus', modelo:'MIFA 9', kw:183, cv:248, kwh:90, autonomia:520, precio:69900, url:'https://www.motor.es/noticias/precio-maxus-mifa-9-202394959.html' },
-  { marca:'Audi', modelo:'Q6 e-tron', kw:210, cv:286, kwh:75.8, autonomia:526, precio:71710, url:'https://www.autopista.es/novedades-coches/audi-q6-e-tron-suv-definitivo-precio-autonomia-record-equipamiento-premium-en-espana-ecn_329657_102.html' },
-  { marca:'Mercedes', modelo:'EQE 300', kw:180, cv:245, kwh:89, autonomia:545, precio:72790, url:'https://www.hibridosyelectricos.com/coches/precio-mercedes-eqe-electrico-espa-c3-b1a_56596_102.html' },
-  { marca:'Kia', modelo:'EV9 GT-Line', kw:283, cv:384, kwh:99.8, autonomia:505, precio:74340, url:'https://es.motor1.com/news/739716/kia-ev9-2025-precio-basico/' },
-  { marca:'Volvo', modelo:'EX90 (Single Motor)', kw:300, cv:408, kwh:88, autonomia:572, precio:83926, url:'https://movilidadelectrica.com/volvo-ex90-medidas-potencia-autonomia-precios/' },
-  { marca:'BMW', modelo:'iX xDrive50', kw:230, cv:313, kwh:108, autonomia:600, precio:88700, url:'https://movilidadelectrica.com/precios-nuevo-bmw-ix-2025/' },
-  { marca:'Polestar', modelo:'3', kw:360, cv:489, kwh:107, autonomia:610, precio:93600, url:'https://autonomiacocheselectricos.es/polestar/3/' }
+  { modelo:'Leapmotor T03', kw:70, cv:95, kwh:37.3, autonomia:265, precio:17900, url:'https://www.motor.es/noticias/leapmotor-precios-espana-t03-b05-b10-c10-ofertas-mayo-2026-2026114256.html' },
+  { modelo:'Renault Twingo E-Tech', kw:60, cv:82, kwh:27.5, autonomia:263, precio:19500, url:'https://www.motor16.com/las-ultimas-noticias/renault-twingo-e-tech-electrico-2026-precio/' },
+  { modelo:'Citroën ë-C3 (44 kWh)', kw:83, cv:113, kwh:44, autonomia:315, precio:19700, url:'https://www.km77.com/coches/citroen/c3/2024/estandar/informacion/citroen-e-c3' },
+  { modelo:'Dacia Spring', kw:60, cv:82, kwh:27.5, autonomia:250, precio:19890, url:'https://www.somoselectricos.com/coches-electricos/nuevo-dacia-spring-250-km-autonomia-menos-20000-euros/20260908174006062984.html' },
+  { modelo:'Geely E2 Pro', kw:85, cv:116, kwh:35.0, autonomia:288.5, precio:20280, url:'' },
+  { modelo:'BYD Dolphin (Comfort)', kw:70, cv:95, kwh:44.9, autonomia:340, precio:23165, url:'https://autonomiacocheselectricos.es/articulos/byd-gama-espana-que-modelo-elegir/' },
+  { modelo:'Citroën ë-C4X (You)', kw:100, cv:136, kwh:50, autonomia:360, precio:23890, url:'https://www.motor.es/noticias/precio-citroen-c4-x-2025-2024104740.html' },
+  { modelo:'Fiat 500e (23 kWh)', kw:70, cv:95, kwh:21.3, autonomia:190, precio:24400, url:'https://www.autopista.es/noticias-motor/fiat-500-electrico-precios-autonomia-real-por-sigue-siendo-rey-ciudad-ecn_324912_102.html' },
+  { modelo:'Renault 5 E-Tech (40 kWh)', kw:70, cv:95, kwh:40, autonomia:312, precio:24950, url:'https://prensa.renault.es/renault-5-e-tech-electrico-una-gama-ahora-completa-desde-menos-de-25000-eur/?lang=spa' },
+  { modelo:'Hyundai Inster', kw:71, cv:97, kwh:42, autonomia:327, precio:24990, url:'https://www.km77.com/coches/hyundai/inster/2025/estandar/datos' },
+  { modelo:'Kia Niro EV', kw:150, cv:204, kwh:64.8, autonomia:463, precio:25070, url:'https://www.hibridosyelectricos.com/coches/coche-electrico-mas-desconocido-kia-tiene-460-km-autonomia-solo-cuesta-22360-euros_81039_102.html' },
+  { modelo:'Hyundai Kona Electric', kw:115, cv:156, kwh:48, autonomia:377, precio:25590, url:'https://www.hyundai.com/es/es/modelos/kona-electrico.html' },
+  { modelo:'Leapmotor B05 (Life)', kw:160, cv:218, kwh:56.2, autonomia:401, precio:26200, url:'https://www.hibridosyelectricos.com/coches/leapmotor-b05-precio-medidas-motor-interior-maletero_88291_102.html' },
+  { modelo:'Opel Corsa Electric', kw:115, cv:156, kwh:51, autonomia:429, precio:27400, url:'https://carnovo.com/es/guias/opel-corsa-electric-2025/' },
+  { modelo:'BYD Atto 3', kw:150, cv:204, kwh:60.5, autonomia:510, precio:27780, url:'https://www.byd.com/es-es/news-list/el-byd-atto-3-100-electrico-ahora-desde-27-780-con-204-cv-y-hasta-565-km-de-autonomia' },
+  { modelo:'Mini Cooper Electric E', kw:135, cv:184, kwh:36.6, autonomia:305, precio:28150, url:'https://caetano.es/mini/coches-nuevos/cooper-electrico/' },
+  { modelo:'Peugeot e-208', kw:115, cv:156, kwh:51, autonomia:433, precio:28700, url:'https://forococheselectricos.com/2025/04/renovado-peugeot-e-208-433-km-autonomia-precio.html' },
+  { modelo:'MG S5 EV', kw:125, cv:170, kwh:49, autonomia:340, precio:28990, url:'https://movilidadelectrica.com/precios-autonomias-mg-electricos/' },
+  { modelo:'Leapmotor B10', kw:160, cv:218, kwh:56.2, autonomia:361, precio:29900, url:'https://www.carwow.es/editorial/consejos-para-elegir-coche/comparativas-coches/leapmotor-b05-b10-c10' },
+  { modelo:'BYD Seal U', kw:160, cv:218, kwh:71.8, autonomia:420, precio:29900, url:'https://www.autopista.es/noticias-motor/byd-seal-u-precios-autonomia-real-opinion-experta-comprar-suv-gran-exito-ecn_328821_102.html' },
+  { modelo:'Ford Puma Gen-E', kw:124, cv:168, kwh:46.8, autonomia:417, precio:30584, url:'https://es.motor1.com/news/788928/comprar-suv-urbano-barato-precio-ford-puma-electrico/' },
+  { modelo:'Skoda Enyaq 60', kw:150, cv:204, kwh:59, autonomia:437, precio:31400, url:'https://www.hibridosyelectricos.com/coches/precios-skoda-enyaq-2025_78040_102.html' },
+  { modelo:'Renault 5 E-Tech (150cv)', kw:110, cv:150, kwh:52, autonomia:412, precio:31632, url:'https://prensa.renault.es/renault-5-e-tech-electrico-una-gama-ahora-completa-desde-menos-de-25000-eur/?lang=spa' },
+  { modelo:'MG4 Standard', kw:125, cv:170, kwh:49, autonomia:350, precio:31690, url:'https://movilidadelectrica.com/precios-autonomias-mg-electricos/' },
+  { modelo:'Kia EV3 (Air Standard Range)', kw:150, cv:204, kwh:58, autonomia:436, precio:32149, url:'https://www.modrive.com/noticias/coches/marca/blog-kia/kia-ev3-precio-autonomia-caracteristicas/' },
+  { modelo:'Geely Galaxy E5 (Base)', kw:150, cv:204, kwh:60.2, autonomia:440, precio:32500, url:'' },
+  { modelo:'Opel Mokka Electric', kw:115, cv:156, kwh:54, autonomia:406, precio:32500, url:'https://movilidadelectrica.com/coches-electricos-opel-2026/' },
+  { modelo:'Citroën ë-C4', kw:115, cv:156, kwh:54, autonomia:420, precio:32690, url:'https://www.hibridosyelectricos.com/coches/precios-citroen-c4-e-c4-2025-espana_76520_102.html' },
+  { modelo:'BYD Seal (RWD)', kw:230, cv:313, kwh:82.5, autonomia:570, precio:33455, url:'https://caetano.es/byd/coches-nuevos/seal/' },
+  { modelo:'Hyundai Ioniq 6 (63 kWh)', kw:111, cv:151, kwh:63, autonomia:430, precio:34430, url:'https://www.motorpasion.com/compra-coches/hyundai-ioniq-6-2026-precio-espana' },
+  { modelo:'KGM Torres EVX', kw:152, cv:207, kwh:80.6, autonomia:500, precio:34500, url:'https://www.cochesyconcesionarios.com/novedades/novedades/05-2025-54716.html' },
+  { modelo:'Tesla Model 3 (RWD)', kw:208, cv:283, kwh:60, autonomia:534, precio:34575, url:'https://autonomiacocheselectricos.es/tesla/model-3/' },
+  { modelo:'Peugeot e-2008', kw:115, cv:156, kwh:51, autonomia:406, precio:34700, url:'https://www.hibridosyelectricos.com/coches/peugeot-e-2008-2024-electrico-precio-medidas-motor-interior-maletero_78989_102.html' },
+  { modelo:'Alfa Romeo Junior Elettrica', kw:115, cv:156, kwh:54, autonomia:410, precio:34990, url:'https://www.km77.com/coches/alfa-romeo/junior/2025/estandar/electrico/datos' },
+  { modelo:'Skoda Elroq 50', kw:125, cv:170, kwh:52, autonomia:376, precio:35215, url:'https://es.motor1.com/news/750609/skoda-elroq-precios-equipamientos-motores/' },
+  { modelo:'Renault Megane E-Tech', kw:162, cv:220, kwh:60, autonomia:468, precio:35251, url:'https://www.coches.com/noticias/renault-megane-e-tech-2025' },
+  { modelo:'Volvo EX30', kw:200, cv:272, kwh:51, autonomia:344, precio:35412, url:'https://www.carwow.es/volvo/ex30' },
+  { modelo:'MG4 Long Range', kw:125, cv:170, kwh:77, autonomia:530, precio:35800, url:'https://movilidadelectrica.com/precios-autonomias-mg-electricos/' },
+  { modelo:'Fiat 600e', kw:114, cv:156, kwh:54, autonomia:409, precio:35950, url:'https://www.somoselectricos.com/coches-electricos/fiat-600e-prestaciones-precio/20230711115000046747.html' },
+  { modelo:'Leapmotor C10', kw:160, cv:218, kwh:69.9, autonomia:420, precio:36000, url:'https://www.motor.es/noticias/leapmotor-precios-espana-t03-b05-b10-c10-ofertas-mayo-2026-2026114256.html' },
+  { modelo:'Opel Astra Electric', kw:115, cv:156, kwh:54, autonomia:454, precio:36499, url:'https://movilidadelectrica.com/opel-astra-electric-autonomia-versiones-precio/' },
+  { modelo:'Nissan Leaf (52 kWh)', kw:130, cv:177, kwh:52, autonomia:375, precio:36695, url:'https://somoselectricos.com/nuevo-nissan-leaf-crossover-electrico-precio-autonomia/' },
+  { modelo:'Honda e:Ny1 Elegance', kw:150, cv:204, kwh:61.9, autonomia:412, precio:37200, url:'https://www.hibridosyelectricos.com/coches/gran-rebaja-en-honda-este-suv-electrico-japones-ahora-es-11000-euros-mas-barato-ofrece-218-cv-amplio-equipamiento-serie_79746_102.html' },
+  { modelo:'Mini Aceman E', kw:135, cv:184, kwh:42.5, autonomia:310, precio:37250, url:'https://soymotor.com/coches/mini/mini-aceman' },
+  { modelo:'Geely E5 PRO', kw:160, cv:218, kwh:68.2, autonomia:475, precio:37490, url:'' },
+  { modelo:'Mini Countryman Electric E', kw:150, cv:204, kwh:66.5, autonomia:462, precio:37820, url:'https://www.hibridosyelectricos.com/coches/mini-countryman-ev-precio-medidas-motor-interior-maletero_80237_102.html' },
+  { modelo:'smart #1 Pro', kw:150, cv:204, kwh:47, autonomia:310, precio:37900, url:'https://es.motor1.com/news/755348/smart1-2025-precio-motores-potencia/' },
+  { modelo:'Volkswagen ID.3 Pro', kw:150, cv:204, kwh:59, autonomia:434, precio:37990, url:'https://www.mcondevolkswagen.com/volkswagen-id3' },
+  { modelo:'Jeep Avenger Electric', kw:115, cv:156, kwh:54, autonomia:400, precio:38000, url:'https://www.hibridosyelectricos.com/coches/este-suv-pequeno-es-superventas-su-marca-tiene-version-electrica-tiene-capacidad-off-road-notable_82484_102.html' },
+  { modelo:'Cupra Born', kw:150, cv:204, kwh:59, autonomia:426, precio:38040, url:'https://www.autonocion.com/coches-nuevos/cupra/born/' },
+  { modelo:'DS 3 E-Tense', kw:115, cv:156, kwh:54, autonomia:402, precio:38300, url:'https://www.hibridosyelectricos.com/coches/ds3-crossback-tense-suv-electrico-320-kilometros-autonomia-costara-38300_30989_102.html' },
+  { modelo:'Skoda Elroq 60', kw:150, cv:204, kwh:59, autonomia:429, precio:38390, url:'https://es.motor1.com/news/750609/skoda-elroq-precios-equipamientos-motores/' },
+  { modelo:'Audi Q4 40 e-tron', kw:150, cv:204, kwh:63, autonomia:410, precio:39356, url:'https://www.lugenergy.com/audi-q4-e-tron-precio-versiones-caracteristicas/' },
+  { modelo:'Opel Grandland Electric', kw:157, cv:213, kwh:73, autonomia:524, precio:39400, url:'https://movilidadelectrica.com/coches-electricos-opel-2026/' },
+  { modelo:'smart #3 Pro', kw:200, cv:272, kwh:47, autonomia:325, precio:39400, url:'https://www.hibridosyelectricos.com/coches/precio-smart-3-electrico_72064_102.html' },
+  { modelo:'Toyota bZ4X Advance', kw:167, cv:227, kwh:73, autonomia:569, precio:39500, url:'https://prensa.toyota.es/nueva-gama-toyota-bz4x-2025--desde-34500--mayor-autonomia-y-tiempo-de-carga-mas-rapido/' },
+  { modelo:'Volkswagen ID.4 Pro', kw:210, cv:286, kwh:77, autonomia:550, precio:40820, url:'https://autonomiacocheselectricos.es/volkswagen/id4/' },
+  { modelo:'Alfa Romeo Junior Veloce', kw:176, cv:240, kwh:54, autonomia:322, precio:41500, url:'https://www.km77.com/coches/alfa-romeo/junior/2025/estandar/electrico/datos' },
+  { modelo:'Renault Scenic E-Tech', kw:162, cv:220, kwh:87, autonomia:625, precio:41837, url:'https://www.renault.es/electricos/scenic.html' },
+  { modelo:'Tesla Model Y (RWD)', kw:220, cv:299, kwh:60, autonomia:534, precio:41970, url:'https://autonomiacocheselectricos.es/tesla/model-y/' },
+  { modelo:'Kia EV6 (RWD GT-Line)', kw:168, cv:228, kwh:63, autonomia:513, precio:42790, url:'https://autonomiacocheselectricos.es/articulos/gama-electrica-kia-espana-2026-ficha-tecnica/' },
+  { modelo:'Ford Explorer (Extended Range RWD)', kw:210, cv:286, kwh:77, autonomia:602, precio:42800, url:'https://www.motor.es/noticias/precio-ford-explorer-ev-2026-2026112405.html' },
+  { modelo:'Skoda Enyaq 85', kw:210, cv:286, kwh:77, autonomia:586, precio:44000, url:'https://www.hibridosyelectricos.com/coches/precios-skoda-enyaq-2025_78040_102.html' },
+  { modelo:'Cupra Tavascan Endurance', kw:210, cv:286, kwh:77, autonomia:568, precio:44500, url:'https://www.autoronda.es/cupra-tavascan-2025-fecha-de-lanzamiento-precio-y-caracteristicas/' },
+  { modelo:'Hyundai Ioniq 5', kw:125, cv:170, kwh:63, autonomia:450, precio:44670, url:'https://www.hyundai.com/es/es/modelos/ioniq5.html' },
+  { modelo:'Volvo EX40 Single Motor', kw:175, cv:238, kwh:69, autonomia:479, precio:46600, url:'https://www.motor.es/noticias/precio-volvo-ex40-2025-2025107083.html' },
+  { modelo:'Xpeng G6 RWD', kw:218, cv:296, kwh:68.8, autonomia:435, precio:47990, url:'https://www.motor.es/noticias/precio-xpeng-g6-g9-2026-2025110181.html' },
+  { modelo:'Peugeot e-3008', kw:157, cv:213, kwh:73, autonomia:525, precio:48160, url:'https://www.hibridosyelectricos.com/coches/hasta-320-cv-700-km-autonomia-peugeot-e-3008-se-renueva-dar-guerra-entre-suv-electricos_79463_102.html' },
+  { modelo:'Polestar 2', kw:170, cv:231, kwh:69, autonomia:516, precio:48200, url:'https://www.motor.es/polestar/2/' },
+  { modelo:'Mercedes EQA 250+', kw:140, cv:190, kwh:70.5, autonomia:559, precio:49790, url:'https://www.motor.es/noticias/mercedes-eqa-eqb-2025-novedades-2024103390.html' },
+  { modelo:'BMW iX1 eDrive20', kw:150, cv:204, kwh:64.8, autonomia:514, precio:49800, url:'https://www.autoronda.es/bmw-ix1-e-ix2-2026-mas-autonomia-carburo-de-silicio-y-precios-desde-49-800-euros-en-espana/' },
+  { modelo:'Audi Q4 45 e-tron', kw:210, cv:286, kwh:77, autonomia:548, precio:50600, url:'https://www.lugenergy.com/audi-q4-e-tron-precio-versiones-caracteristicas/' },
+  { modelo:'Peugeot e-5008', kw:169, cv:230, kwh:73, autonomia:504, precio:51660, url:'https://www.peugeot.es/gama/peugeot-5008/electrico.html' },
+  { modelo:'Lexus RZ 350e', kw:165, cv:224, kwh:77, autonomia:568, precio:52000, url:'https://www.motor.es/noticias/precio-lexus-rz-2026-2025110139.html' },
+  { modelo:'Volkswagen ID.Buzz Pro', kw:210, cv:286, kwh:79, autonomia:454, precio:52245, url:'https://autonomiacocheselectricos.es/volkswagen/id-buzz/' },
+  { modelo:'Volkswagen ID.7 Pro', kw:210, cv:286, kwh:77, autonomia:615, precio:52652, url:'https://www.diariomotor.com/noticia/volkswagen-id-7-precio-espana/' },
+  { modelo:'DS N°8', kw:170, cv:230, kwh:74, autonomia:425, precio:54189, url:'https://www.motor.es/noticias/precio-ds-n8-2025106568.html' },
+  { modelo:'BMW iX2 eDrive20', kw:150, cv:204, kwh:64.8, autonomia:510, precio:56026, url:'https://www.motor.es/noticias/bmw-ix1-ix2-mejora-autonomia-2026112331.html' },
+  { modelo:'BMW i4 eDrive35', kw:210, cv:286, kwh:67, autonomia:514, precio:58650, url:'https://www.hibridosyelectricos.com/coches/bmw-i4-electrico-mas-asequible-precio-espana_65532_102.html' },
+  { modelo:'Nissan Ariya (4x2)', kw:178, cv:242, kwh:87, autonomia:525, precio:59350, url:'https://www.motor.es/noticias/precio-nissan-ariya-2027-2026115293.html' },
+  { modelo:'Mercedes EQB 250+', kw:140, cv:190, kwh:66.5, autonomia:532, precio:61717, url:'https://www.motor.es/noticias/mercedes-eqa-eqb-2025-novedades-2024103390.html' },
+  { modelo:'Xpeng G9 RWD', kw:230, cv:313, kwh:93.1, autonomia:570, precio:62990, url:'https://www.motor.es/noticias/precio-xpeng-g6-g9-2026-2025110181.html' },
+  { modelo:'Polestar 4 (Long Range Single Motor)', kw:200, cv:272, kwh:100, autonomia:620, precio:65900, url:'https://forococheselectricos.com/noticias/620-km-autonomia-polestar-4-baja-16000-euros-precio-espana-20251229-39378.html' },
+  { modelo:'BMW i5 eDrive40', kw:250, cv:340, kwh:84.4, autonomia:582, precio:66984, url:'https://autonomiacocheselectricos.es/bmw/i5-berlina/edrive40/' },
+  { modelo:'Maxus MIFA 9', kw:183, cv:248, kwh:90, autonomia:520, precio:69900, url:'https://www.motor.es/noticias/precio-maxus-mifa-9-202394959.html' },
+  { modelo:'Audi Q6 e-tron', kw:210, cv:286, kwh:75.8, autonomia:526, precio:71710, url:'https://www.autopista.es/novedades-coches/audi-q6-e-tron-suv-definitivo-precio-autonomia-record-equipamiento-premium-en-espana-ecn_329657_102.html' },
+  { modelo:'Mercedes EQE 300', kw:180, cv:245, kwh:89, autonomia:545, precio:72790, url:'https://www.hibridosyelectricos.com/coches/precio-mercedes-eqe-electrico-espa-c3-b1a_56596_102.html' },
+  { modelo:'Kia EV9 GT-Line', kw:283, cv:384, kwh:99.8, autonomia:505, precio:74340, url:'https://es.motor1.com/news/739716/kia-ev9-2025-precio-basico/' },
+  { modelo:'Volvo EX90 (Single Motor)', kw:300, cv:408, kwh:88, autonomia:572, precio:83926, url:'https://movilidadelectrica.com/volvo-ex90-medidas-potencia-autonomia-precios/' },
+  { modelo:'BMW iX xDrive50', kw:230, cv:313, kwh:108, autonomia:600, precio:88700, url:'https://movilidadelectrica.com/precios-nuevo-bmw-ix-2025/' },
+  { modelo:'Polestar 3', kw:360, cv:489, kwh:107, autonomia:610, precio:93600, url:'https://autonomiacocheselectricos.es/polestar/3/' }
 ];
 
 const COLORS = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#a65628','#f781bf','#999999','#66c2a5','#fc8d62'];
@@ -3147,44 +3122,6 @@ const VARS = {
   kw:        { label:'Potencia',       unit:'kW',  decimals:0, fmt:v=>v.toLocaleString('es-ES',{maximumFractionDigits:0})+' kW' },
   cv:        { label:'Potencia',       unit:'CV',  decimals:0, fmt:v=>v.toLocaleString('es-ES',{maximumFractionDigits:0})+' CV' }
 };
-
-// ===================== FILTRO DE MARCA =====================
-const brandChipsEl = document.getElementById('brandChips');
-let deselectedBrands = new Set();
-
-function getBrands(){
-  return [...new Set(DATA.map(d=>d.marca))].sort((a,b)=>a.localeCompare(b,'es'));
-}
-function renderBrandFilter(){
-  const brands = getBrands();
-  brandChipsEl.innerHTML = brands.map(b=>{
-    const active = !deselectedBrands.has(b);
-    const count = DATA.filter(d=>d.marca===b).length;
-    return `<button type="button" class="brand-chip${active?' active':''}" data-brand="${esc(b)}">${esc(b)} <span class="chip-count">(${count})</span></button>`;
-  }).join('');
-}
-brandChipsEl.addEventListener('click', e=>{
-  const chip = e.target.closest('[data-brand]');
-  if(!chip) return;
-  const b = chip.dataset.brand;
-  if(deselectedBrands.has(b)) deselectedBrands.delete(b); else deselectedBrands.add(b);
-  renderBrandFilter();
-  renderLegend();
-  drawChart();
-});
-document.getElementById('btnBrandsAll').addEventListener('click', ()=>{
-  deselectedBrands.clear();
-  renderBrandFilter();
-  renderLegend();
-  drawChart();
-});
-document.getElementById('btnBrandsNone').addEventListener('click', ()=>{
-  getBrands().forEach(b=> deselectedBrands.add(b));
-  renderBrandFilter();
-  renderLegend();
-  drawChart();
-});
-renderBrandFilter();
 
 // ===================== FILTRO DE PRECIO =====================
 const priceMinInput = document.getElementById('priceMin');
@@ -3225,7 +3162,7 @@ function updatePriceFilterUI(){
 }
 
 function getFilteredData(){
-  return DATA.filter(d=> d.precio >= priceFilterMin && d.precio <= priceFilterMax && !deselectedBrands.has(d.marca));
+  return DATA.filter(d=> d.precio >= priceFilterMin && d.precio <= priceFilterMax);
 }
 
 priceMinInput.addEventListener('input', ()=>{
@@ -3275,10 +3212,9 @@ function renderFicha(){
       <td>
         <span class="model-chip">
           <span class="dot" style="background:${d.color}"></span>
-          <input class="cell-input" type="text" data-field="marca" value="${String(d.marca).replace(/"/g,'&quot;')}">
+          <input class="cell-input" type="text" data-field="modelo" value="${String(d.modelo).replace(/"/g,'&quot;')}">
         </span>
       </td>
-      <td><input class="cell-input" type="text" data-field="modelo" value="${String(d.modelo).replace(/"/g,'&quot;')}"></td>
       <td><input class="cell-input num" type="number" step="1" data-field="kw" value="${d.kw}"></td>
       <td><input class="cell-input num" type="number" step="1" data-field="cv" value="${d.cv}"></td>
       <td><input class="cell-input num" type="number" step="0.1" data-field="kwh" value="${d.kwh}"></td>
@@ -3296,7 +3232,7 @@ function renderFicha(){
 }
 renderFicha();
 
-const TEXT_FIELDS = ['marca', 'modelo', 'url'];
+const TEXT_FIELDS = ['modelo', 'url'];
 fichaBody.addEventListener('input', e=>{
   const input = e.target.closest('[data-field]');
   if(!input) return;
@@ -3305,7 +3241,6 @@ fichaBody.addEventListener('input', e=>{
   if(TEXT_FIELDS.includes(field)){
     DATA[idx][field] = input.value;
     if(field === 'modelo') renderLegend();
-    if(field === 'marca'){ renderBrandFilter(); renderLegend(); }
     if(field === 'url'){
       const btn = input.closest('.source-cell').querySelector('[data-open-link]');
       btn.disabled = !input.value.trim();
@@ -3328,7 +3263,6 @@ fichaBody.addEventListener('click', e=>{
     renderFicha();
     renderStatRow();
     syncPriceSliderBounds();
-    renderBrandFilter();
     renderLegend();
     drawChart();
     return;
@@ -3341,11 +3275,10 @@ fichaBody.addEventListener('click', e=>{
 });
 
 document.getElementById('btnAddRow').addEventListener('click', ()=>{
-  DATA.push({ marca:'Marca', modelo:'Nuevo modelo', kw:100, cv:136, kwh:50, autonomia:300, precio:25000, url:'', color: nextColor(DATA.length) });
+  DATA.push({ modelo:'Nuevo modelo', kw:100, cv:136, kwh:50, autonomia:300, precio:25000, url:'', color: nextColor(DATA.length) });
   renderFicha();
   renderStatRow();
   syncPriceSliderBounds();
-  renderBrandFilter();
   renderLegend();
   drawChart();
   const rows = fichaBody.querySelectorAll('tr');
@@ -3384,12 +3317,12 @@ function renderLegend(){
   }
   const filtered = getFilteredData();
   if(!filtered.length){
-    legend.innerHTML = `<span class="legend-item">Ningún modelo coincide con los filtros seleccionados.</span>`;
+    legend.innerHTML = `<span class="legend-item">Ningún modelo dentro del rango de precio seleccionado.</span>`;
     return;
   }
   const trendItem = filtered.length >= 2 ? `<span class="legend-item"><span class="legend-dash"></span>Ajuste lineal (mínimos cuadrados)</span>` : '';
   legend.innerHTML = trendItem + filtered.map(d=>`
-    <span class="legend-item"><span class="legend-dot" style="background:${d.color}"></span>${esc(d.marca)} ${esc(d.modelo)}</span>
+    <span class="legend-item"><span class="legend-dot" style="background:${d.color}"></span>${esc(d.modelo)}</span>
   `).join('');
 }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -3461,7 +3394,7 @@ function drawChart(){
     ctx.fillStyle = '#5B7086';
     ctx.font = "13px 'Inter', sans-serif";
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('Ningún modelo coincide con los filtros seleccionados.', cssW/2, cssH/2);
+    ctx.fillText('Ningún modelo dentro del rango de precio seleccionado.', cssW/2, cssH/2);
     return;
   }
 
@@ -3605,7 +3538,7 @@ function handlePointer(clientX, clientY){
   });
   if(nearest){
     const xKey = selX.value, yKey = selY.value;
-    tooltip.innerHTML = `<span class="tt-model">${esc(nearest.d.marca)} ${esc(nearest.d.modelo)}</span>
+    tooltip.innerHTML = `<span class="tt-model">${esc(nearest.d.modelo)}</span>
       <span class="tt-row">${VARS[xKey].label}: ${VARS[xKey].fmt(nearest.d[xKey])}</span><br>
       <span class="tt-row">${VARS[yKey].label}: ${VARS[yKey].fmt(nearest.d[yKey])}</span>`;
     tooltip.style.left = (nearest.cx + 14) + 'px';
@@ -3764,7 +3697,6 @@ function generarPDF(){
 
   doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(110,118,130);
   let contexto = `Filtro de precio: ${fmtEur(priceFilterMin)} – ${fmtEur(priceFilterMax)} · ${filtered.length} de ${DATA.length} modelos incluidos`;
-  if(deselectedBrands.size) contexto += ` · ${deselectedBrands.size} marca${deselectedBrands.size===1?'':'s'} excluida${deselectedBrands.size===1?'':'s'}`;
   if(zoomDomain) contexto += ' · zoom aplicado en el gráfico';
   doc.splitTextToSize(contexto, qrX - marginX - 6).forEach(line=>{ doc.text(line, marginX, y); y += 4.2; });
   y += 3.5;
@@ -3780,15 +3712,15 @@ function generarPDF(){
     y += imgH + 10;
   } else {
     doc.setFont('helvetica','italic'); doc.setFontSize(10); doc.setTextColor(170,60,60);
-    doc.text('Ningún modelo coincide con los filtros seleccionados.', marginX, y); y += 10;
+    doc.text('Ningún modelo dentro del rango de precio seleccionado.', marginX, y); y += 10;
   }
 
   ensureSpace(14);
   doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(20,30,45);
   doc.text('Modelos incluidos', marginX, y); y += 7;
 
-  const colX = [marginX, marginX+26, marginX+66, marginX+80, marginX+94, marginX+110, marginX+134];
-  const headers = ['Marca','Modelo','kW','CV','kWh','km WLTP','Precio'];
+  const colX = [marginX, marginX+68, marginX+84, marginX+100, marginX+118, marginX+140];
+  const headers = ['Modelo','kW','CV','kWh','km WLTP','Precio'];
   function drawTableHeader(){
     doc.setFont('helvetica','bold'); doc.setFontSize(7.6); doc.setTextColor(100,108,120);
     headers.forEach((h,i)=> doc.text(h, colX[i], y));
@@ -3802,14 +3734,13 @@ function generarPDF(){
     ensureSpace(6, drawTableHeader);
     const [mr,mg,mb] = colorToRgb(d.color);
     doc.setFont('helvetica','bold'); doc.setTextColor(mr,mg,mb);
-    doc.text(String(d.marca).slice(0,18), colX[0], y);
-    doc.text(String(d.modelo).slice(0,32), colX[1], y);
+    doc.text(String(d.modelo).slice(0,42), colX[0], y);
     doc.setFont('helvetica','normal'); doc.setTextColor(30,35,45);
-    doc.text(String(Math.round(d.kw)), colX[2], y);
-    doc.text(String(Math.round(d.cv)), colX[3], y);
-    doc.text(d.kwh.toLocaleString('es-ES',{maximumFractionDigits:1}), colX[4], y);
-    doc.text(String(Math.round(d.autonomia)), colX[5], y);
-    doc.text(fmtEur(d.precio), colX[6], y);
+    doc.text(String(Math.round(d.kw)), colX[1], y);
+    doc.text(String(Math.round(d.cv)), colX[2], y);
+    doc.text(d.kwh.toLocaleString('es-ES',{maximumFractionDigits:1}), colX[3], y);
+    doc.text(String(Math.round(d.autonomia)), colX[4], y);
+    doc.text(fmtEur(d.precio), colX[5], y);
     y += 5.2;
   });
 
