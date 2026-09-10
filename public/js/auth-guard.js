@@ -13,7 +13,7 @@
   // URL base para /auth/login y /auth/register. La alterna
   // scripts/set-docs-url.sh (predeploy/postdeploy en package.json), igual
   // que hace con las URLs incrustadas en public/docs/**/*.html.
-  var API_BASE_URL = 'http://127.0.0.1:8888/';
+  var API_BASE_URL = 'https://doctec.duckdns.org/fast/';
 
   function apiBase() {
     return API_BASE_URL.replace(/\/$/, '');
