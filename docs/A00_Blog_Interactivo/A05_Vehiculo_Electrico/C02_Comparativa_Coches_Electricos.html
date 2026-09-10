@@ -154,6 +154,7 @@
 
   .cell-input{background:transparent; border:none; border-bottom:1px solid transparent; color:var(--text); font-family:var(--font-body); font-size:12.5px; padding:4px 2px; width:100%; min-width:70px; border-radius:0;}
   .cell-input.num{font-family:var(--font-mono); color:var(--cyan); min-width:60px;}
+  .ratio-cell{font-family:var(--font-mono); color:var(--text-dim); white-space:nowrap;}
   .cell-input:hover{border-bottom-color:var(--line);}
   .cell-input:focus{outline:none; border-bottom-color:var(--cyan); background:var(--panel2);}
   td.actions-cell{width:1%; white-space:nowrap;}
@@ -387,6 +388,7 @@
                 <th class="sortable-th" data-sort="kwh" data-label="Batería neta (kWh)">Batería neta (kWh)</th>
                 <th class="sortable-th" data-sort="autonomia" data-label="Autonomía WLTP (km)">Autonomía WLTP (km)</th>
                 <th class="sortable-th" data-sort="precio" data-label="Precio aprox. (€)">Precio aprox. (€)</th>
+                <th class="sortable-th" data-sort="eurkm" data-label="€/km autonomía">€/km autonomía</th>
                 <th class="sortable-th" data-sort="url" data-label="Fuente">Fuente</th>
                 <th></th>
               </tr>
@@ -3392,7 +3394,10 @@ const COLORS = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#a65628','#f7
 function nextColor(idx){
   return idx < COLORS.length ? COLORS[idx] : `hsl(${Math.round((idx*137.508)%360)},65%,58%)`;
 }
-DATA.forEach((d,i)=> d.color = nextColor(i));
+function eurPerKm(d){
+  return d.autonomia > 0 ? d.precio / d.autonomia : 0;
+}
+DATA.forEach((d,i)=>{ d.color = nextColor(i); d.eurkm = eurPerKm(d); });
 
 // Segmentos por tamaño: A/B/C/D urbanos-berlina, E ejecutivo/lujo, variantes -SUV para carrocería todocamino
 const SEGMENTOS = ['A','B','B-SUV','C','C-SUV','D','D-SUV','E','E-SUV'];
@@ -3402,7 +3407,8 @@ const VARS = {
   precio:    { label:'Precio aprox.',  unit:'€',   decimals:0, fmt:v=>v.toLocaleString('es-ES',{maximumFractionDigits:0})+' €' },
   autonomia: { label:'Autonomía WLTP', unit:'km',  decimals:0, fmt:v=>v.toLocaleString('es-ES',{maximumFractionDigits:0})+' km' },
   kw:        { label:'Potencia',       unit:'kW',  decimals:0, fmt:v=>v.toLocaleString('es-ES',{maximumFractionDigits:0})+' kW' },
-  cv:        { label:'Potencia',       unit:'CV',  decimals:0, fmt:v=>v.toLocaleString('es-ES',{maximumFractionDigits:0})+' CV' }
+  cv:        { label:'Potencia',       unit:'CV',  decimals:0, fmt:v=>v.toLocaleString('es-ES',{maximumFractionDigits:0})+' CV' },
+  eurkm:     { label:'Precio / autonomía', unit:'€/km', decimals:1, fmt:v=>v.toLocaleString('es-ES',{maximumFractionDigits:1,minimumFractionDigits:1})+' €/km' }
 };
 
 // ===================== FILTRO DE MARCA (compartido entre Comparativa y Ficha técnica) =====================
@@ -3656,7 +3662,7 @@ function updateSortHeaders(){
 function renderFicha(){
   const rows = getFichaRows();
   if(!rows.length){
-    fichaBody.innerHTML = `<tr><td colspan="10" style="color:var(--text-dimmer); text-align:center; padding:20px;">Ningún modelo coincide con el filtro de marca.</td></tr>`;
+    fichaBody.innerHTML = `<tr><td colspan="11" style="color:var(--text-dimmer); text-align:center; padding:20px;">Ningún modelo coincide con el filtro de marca.</td></tr>`;
     updateSortHeaders();
     return;
   }
@@ -3679,6 +3685,7 @@ function renderFicha(){
       <td><input class="cell-input num" type="number" step="0.1" data-field="kwh" value="${d.kwh}"></td>
       <td><input class="cell-input num" type="number" step="1" data-field="autonomia" value="${d.autonomia}"></td>
       <td><input class="cell-input num" type="number" step="100" data-field="precio" value="${d.precio}"></td>
+      <td class="ratio-cell">${VARS.eurkm.fmt(d.eurkm)}</td>
       <td>
         <span class="source-cell">
           <input class="cell-input" type="text" data-field="url" placeholder="https://…" value="${String(d.url||'').replace(/"/g,'&quot;')}">
@@ -3721,6 +3728,11 @@ fichaBody.addEventListener('input', e=>{
     DATA[idx][field] = isNaN(val) ? 0 : val;
     renderStatRow();
     if(field === 'precio') syncPriceSliderBounds();
+    if(field === 'precio' || field === 'autonomia'){
+      DATA[idx].eurkm = eurPerKm(DATA[idx]);
+      const ratioCell = input.closest('tr').querySelector('.ratio-cell');
+      if(ratioCell) ratioCell.textContent = VARS.eurkm.fmt(DATA[idx].eurkm);
+    }
     renderLegend();
   }
   drawChart();
@@ -3748,7 +3760,9 @@ fichaBody.addEventListener('click', e=>{
 });
 
 document.getElementById('btnAddRow').addEventListener('click', ()=>{
-  DATA.push({ marca:'Marca', modelo:'Nuevo modelo', kw:100, cv:136, kwh:50, autonomia:300, precio:25000, url:'', segmento:'C', color: nextColor(DATA.length) });
+  const nuevo = { marca:'Marca', modelo:'Nuevo modelo', kw:100, cv:136, kwh:50, autonomia:300, precio:25000, url:'', segmento:'C', color: nextColor(DATA.length) };
+  nuevo.eurkm = eurPerKm(nuevo);
+  DATA.push(nuevo);
   const newIdx = DATA.length - 1;
   renderFicha();
   renderStatRow();
