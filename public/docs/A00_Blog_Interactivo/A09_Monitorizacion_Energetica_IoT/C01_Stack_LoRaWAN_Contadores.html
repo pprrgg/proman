@@ -155,9 +155,14 @@
   .budget-table th{text-align:left; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dimmer); padding:8px 8px; border-bottom:1px solid var(--line);}
   .budget-table td{padding:7px 8px; border-bottom:1px solid var(--line-soft); vertical-align:middle;}
   .budget-table .concepto{color:var(--text); max-width:360px;}
+  .budget-table .concepto input[type=text]{width:100%; min-width:160px; background:var(--panel2); border:1px solid var(--line); color:var(--text); padding:7px 8px; border-radius:var(--radius); font-family:inherit; font-size:12.5px;}
+  .budget-table .concepto input[type=text]:focus{outline:none; border-color:var(--amber);}
   .budget-table input[type=number]{width:100%; min-width:72px; background:var(--panel2); border:1px solid var(--line); color:var(--text); padding:7px 8px; border-radius:var(--radius); font-family:var(--font-mono); font-size:12.5px; text-align:right;}
   .budget-table input[type=number]:focus{outline:none; border-color:var(--amber);}
   .budget-table .subtotal{font-family:var(--font-mono); color:var(--amber); text-align:right; white-space:nowrap;}
+  .budget-table td.row-actions{width:30px; padding:7px 4px; text-align:center;}
+  .budget-table .btn-del-row{background:transparent; border:1px solid var(--line); color:var(--text-dimmer); border-radius:var(--radius); width:22px; height:22px; line-height:1; cursor:pointer; font-size:11px;}
+  .budget-table .btn-del-row:hover{border-color:var(--red); color:var(--red);}
   .budget-table tfoot td{border-bottom:none; border-top:1px solid var(--line); padding-top:10px; font-family:var(--font-mono);}
   .budget-table tfoot .subtotal{font-size:13.5px;}
 
@@ -615,9 +620,18 @@ docker compose logs -f chirpstack   <span class="cm"># por si hay que depurar al
       <p class="lede">Partidas orientativas para un despliegue de este tipo (precios de referencia, editables uno a uno). Indica el número de contadores y de gateways y pulsa "Aplicar cantidades" para rellenar automáticamente las partidas que dependen de ellas — el resto de cantidades y precios se pueden ajustar libremente a mano.</p>
 
       <div class="card" style="margin-bottom:20px;">
-        <div class="grid3" style="align-items:end;">
+        <div class="grid4" style="align-items:end;">
           <div class="field"><label>Nº de contadores a supervisar</label><input type="number" id="b_ndispositivos" value="20" min="1" max="500" step="1"></div>
           <div class="field"><label>Nº de gateways LoRaWAN</label><input type="number" id="b_ngateways" value="1" min="1" max="20" step="1"></div>
+          <div class="field"><label>Periodo de garantía y mantenimiento</label>
+            <select id="b_periodo_garantia">
+              <option value="36" selected>36 meses (mínimo obligatorio)</option>
+              <option value="48">48 meses (4 años)</option>
+              <option value="60">60 meses (5 años)</option>
+              <option value="84">84 meses (7 años)</option>
+              <option value="120">120 meses (10 años)</option>
+            </select>
+          </div>
           <div class="field"><label>IVA aplicable</label>
             <select id="b_iva">
               <option value="21">21 % (general)</option>
@@ -630,38 +644,43 @@ docker compose logs -f chirpstack   <span class="cm"># por si hay que depurar al
           <button class="btn primary" type="button" id="btnAplicarCantidades">Aplicar cantidades a las partidas</button>
         </div>
         <p class="tooltip-text" style="font-size:11.5px; color:var(--text-dimmer); margin-top:10px;">Sugerencia de gateways: 1 por cada ~40 contadores en un radio de hasta 5&nbsp;km con línea de vista razonable; ajusta según tu estudio de cobertura real.</p>
+        <p class="tooltip-text" style="font-size:11.5px; color:var(--text-dimmer); margin-top:6px;">Periodo de garantía: 36 meses de compromiso mínimo, ampliable hasta 120 meses (10 años) — orientado a la vida útil que suelen asignarse a las medidas de monitorización y control energético en el sistema de Certificados de Ahorro Energético (CAE), donde mantener la supervisión activa durante ese periodo es lo que permite acreditar el ahorro. Verifica la vida útil exacta en la ficha CAE vigente si el proyecto se va a presentar a certificación.</p>
       </div>
 
       <div class="fieldset-title" style="margin-top:0;">Hardware</div>
       <div style="overflow-x:auto;">
         <table class="budget-table" id="tablaHardware">
-          <thead><tr><th style="width:48%;">Concepto</th><th>Cantidad</th><th>Precio unitario (€)</th><th>Subtotal</th></tr></thead>
+          <thead><tr><th style="width:44%;">Concepto</th><th>Cantidad</th><th>Precio unitario (€)</th><th>Subtotal</th><th></th></tr></thead>
           <tbody></tbody>
-          <tfoot><tr><td colspan="3">Subtotal hardware</td><td class="subtotal" id="totalHardware">—</td></tr></tfoot>
+          <tfoot><tr><td colspan="4">Subtotal hardware</td><td class="subtotal" id="totalHardware">—</td></tr></tfoot>
         </table>
       </div>
+      <div class="btn-row" style="margin:8px 0 20px;"><button class="btn ghost small" type="button" data-add-row="hardware" data-add-table="tablaHardware">+ Añadir línea</button></div>
 
       <div class="fieldset-title">Instalación y puesta en marcha</div>
       <div style="overflow-x:auto;">
         <table class="budget-table" id="tablaInstalacion">
-          <thead><tr><th style="width:48%;">Concepto</th><th>Cantidad</th><th>Precio unitario (€)</th><th>Subtotal</th></tr></thead>
+          <thead><tr><th style="width:44%;">Concepto</th><th>Cantidad</th><th>Precio unitario (€)</th><th>Subtotal</th><th></th></tr></thead>
           <tbody></tbody>
-          <tfoot><tr><td colspan="3">Subtotal instalación y puesta en marcha</td><td class="subtotal" id="totalInstalacion">—</td></tr></tfoot>
+          <tfoot><tr><td colspan="4">Subtotal instalación y puesta en marcha</td><td class="subtotal" id="totalInstalacion">—</td></tr></tfoot>
         </table>
       </div>
+      <div class="btn-row" style="margin:8px 0 20px;"><button class="btn ghost small" type="button" data-add-row="instalacion" data-add-table="tablaInstalacion">+ Añadir línea</button></div>
 
-      <div class="fieldset-title">Mantenimiento de software (cuota mensual)</div>
+      <div class="fieldset-title">Mantenimiento durante el periodo de garantía (cuota mensual, obligatoria)</div>
       <div style="overflow-x:auto;">
         <table class="budget-table" id="tablaMantenimiento">
-          <thead><tr><th style="width:48%;">Concepto</th><th>Cantidad</th><th>Precio unitario (€/mes)</th><th>Subtotal</th></tr></thead>
+          <thead><tr><th style="width:44%;">Concepto</th><th>Cantidad</th><th>Precio unitario (€/mes)</th><th>Subtotal</th><th></th></tr></thead>
           <tbody></tbody>
-          <tfoot><tr><td colspan="3">Subtotal mantenimiento mensual</td><td class="subtotal" id="totalMantenimientoMes">—</td></tr></tfoot>
+          <tfoot><tr><td colspan="4">Subtotal mantenimiento mensual</td><td class="subtotal" id="totalMantenimientoMes">—</td></tr></tfoot>
         </table>
       </div>
-      <p class="tooltip-text" style="font-size:11.5px; color:var(--text-dimmer); margin:8px 0 0;">El mantenimiento es una cuota recurrente (OPEX), no forma parte de la inversión inicial: incluye actualizaciones del stack, copias de seguridad, soporte técnico y sustitución de hardware en garantía.</p>
+      <div class="btn-row" style="margin:8px 0;"><button class="btn ghost small" type="button" data-add-row="mantenimiento" data-add-table="tablaMantenimiento">+ Añadir línea</button></div>
+      <p class="tooltip-text" style="font-size:11.5px; color:var(--text-dimmer); margin:8px 0 0;">Durante el periodo de garantía (mínimo 36 meses, arriba) el mantenimiento es obligatorio y cubre actualizaciones del stack, copias de seguridad, soporte técnico y sustitución de hardware defectuoso — se contrata por todo el periodo, no mes a mes. Si el proyecto se acoge a un CAE, esta continuidad de la supervisión es además la que justifica el ahorro acreditado durante la vida útil de la medida.</p>
+      <p style="font-size:11.5px; color:var(--text-dimmer); margin:6px 0 0; border-left:2px solid var(--line); padding-left:10px;">Nota comercial: en este tipo de proyecto el hardware y la instalación suelen cotizarse muy ajustados frente a la competencia; el margen se concentra en esta cuota de mantenimiento, de coste relativamente alto y obligada durante toda la garantía — ajusta los precios de esta tabla en consecuencia antes de enviar la oferta.</p>
 
       <div class="fieldset-title">Resumen de la oferta</div>
-      <div class="grid4" id="resumenChips"></div>
+      <div class="grid3" id="resumenChips"></div>
     </section>
 
     <!-- SECCIÓN 11: INFORME FINAL -->
@@ -777,6 +796,12 @@ PANELES_ACCESO.forEach(p=>{
 
 // ===================== PRESUPUESTO / OFERTA ECONÓMICA =====================
 function fmtEUR(n){ return (isFinite(n)?n:0).toLocaleString('es-ES',{style:'currency', currency:'EUR', minimumFractionDigits:2, maximumFractionDigits:2}); }
+// La fuente estándar "helvetica" de jsPDF no tiene glyph para flechas (→ etc.): si se le pasa
+// una, el texto sale corrupto (espaciado roto). Esto sanea los conceptos —incluidos los que
+// escriba el usuario en líneas nuevas del presupuesto— antes de pasarlos a doc.text().
+function pdfSafe(text){
+  return String(text).replace(/[←-⇿]/g, '->');
+}
 function fmtFecha(iso){
   if(!iso) return '—';
   const d = new Date(iso+'T00:00:00');
@@ -789,7 +814,7 @@ function fmtFecha(iso){
 const BUDGET = {
   hardware: [
     {id:'hw_contador', label:'Contador de energía Eastron SDM630 (si no está ya instalado)', qty:0, price:120, link:null},
-    {id:'hw_dragino', label:'Nodo Dragino RS485-LN (lectura Modbus → LoRaWAN)', qty:20, price:95, link:'ndispositivos'},
+    {id:'hw_dragino', label:'Nodo Dragino RS485-LN (lectura Modbus, transmisión LoRaWAN)', qty:20, price:95, link:'ndispositivos'},
     {id:'hw_accesorios', label:'Accesorios por punto (alimentación, cableado RS485, protecciones)', qty:20, price:40, link:'ndispositivos'},
     {id:'hw_gateway', label:'Gateway LoRaWAN EU868 (RAK7248 / MikroTik wAP LR9 o equivalente)', qty:1, price:350, link:'ngateways'},
     {id:'hw_servidor', label:'Servidor / mini-PC dedicado para el stack Docker (opcional)', qty:1, price:450, link:null},
@@ -803,31 +828,65 @@ const BUDGET = {
     {id:'in_pruebas', label:'Pruebas de cobertura de campo y puesta en marcha', qty:1, price:320, link:null},
   ],
   mantenimiento: [
-    {id:'mn_soporte', label:'Mantenimiento del stack, copias de seguridad y soporte técnico', qty:1, price:45, link:null},
-    {id:'mn_garantia', label:'Garantía y sustitución de hardware (nodos y gateway)', qty:1, price:15, link:null},
+    {id:'mn_soporte', label:'Mantenimiento del stack, copias de seguridad y soporte técnico prioritario', qty:1, price:150, link:null},
+    {id:'mn_garantia', label:'Garantía extendida y sustitución de hardware (nodos y gateway)', qty:1, price:40, link:null},
   ],
 };
 const TODAS_LAS_PARTIDAS = [...BUDGET.hardware, ...BUDGET.instalacion, ...BUDGET.mantenimiento];
 
-function renderTabla(tablaId, items){
-  document.querySelector('#'+tablaId+' tbody').innerHTML = items.map(it=>`
-    <tr>
-      <td class="concepto">${esc(it.label)}</td>
+function filaHtml(it){
+  return `
+    <tr data-row-id="${it.id}">
+      <td class="concepto"><input type="text" id="lb_${it.id}" value="${esc(it.label)}"></td>
       <td><input type="number" id="q_${it.id}" value="${it.qty}" min="0" step="1"></td>
       <td><input type="number" id="pr_${it.id}" value="${it.price}" min="0" step="0.01"></td>
       <td class="subtotal" id="st_${it.id}">—</td>
+      <td class="row-actions">${it.personalizada ? `<button type="button" class="btn-del-row" data-del-id="${it.id}" aria-label="Eliminar línea">✕</button>` : ''}</td>
     </tr>
-  `).join('');
+  `;
+}
+function renderTabla(tablaId, items){
+  document.querySelector('#'+tablaId+' tbody').innerHTML = items.map(filaHtml).join('');
 }
 renderTabla('tablaHardware', BUDGET.hardware);
 renderTabla('tablaInstalacion', BUDGET.instalacion);
 renderTabla('tablaMantenimiento', BUDGET.mantenimiento);
 
 function filaValores(it){
+  const labelInput = document.getElementById('lb_'+it.id)?.value.trim();
+  const label = labelInput || it.label;
   const q = parseFloat(document.getElementById('q_'+it.id)?.value)||0;
   const p = parseFloat(document.getElementById('pr_'+it.id)?.value)||0;
-  return {q, p, st: q*p};
+  return {label, q, p, st: q*p};
 }
+
+// ===================== AÑADIR / ELIMINAR LÍNEAS PERSONALIZADAS =====================
+const contadoresLineas = {hardware:0, instalacion:0, mantenimiento:0};
+document.querySelectorAll('[data-add-row]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const budgetKey = btn.dataset.addRow;
+    const tablaId = btn.dataset.addTable;
+    contadoresLineas[budgetKey]++;
+    const it = {id:'custom_'+budgetKey+'_'+contadoresLineas[budgetKey], label:'Nuevo concepto', qty:1, price:0, link:null, personalizada:true};
+    BUDGET[budgetKey].push(it);
+    document.querySelector('#'+tablaId+' tbody').insertAdjacentHTML('beforeend', filaHtml(it));
+    recalcular();
+    const inputLabel = document.getElementById('lb_'+it.id);
+    inputLabel.focus();
+    inputLabel.select();
+  });
+});
+document.getElementById('presupuesto').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.btn-del-row');
+  if(!btn) return;
+  const id = btn.dataset.delId;
+  for(const key of ['hardware','instalacion','mantenimiento']){
+    const idx = BUDGET[key].findIndex(x=>x.id===id);
+    if(idx>-1){ BUDGET[key].splice(idx,1); break; }
+  }
+  btn.closest('tr').remove();
+  recalcular();
+});
 
 function recalcular(){
   let totalHW=0, totalIN=0, totalMN=0;
@@ -843,9 +902,11 @@ function recalcular(){
   const totalInversion = totalHW + totalIN;
   const ivaInversion = totalInversion * ivaPct/100;
   const totalInversionConIva = totalInversion + ivaInversion;
-  const mantenimientoAnual = totalMN * 12;
-  const ivaMantenimientoAnual = mantenimientoAnual * ivaPct/100;
-  const mantenimientoAnualConIva = mantenimientoAnual + ivaMantenimientoAnual;
+  const periodoGarantiaMeses = Math.max(parseFloat(document.getElementById('b_periodo_garantia').value)||36, 36);
+  const mantenimientoTotalGarantia = totalMN * periodoGarantiaMeses;
+  const ivaMantenimientoGarantia = mantenimientoTotalGarantia * ivaPct/100;
+  const mantenimientoTotalGarantiaConIva = mantenimientoTotalGarantia + ivaMantenimientoGarantia;
+  const mantenimientoMesConIva = totalMN * (1 + ivaPct/100);
   const nDisp = Math.max(parseFloat(document.getElementById('b_ndispositivos').value)||1, 1);
   const costePorDispositivo = totalInversion / nDisp;
 
@@ -853,10 +914,12 @@ function recalcular(){
     <div class="result-chip"><div class="v">${fmtEUR(totalInversion)}</div><div class="l">Inversión inicial (sin IVA)</div></div>
     <div class="result-chip"><div class="v">${fmtEUR(ivaInversion)}</div><div class="l">IVA (${ivaPct}%) sobre la inversión</div></div>
     <div class="result-chip good"><div class="v">${fmtEUR(totalInversionConIva)}</div><div class="l">Inversión inicial, IVA incluido</div></div>
-    <div class="result-chip"><div class="v">${fmtEUR(mantenimientoAnualConIva)}</div><div class="l">Mantenimiento anual, IVA incluido</div></div>
+    <div class="result-chip"><div class="v">${fmtEUR(mantenimientoMesConIva)}</div><div class="l">Cuota de mantenimiento mensual, IVA incluido</div></div>
+    <div class="result-chip"><div class="v">${periodoGarantiaMeses} meses</div><div class="l">Periodo de garantía contratado</div></div>
+    <div class="result-chip good"><div class="v">${fmtEUR(mantenimientoTotalGarantiaConIva)}</div><div class="l">Total mantenimiento durante la garantía, IVA incluido</div></div>
   `;
 
-  return {totalHW, totalIN, totalMN, ivaPct, totalInversion, ivaInversion, totalInversionConIva, mantenimientoAnual, ivaMantenimientoAnual, mantenimientoAnualConIva, costePorDispositivo, nDisp};
+  return {totalHW, totalIN, totalMN, ivaPct, totalInversion, ivaInversion, totalInversionConIva, periodoGarantiaMeses, mantenimientoTotalGarantia, ivaMantenimientoGarantia, mantenimientoTotalGarantiaConIva, mantenimientoMesConIva, costePorDispositivo, nDisp};
 }
 recalcular();
 
@@ -888,7 +951,7 @@ function datosProyecto(){
 }
 
 function filasConCantidad(items){
-  return items.map(it=>({label:it.label, ...filaValores(it)})).filter(r=>r.q>0);
+  return items.map(it=>filaValores(it)).filter(r=>r.q>0);
 }
 
 function tablaHtmlInforme(rows, unidad){
@@ -918,7 +981,9 @@ function generarInforme(){
 
     <h3>Hardware</h3>${tablaHtmlInforme(filasConCantidad(BUDGET.hardware), ' (€)')}
     <h3>Instalación y puesta en marcha</h3>${tablaHtmlInforme(filasConCantidad(BUDGET.instalacion), ' (€)')}
-    <h3>Mantenimiento de software</h3>${tablaHtmlInforme(filasConCantidad(BUDGET.mantenimiento), ' (€/mes)')}
+    <h3>Garantía y mantenimiento (${calc.periodoGarantiaMeses} meses)</h3>
+    <p>Durante el periodo de garantía de <b>${calc.periodoGarantiaMeses} meses</b>, el mantenimiento es obligatorio y se contrata por la totalidad del periodo:</p>
+    ${tablaHtmlInforme(filasConCantidad(BUDGET.mantenimiento), ' (€/mes)')}
 
     <h3>Resumen económico</h3>
     <table class="data-table" style="margin-bottom:6px;">
@@ -926,13 +991,14 @@ function generarInforme(){
         <tr><td>Subtotal hardware + instalación</td><td>${fmtEUR(calc.totalInversion)}</td></tr>
         <tr><td>IVA (${calc.ivaPct}%)</td><td>${fmtEUR(calc.ivaInversion)}</td></tr>
         <tr><td><b>Total inversión inicial, IVA incluido</b></td><td><b>${fmtEUR(calc.totalInversionConIva)}</b></td></tr>
-        <tr><td>Mantenimiento anual, IVA incluido</td><td>${fmtEUR(calc.mantenimientoAnualConIva)}</td></tr>
+        <tr><td>Cuota de mantenimiento mensual, IVA incluido</td><td>${fmtEUR(calc.mantenimientoMesConIva)}</td></tr>
+        <tr><td><b>Total mantenimiento durante los ${calc.periodoGarantiaMeses} meses de garantía, IVA incluido</b></td><td><b>${fmtEUR(calc.mantenimientoTotalGarantiaConIva)}</b></td></tr>
       </tbody>
     </table>
     <p class="rmeta">Coste medio por dispositivo (sin IVA, sin mantenimiento): ${fmtEUR(calc.costePorDispositivo)}</p>
 
     <h3>Condiciones</h3>
-    <p>Oferta orientativa válida 30 días desde la fecha indicada, sujeta a visita técnica previa para confirmar cobertura de radio LoRa y el estado de los cuadros eléctricos. No incluye obra civil, canalizaciones nuevas ni gestión de permisos salvo que se indique expresamente. Los precios son de referencia para un proyecto de este tipo y deben ajustarse a las condiciones reales del emplazamiento.</p>
+    <p>Oferta orientativa válida 30 días desde la fecha indicada, sujeta a visita técnica previa para confirmar cobertura de radio LoRa y el estado de los cuadros eléctricos. El contrato de mantenimiento tiene un compromiso mínimo de 36 meses (ampliable hasta 120 meses / 10 años) y es obligatorio durante todo el periodo de garantía contratado; al finalizar puede renovarse en las mismas condiciones. No incluye obra civil, canalizaciones nuevas ni gestión de permisos salvo que se indique expresamente. Los precios son de referencia para un proyecto de este tipo y deben ajustarse a las condiciones reales del emplazamiento.</p>
   `;
   showToast('Vista previa del informe actualizada.');
 }
@@ -988,7 +1054,7 @@ function descargarPDF(){
     y += 3;
   }
   function filasPdf(items){
-    return filasConCantidad(items).map(r=>[r.label, String(r.q), fmtEUR(r.p), fmtEUR(r.st)]);
+    return filasConCantidad(items).map(r=>[pdfSafe(r.label), String(r.q), fmtEUR(r.p), fmtEUR(r.st)]);
   }
 
   const d = datosProyecto();
@@ -1026,7 +1092,8 @@ function descargarPDF(){
   const rIN = filasPdf(BUDGET.instalacion);
   rIN.length ? tabla(rIN, cols) : paragraph('Sin partidas con cantidad > 0.');
 
-  heading('Mantenimiento de software (cuota mensual)');
+  heading('Garantía y mantenimiento ('+calc.periodoGarantiaMeses+' meses)');
+  paragraph('Durante el periodo de garantía de '+calc.periodoGarantiaMeses+' meses, el mantenimiento es obligatorio y se contrata por la totalidad del periodo:');
   const rMN = filasPdf(BUDGET.mantenimiento);
   rMN.length ? tabla(rMN, cols) : paragraph('Sin partidas con cantidad > 0.');
 
@@ -1035,12 +1102,13 @@ function descargarPDF(){
     ['Subtotal hardware + instalación', '', '', fmtEUR(calc.totalInversion)],
     ['IVA ('+calc.ivaPct+'%)', '', '', fmtEUR(calc.ivaInversion)],
     ['Total inversión inicial, IVA incluido', '', '', fmtEUR(calc.totalInversionConIva)],
-    ['Mantenimiento anual, IVA incluido', '', '', fmtEUR(calc.mantenimientoAnualConIva)],
+    ['Cuota de mantenimiento mensual, IVA incluido', '', '', fmtEUR(calc.mantenimientoMesConIva)],
+    ['Total mantenimiento durante '+calc.periodoGarantiaMeses+' meses de garantía, IVA incluido', '', '', fmtEUR(calc.mantenimientoTotalGarantiaConIva)],
   ], cols);
   paragraph('Coste medio por dispositivo (sin IVA, sin mantenimiento): '+fmtEUR(calc.costePorDispositivo));
 
   heading('Condiciones');
-  paragraph('Oferta orientativa válida 30 días desde la fecha indicada, sujeta a visita técnica previa para confirmar cobertura de radio LoRa y el estado de los cuadros eléctricos. No incluye obra civil, canalizaciones nuevas ni gestión de permisos salvo que se indique expresamente. Los precios son de referencia para un proyecto de este tipo y deben ajustarse a las condiciones reales del emplazamiento.');
+  paragraph('Oferta orientativa válida 30 días desde la fecha indicada, sujeta a visita técnica previa para confirmar cobertura de radio LoRa y el estado de los cuadros eléctricos. El contrato de mantenimiento tiene un compromiso mínimo de 36 meses (ampliable hasta 120 meses / 10 años) y es obligatorio durante todo el periodo de garantía contratado; al finalizar puede renovarse en las mismas condiciones. No incluye obra civil, canalizaciones nuevas ni gestión de permisos salvo que se indique expresamente. Los precios son de referencia para un proyecto de este tipo y deben ajustarse a las condiciones reales del emplazamiento.');
 
   const totalPages = doc.internal.getNumberOfPages();
   for(let p=1;p<=totalPages;p++){
