@@ -1507,7 +1507,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
       b.style.cssText = 'font-family:inherit; font-size:11px; padding:8px 12px; border-radius:4px; border:1px solid #FFB020; background:#0A121C; color:#FFB020; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.35);';
       return b;
     }
-    var btnExp = crearBoton('⬇ Exportar vatiaco.json');
+    var btnExp = crearBoton('⬇');
     btnExp.addEventListener('click', function(){
       var blob = new Blob([JSON.stringify(leerVatiaco(), null, 2)], {type:'application/json'});
       var url = URL.createObjectURL(blob);
@@ -1517,7 +1517,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
       URL.revokeObjectURL(url);
     });
 
-    var btnImp = crearBoton('⬆ Importar vatiaco.json');
+    var btnImp = crearBoton('⬆');
     var inputFile = document.createElement('input');
     inputFile.type = 'file'; inputFile.accept = '.json,application/json'; inputFile.style.display = 'none';
     inputFile.addEventListener('change', function(e){

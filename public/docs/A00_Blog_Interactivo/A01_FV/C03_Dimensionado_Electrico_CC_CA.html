@@ -335,7 +335,7 @@
                   <label>Modelo de panel encontrado en el diseño guardado</label>
                   <select id="importSelectGrupo"></select>
                 </div>
-                <button class="btn primary" id="btnImportarGrupo" type="button">⬇ Usar este modelo</button>
+                <button class="btn primary" id="btnImportarGrupo" type="button">⬇Usar este modelo</button>
               </div>
               <p class="hint" style="margin-top:10px;">Se importan las características eléctricas del panel y se sugiere como potencia objetivo el kWp total de ese modelo ya dibujado sobre el mapa (editable a continuación).</p>
             </div>
@@ -559,7 +559,7 @@
       <p class="lede">Vuelve a calcular si has cambiado algún dato en las secciones anteriores.</p>
       <div class="btn-row" style="margin-bottom:24px;">
         <button class="btn primary" id="btnRecalcular2" type="button">⚡ Recalcular</button>
-        <button class="btn ghost" id="btnPdf" type="button">⬇ Generar informe en PDF</button>
+        <button class="btn ghost" id="btnPdf" type="button">⬇Generar informe en PDF</button>
       </div>
       <div id="informeResumen"></div>
       <p class="disclaimer">Informe de predimensionado generado automáticamente. Antes de ejecutar la instalación, valida los cálculos con el proyecto justificativo, la normativa vigente (REBT e ITC aplicables, UNE-HD 60364) y las hojas de características reales de los equipos elegidos.</p>
@@ -1665,7 +1665,7 @@ function guardarSalidaEnVatiaco(resultado){
       b.style.cssText = 'font-family:inherit; font-size:11px; padding:8px 12px; border-radius:4px; border:1px solid #37CFFF; background:#0A121C; color:#37CFFF; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.35);';
       return b;
     }
-    const btnExp = crearBoton('⬇ Exportar vatiaco.json');
+    const btnExp = crearBoton('⬇');
     btnExp.addEventListener('click', function(){
       const blob = new Blob([JSON.stringify(vatiacoLeer(), null, 2)], {type:'application/json'});
       const url = URL.createObjectURL(blob);
@@ -1674,7 +1674,7 @@ function guardarSalidaEnVatiaco(resultado){
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
-    const btnImp = crearBoton('⬆ Importar vatiaco.json');
+    const btnImp = crearBoton('⬆');
     const inputFile = document.createElement('input');
     inputFile.type = 'file'; inputFile.accept = '.json,application/json'; inputFile.style.display = 'none';
     inputFile.addEventListener('change', function(e){
