@@ -222,7 +222,7 @@
     <section id="resumen">
       <div class="eyebrow kicker">00 · Resumen ejecutivo</div>
       <h2>Estudio del recurso eólico en cualquier punto de la península, con datos reales de PVGIS.</h2>
-      <p class="lede">Herramienta interactiva de análisis estadístico del viento, inspirada en un informe técnico académico tipo "Estudio del Recurso Eólico" (Master en Blog de Ingeniería Industrial, UPM): análisis anual, estacional y diurno/nocturno, histograma de velocidades, rosa de los vientos, extrapolación con la altura, ajuste de la distribución de Weibull y cálculo de energía y factor de capacidad de un aerogenerador. En vez de un fichero de datos descargado a mano, esta herramienta llama en tiempo real a la API TMY (año meteorológico típico) de <b>PVGIS</b> para cualquier coordenada de España, y amplía la teoría con el manual <b>Energía Eólica (IDAE, 2006)</b>.</p>
+      <p class="lede">Herramienta interactiva de análisis estadístico del viento, inspirada en un informe técnico académico tipo "Estudio del Recurso Eólico" (Master en Blog de un ingeniero jubilado Industrial, UPM): análisis anual, estacional y diurno/nocturno, histograma de velocidades, rosa de los vientos, extrapolación con la altura, ajuste de la distribución de Weibull y cálculo de energía y factor de capacidad de un aerogenerador. En vez de un fichero de datos descargado a mano, esta herramienta llama en tiempo real a la API TMY (año meteorológico típico) de <b>PVGIS</b> para cualquier coordenada de España, y amplía la teoría con el manual <b>Energía Eólica (IDAE, 2006)</b>.</p>
 
       <div class="hero">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:40px; flex-wrap:wrap;">
@@ -321,7 +321,7 @@
       <div class="formula-box">
         <div class="f">v(h) = v_ref · ln(h / z0) / ln(h_ref / z0)</div>
       </div>
-      <p class="tooltip-text">Una alternativa habitual en Blog de Ingeniería eólica es la <b>ley potencial</b>, v(h) = v_ref·(h/h_ref)^α, con α típico entre 0,10 (terreno muy liso) y 0,40 (terreno muy rugoso o urbano). Esta herramienta usa la ley logarítmica por coherencia con el informe de referencia, pero ambos métodos dan resultados similares para alturas de buje habituales.</p>
+      <p class="tooltip-text">Una alternativa habitual en Blog de un ingeniero jubilado eólica es la <b>ley potencial</b>, v(h) = v_ref·(h/h_ref)^α, con α típico entre 0,10 (terreno muy liso) y 0,40 (terreno muy rugoso o urbano). Esta herramienta usa la ley logarítmica por coherencia con el informe de referencia, pero ambos métodos dan resultados similares para alturas de buje habituales.</p>
 
       <div class="fieldset-title">Clases y longitudes de rugosidad (European Wind Atlas)</div>
       <div style="overflow-x:auto;">
@@ -519,7 +519,7 @@
     </section>
 
     <footer>
-      Herramienta orientativa de estudio de recurso eólico, basada en llamadas en tiempo real a la API TMY de <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/" target="_blank" rel="noopener">PVGIS</a> (Comisión Europea, Joint Research Centre) y ampliada con el manual "Energía Eólica" del IDAE (2006) y el European Wind Atlas. Los resultados dependen de la disponibilidad y precisión de los datos de PVGIS para cada ubicación; no sustituyen a una campaña de medición in situ ni a un estudio de viabilidad firmado por un técnico competente. Integrado en el blog de Vatiaco. Última actualización: 2026.
+      Herramienta orientativa de estudio de recurso eólico, basada en llamadas en tiempo real a la API TMY de <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/" target="_blank" rel="noopener">PVGIS</a> (Comisión Europea, Joint Research Centre) y ampliada con el manual "Energía Eólica" del IDAE (2006) y el European Wind Atlas. Los resultados dependen de la disponibilidad y precisión de los datos de PVGIS para cada ubicación; no sustituyen a una campaña de medición in situ ni a un estudio de viabilidad firmado por un técnico competente. Integrado en el blog de VatioLibre. Última actualización: 2026.
     </footer>
 
   </main>
@@ -1816,7 +1816,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
 <script>
 (function(){
   var DOC_KEY = 'estudio_recurso_eolico_espana';
-  var LS_KEY = 'vatiaco';
+  var LS_KEY = 'vatiolibre';
 
   function leerVatiaco(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); }catch(e){ return {}; } }
   function guardarVatiaco(v){ try{ localStorage.setItem(LS_KEY, JSON.stringify(v)); }catch(e){} }
@@ -1870,7 +1870,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
       var blob = new Blob([JSON.stringify(leerVatiaco(), null, 2)], {type:'application/json'});
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.href = url; a.download = 'vatiaco.json';
+      a.href = url; a.download = 'vatiolibre.json';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });

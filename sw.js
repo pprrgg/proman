@@ -11,8 +11,8 @@
  * siempre pasa por aquí antes de que el documento vea la respuesta.
  */
 
-var CHANNEL_NAME = 'vatiaco-auth-sw';
-var DB_NAME = 'vatiaco-auth';
+var CHANNEL_NAME = 'vatiolibre-auth-sw';
+var DB_NAME = 'vatiolibre-auth';
 var STORE_NAME = 'kv';
 var TOKEN_KEY = 'token';
 var API_HOSTS = ['127.0.0.1:8888', 'doctec.duckdns.org'];

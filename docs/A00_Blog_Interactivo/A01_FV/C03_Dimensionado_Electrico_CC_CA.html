@@ -245,7 +245,7 @@
           <div class="hero-meta">
             <span>Encadena con</span>
             <span style="color:var(--amber)">C01 · Diseño de Sistemas FV</span>
-            <span>Datos propios: guardados en <code class="inline" style="color:inherit; background:transparent; padding:0;">vatiaco</code></span>
+            <span>Datos propios: guardados en <code class="inline" style="color:inherit; background:transparent; padding:0;">vatiolibre</code></span>
           </div>
         </div>
         <div class="stat-row">
@@ -695,7 +695,7 @@ function calibreSuperior(lista, valor){
 }
 
 // ===================== IMPORTAR PANEL DESDE C01 =====================
-const VATIACO_LS_KEY = 'vatiaco';
+const VATIACO_LS_KEY = 'vatiolibre';
 const DOC_KEY_C01 = 'fv_diseno_sistemas_fv';
 const DOC_KEY = 'fv_dimensionado_electrico_cc_ca';
 function vatiacoLeer(){
@@ -731,7 +731,7 @@ function inicializarImportacion(){
   const selectorWrap = document.getElementById('importSelectorWrap');
   if(!grupos || grupos.length===0){
     avisoVacio.style.display = 'block';
-    avisoVacio.innerHTML = '⚠ No se ha encontrado ningún diseño guardado en el navegador (clave <code class="inline">vatiaco.'+DOC_KEY_C01+'.outputs.diseno</code>). Ve primero a <a href="C01_Diseno_Sistemas_FV.html">Diseño de Sistemas FV</a>, pinta al menos una superficie con un modelo de panel, y vuelve a esta página. También puedes seguir con los datos manuales de abajo.';
+    avisoVacio.innerHTML = '⚠ No se ha encontrado ningún diseño guardado en el navegador (clave <code class="inline">vatiolibre.'+DOC_KEY_C01+'.outputs.diseno</code>). Ve primero a <a href="C01_Diseno_Sistemas_FV.html">Diseño de Sistemas FV</a>, pinta al menos una superficie con un modelo de panel, y vuelve a esta página. También puedes seguir con los datos manuales de abajo.';
     selectorWrap.style.display = 'none';
     return;
   }
@@ -1610,9 +1610,9 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
 
 // ===================== VATIACO: memoria compartida del navegador =====================
 // "Datos del proyecto" (campos con id que empieza por "p_") se sincroniza de forma
-// bidireccional con vatiaco.proyecto, compartido entre todos los documentos. El resto de
-// campos propios de este documento se acumulan en vatiaco.fv_dimensionado_electrico_cc_ca.inputs,
-// y cada calculo escribe el resultado completo en vatiaco.fv_dimensionado_electrico_cc_ca.outputs
+// bidireccional con vatiolibre.proyecto, compartido entre todos los documentos. El resto de
+// campos propios de este documento se acumulan en vatiolibre.fv_dimensionado_electrico_cc_ca.inputs,
+// y cada calculo escribe el resultado completo en vatiolibre.fv_dimensionado_electrico_cc_ca.outputs
 // (mismo esquema inputs/outputs que usan todos los documentos del sitio).
 function guardarSalidaEnVatiaco(resultado){
   const v = vatiacoLeer();
@@ -1670,7 +1670,7 @@ function guardarSalidaEnVatiaco(resultado){
       const blob = new Blob([JSON.stringify(vatiacoLeer(), null, 2)], {type:'application/json'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = 'vatiaco.json';
+      a.href = url; a.download = 'vatiolibre.json';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });

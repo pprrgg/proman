@@ -612,7 +612,7 @@
     </section>
 
     <footer>
-      Herramienta interactiva de auditoría energética (marco ISO 50002 / EN 16247, metodología caso base–caso propuesto de VATIACOScreen) integrada en el blog de Vatiaco. Los valores de referencia por sector son orientativos y los cálculos, estimativos; para un dictamen vinculante consulta a un auditor energético certificado. Última actualización: 2026.
+      Herramienta interactiva de auditoría energética (marco ISO 50002 / EN 16247, metodología caso base–caso propuesto de VATIACOScreen) integrada en el blog de VatioLibre. Los valores de referencia por sector son orientativos y los cálculos, estimativos; para un dictamen vinculante consulta a un auditor energético certificado. Última actualización: 2026.
     </footer>
 
   </main>
@@ -1242,7 +1242,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
 <script>
 (function(){
   var DOC_KEY = 'auditoria_energetica_iso_VATIACOScreen';
-  var LS_KEY = 'vatiaco';
+  var LS_KEY = 'vatiolibre';
 
   function leerVatiaco(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); }catch(e){ return {}; } }
   function guardarVatiaco(v){ try{ localStorage.setItem(LS_KEY, JSON.stringify(v)); }catch(e){} }
@@ -1296,7 +1296,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
       var blob = new Blob([JSON.stringify(leerVatiaco(), null, 2)], {type:'application/json'});
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.href = url; a.download = 'vatiaco.json';
+      a.href = url; a.download = 'vatiolibre.json';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });

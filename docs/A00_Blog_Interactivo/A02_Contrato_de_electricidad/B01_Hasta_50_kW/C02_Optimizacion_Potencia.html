@@ -1626,17 +1626,17 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
 
 <!-- ===================== VATIACO: memoria compartida del navegador ===================== -->
 <!-- "Datos del proyecto" (campos con id que empieza por "p_") se sincroniza de forma
-     bidireccional con vatiaco.proyecto, compartido entre todos los documentos: se rellena
+     bidireccional con vatiolibre.proyecto, compartido entre todos los documentos: se rellena
      por defecto desde ahi al cargar la pagina, y cualquier cambio en el formulario se guarda
      de vuelta. El resto de campos propios de este documento se acumulan en
-     vatiaco.hasta_50_kw_optimizacion_potencia.inputs. Si vatiaco.hasta_50_kw_optimizacion_potencia no existe todavia, se crea al vuelo con
+     vatiolibre.hasta_50_kw_optimizacion_potencia.inputs. Si vatiolibre.hasta_50_kw_optimizacion_potencia no existe todavia, se crea al vuelo con
      los valores que los campos tienen por defecto (o vacios, si el campo esta vacio). Cada vez
-     que se genera el informe PDF se anota en vatiaco.hasta_50_kw_optimizacion_potencia.outputs. Ademas se anaden
-     botones flotantes para exportar/importar el objeto vatiaco completo como un .json. -->
+     que se genera el informe PDF se anota en vatiolibre.hasta_50_kw_optimizacion_potencia.outputs. Ademas se anaden
+     botones flotantes para exportar/importar el objeto vatiolibre completo como un .json. -->
 <script>
 (function(){
   var DOC_KEY = 'hasta_50_kw_optimizacion_potencia';
-  var LS_KEY = 'vatiaco';
+  var LS_KEY = 'vatiolibre';
 
   function leerVatiaco(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); }catch(e){ return {}; } }
   function guardarVatiaco(v){ try{ localStorage.setItem(LS_KEY, JSON.stringify(v)); }catch(e){} }
@@ -1646,7 +1646,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
 
   var TIPOS_IGNORADOS = {file:1, button:1, submit:1, reset:1, image:1};
 
-  // Sincroniza cada campo con su contenedor en vatiaco: si ya hay un valor guardado, lo
+  // Sincroniza cada campo con su contenedor en vatiolibre: si ya hay un valor guardado, lo
   // vuelca en el campo (memoria -> formulario); si no hay nada guardado todavia, guarda el
   // valor que el campo tiene ahora mismo -- el que trae por defecto, o vacio si no tiene
   // (formulario -> memoria), de forma que la clave quede creada desde la primera visita.
@@ -1672,7 +1672,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
     });
   }
 
-  // Registra en vatiaco.hasta_50_kw_optimizacion_potencia.outputs cada vez que se genera el informe (salida del
+  // Registra en vatiolibre.hasta_50_kw_optimizacion_potencia.outputs cada vez que se genera el informe (salida del
   // documento). No duplica la logica de calculo de cada documento (distinta en cada uno):
   // deja constancia de cuando se genero la ultima salida, junto con los inputs vigentes en
   // ese momento, para poder distinguir una salida ya desactualizada de una reciente.
@@ -1698,7 +1698,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
       var blob = new Blob([JSON.stringify(leerVatiaco(), null, 2)], {type:'application/json'});
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.href = url; a.download = 'vatiaco.json';
+      a.href = url; a.download = 'vatiolibre.json';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
@@ -1745,7 +1745,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
       function(vv){ return vv.proyecto; },
       function(vv){ vv.proyecto = vv.proyecto || {}; return vv.proyecto; }
     );
-    // Resto de campos de este documento: propios, acumulados en vatiaco.hasta_50_kw_optimizacion_potencia.inputs.
+    // Resto de campos de este documento: propios, acumulados en vatiolibre.hasta_50_kw_optimizacion_potencia.inputs.
     sincronizarCampos(
       Array.prototype.slice.call(document.querySelectorAll('input:not([id^="p_"]), select:not([id^="p_"]), textarea:not([id^="p_"])')),
       function(vv){ return vv[DOC_KEY] && vv[DOC_KEY].inputs; },

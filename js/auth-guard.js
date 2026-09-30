@@ -33,14 +33,14 @@
   }
 
   function notifyAuthChanged() {
-    window.dispatchEvent(new CustomEvent('vatiaco-auth-changed'));
+    window.dispatchEvent(new CustomEvent('vatiolibre-auth-changed'));
   }
 
   // ---------- Espejo del token en IndexedDB para el Service Worker ----------
   // Un Service Worker no puede leer localStorage, así que cada vez que el
   // token cambia aquí también se guarda en IndexedDB (misma base de datos
   // que lee sw.js) para que pueda añadir el header Authorization.
-  var IDB_NAME = 'vatiaco-auth';
+  var IDB_NAME = 'vatiolibre-auth';
   var IDB_STORE = 'kv';
   var IDB_TOKEN_KEY = 'token';
 
@@ -182,7 +182,7 @@
 
   // El aviso nunca inicia sesión por sí mismo: se resuelve en cuanto el
   // usuario complete el login desde el otro modal (botón superior).
-  window.addEventListener('vatiaco-auth-changed', function () {
+  window.addEventListener('vatiolibre-auth-changed', function () {
     if (getUsername() && pending.length) {
       hideModal();
       resolvePending();
@@ -194,7 +194,7 @@
   // BroadcastChannel; se muestra el aviso y se le responde con el
   // resultado para que reintente (o no) la petición original.
   if ('BroadcastChannel' in window) {
-    var swChannel = new BroadcastChannel('vatiaco-auth-sw');
+    var swChannel = new BroadcastChannel('vatiolibre-auth-sw');
     swChannel.addEventListener('message', function (event) {
       if (event.data && event.data.type === 'need-login') {
         waitForLogin()

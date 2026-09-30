@@ -1069,7 +1069,7 @@ const HORAS_ETIQUETA = Array.from({length:24}, (_,i)=>i);
 // ===================== VATIACO: memoria compartida del navegador =====================
 // Definido aqui (antes de CURVAS) porque la restauracion de curvas guardadas, justo debajo,
 // necesita estas constantes y funciones disponibles desde el primer render.
-const VATIACO_LS_KEY = 'vatiaco';
+const VATIACO_LS_KEY = 'vatiolibre';
 const DOC_KEY_C04 = 'fv_autoconsumo_fv_bateria';
 function vatiacoLeer(){
   try { return JSON.parse(localStorage.getItem(VATIACO_LS_KEY) || '{}'); }
@@ -1101,7 +1101,7 @@ const CURVAS = {
 };
 
 // Ambas curvas (generacion y consumo) se guardan tambien en
-// vatiaco.fv_autoconsumo_fv_bateria.inputs.curvas, ademas de los campos "input" sueltos --
+// vatiolibre.fv_autoconsumo_fv_bateria.inputs.curvas, ademas de los campos "input" sueltos --
 // asi el patron "bidireccional" cubre tambien las curvas horarias, no solo los campos
 // escalares. curvasRestauradasDeVatiaco marca si hubo algo que restaurar, para que el
 // bloque de "perfiles por defecto" (mas abajo) no las sobreescriba con un perfil tipico.
@@ -1122,7 +1122,7 @@ let curvasRestauradasDeVatiaco = false;
 // Curva de precio (€/kWh), editable arrastrando igual que generacion/consumo pero con su
 // propia escala vertical (fuera de CURVAS: sus valores, de decimas de euro, no son
 // comparables a los kWh de generacion/consumo que comparten eje). Se guarda en la misma
-// vatiaco.fv_autoconsumo_fv_bateria.inputs.curvas, como una clave "precio" mas.
+// vatiolibre.fv_autoconsumo_fv_bateria.inputs.curvas, como una clave "precio" mas.
 let PRECIO_HORARIO = new Array(24).fill(0);
 let precioRestauradoDeVatiaco = false;
 // Curva de precio de potencia contratada (€/kW/dia), editable arrastrando igual que
@@ -1170,8 +1170,8 @@ function guardarCurvasEnVatiaco(){
 // ===================== EDITOR DE CURVA (arrastrar sobre el reparto horario, seccion 03) =====================
 // Generacion y consumo ya no tienen graficos de barras propios -- se editan arrastrando
 // directamente sobre "Reparto horario del dia tipo" (ver repartoSetFromEvent, mas abajo).
-// renderTodosLosEditores() se queda solo con la persistencia en vatiaco: la llaman todos
-// los sitios que cambian CURVAS (arrastrar, perfiles tipicos, importar PVGIS/vatiaco...).
+// renderTodosLosEditores() se queda solo con la persistencia en vatiolibre: la llaman todos
+// los sitios que cambian CURVAS (arrastrar, perfiles tipicos, importar PVGIS/vatiolibre...).
 function renderTodosLosEditores(){ guardarCurvasEnVatiaco(); }
 
 // Unico editor de generacion/consumo: arrastrar directamente sobre el grafico "Reparto
@@ -3426,12 +3426,12 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
 
 // ===================== VATIACO: sincronizacion de campos, salida y exportar/importar =====================
 // Mismo patron que el resto de documentos: "Datos del proyecto" (campos "p_") se
-// sincroniza con vatiaco.proyecto, compartido entre todos los documentos; el resto de
+// sincroniza con vatiolibre.proyecto, compartido entre todos los documentos; el resto de
 // campos propios (dia tipo, latitud/kWp, tipo de consumidor, bateria...) se acumulan en
-// vatiaco.fv_autoconsumo_fv_bateria.inputs; y cada vez que se genera el PDF se anota en
-// vatiaco.fv_autoconsumo_fv_bateria.outputs. Se ejecuta de forma sincrona (no con setTimeout)
+// vatiolibre.fv_autoconsumo_fv_bateria.inputs; y cada vez que se genera el PDF se anota en
+// vatiolibre.fv_autoconsumo_fv_bateria.outputs. Se ejecuta de forma sincrona (no con setTimeout)
 // y ANTES de aplicar los perfiles por defecto, para que estos usen los valores ya
-// restaurados de vatiaco en vez de los que traen los campos por defecto en el HTML.
+// restaurados de vatiolibre en vez de los que traen los campos por defecto en el HTML.
 (function(){
   var DOC_KEY = DOC_KEY_C04;
   function valorCampo(el){ return el.type === 'checkbox' ? el.checked : el.value; }
@@ -3479,7 +3479,7 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
       var blob = new Blob([JSON.stringify(vatiacoLeer(), null, 2)], { type:'application/json' });
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.href = url; a.download = 'vatiaco.json';
+      a.href = url; a.download = 'vatiolibre.json';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
@@ -3532,9 +3532,9 @@ document.getElementById('btnPdf').addEventListener('click', ()=>{
 // Para que las curvas y los resultados no empiecen vacios, se aplican automaticamente
 // al abrir la pagina: generacion tipica con la latitud/kWp por defecto de los campos, y
 // un perfil domestico de consumo (con el kWh/dia que traiga el campo), ambos para el dia
-// tipo seleccionado (por defecto o restaurado de vatiaco por sincronizarCampos, arriba).
+// tipo seleccionado (por defecto o restaurado de vatiolibre por sincronizarCampos, arriba).
 // Sigue siendo un punto de partida - todo se puede editar despues arrastrando o aplicando
-// otro perfil/tipo/dia. Se omite por completo si ya se restauraron curvas desde vatiaco
+// otro perfil/tipo/dia. Se omite por completo si ya se restauraron curvas desde vatiolibre
 // (sesion anterior), para no pisar lo que el usuario ya habia dibujado/importado.
 // Va al final del script para que ya existan todas las funciones y constantes que usa
 // renderResultados().

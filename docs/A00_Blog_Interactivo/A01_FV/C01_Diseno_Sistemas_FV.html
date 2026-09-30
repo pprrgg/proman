@@ -1661,11 +1661,11 @@ function generarGeoJSONTodasLasSuperficies(superficies){
 
 // ===================== GUARDADO AUTOMATICO EN EL NAVEGADOR (para C02) =====================
 // Cada cambio en las superficies se refleja en localStorage, bajo
-// vatiaco.<DOC_KEY_C01>.outputs.diseno, para que la app de generacion fotovoltaica (C02) lo
+// vatiolibre.<DOC_KEY_C01>.outputs.diseno, para que la app de generacion fotovoltaica (C02) lo
 // pueda leer sin necesidad de exportar/importar un archivo .geojson manualmente. DOC_KEY_C01
 // sigue el mismo esquema <carpeta>_<documento> que usan todos los documentos, y outputs es la
 // misma subclave (junto a inputs) que usan todos los documentos (ver mas abajo).
-const VATIACO_LS_KEY = 'vatiaco';
+const VATIACO_LS_KEY = 'vatiolibre';
 const DOC_KEY_C01 = 'fv_diseno_sistemas_fv';
 function vatiacoLeer(){
   try{ return JSON.parse(localStorage.getItem(VATIACO_LS_KEY)||'{}'); }
@@ -1851,9 +1851,9 @@ function renderInstallations(){
 
 window.toggleInst = function(id){ document.getElementById('ib-'+id).classList.toggle('open'); };
 
-// Comunicacion bidireccional con vatiaco.<DOC_KEY_C01>.outputs.diseno: si ya hay un diseno
+// Comunicacion bidireccional con vatiolibre.<DOC_KEY_C01>.outputs.diseno: si ya hay un diseno
 // guardado en la memoria del navegador (por ejemplo, justo despues de importar un
-// vatiaco.json con el boton "Importar vatiaco.json", que recarga la pagina) se restauran esas
+// vatiolibre.json con el boton "Importar vatiolibre.json", que recarga la pagina) se restauran esas
 // superficies y sus paneles pintados; si no hay nada guardado, se crea una superficie inicial
 // en blanco para que el usuario pueda empezar a pintar de inmediato.
 (function restaurarDisenoOInicial(){
@@ -1861,7 +1861,7 @@ window.toggleInst = function(id){ document.getElementById('ib-'+id).classList.to
   const disenoGuardado = guardado && guardado.outputs && guardado.outputs.diseno;
   if(disenoGuardado && Array.isArray(disenoGuardado.features) && disenoGuardado.features.length>0){
     const n = importarGeoJSON(disenoGuardado);
-    if(n>0){ showToast(n+' superficie(s) restauradas desde la memoria del navegador (vatiaco.'+DOC_KEY_C01+'.outputs.diseno).'); return; }
+    if(n>0){ showToast(n+' superficie(s) restauradas desde la memoria del navegador (vatiolibre.'+DOC_KEY_C01+'.outputs.diseno).'); return; }
   }
   nuevaSuperficie();
 })();
@@ -2524,13 +2524,13 @@ document.getElementById('btnPdf').addEventListener('click', async ()=>{
 
 <!-- ===================== VATIACO: memoria compartida del navegador ===================== -->
 <!-- "Datos del proyecto" (campos con id que empieza por "p_") se sincroniza de forma
-     bidireccional con vatiaco.proyecto, compartido entre todos los documentos: se rellena
+     bidireccional con vatiolibre.proyecto, compartido entre todos los documentos: se rellena
      por defecto desde ahi al cargar la pagina, y cualquier cambio en el formulario se guarda
      de vuelta. El resto de campos propios de este documento se acumulan en
-     vatiaco.fv_diseno_sistemas_fv.inputs. Si vatiaco.fv_diseno_sistemas_fv no existe todavia, se crea al vuelo con
+     vatiolibre.fv_diseno_sistemas_fv.inputs. Si vatiolibre.fv_diseno_sistemas_fv no existe todavia, se crea al vuelo con
      los valores que los campos tienen por defecto (o vacios, si el campo esta vacio). Cada vez
-     que se genera el informe PDF se anota en vatiaco.fv_diseno_sistemas_fv.outputs. Ademas se anaden
-     botones flotantes para exportar/importar el objeto vatiaco completo como un .json.
+     que se genera el informe PDF se anota en vatiolibre.fv_diseno_sistemas_fv.outputs. Ademas se anaden
+     botones flotantes para exportar/importar el objeto vatiolibre completo como un .json.
      Reutiliza VATIACO_LS_KEY, DOC_KEY_C01 y vatiacoLeer/vatiacoGuardar ya definidos mas
      arriba, para no duplicar la clave del documento ni el acceso a localStorage. -->
 <script>
@@ -2542,7 +2542,7 @@ document.getElementById('btnPdf').addEventListener('click', async ()=>{
 
   var TIPOS_IGNORADOS = {file:1, button:1, submit:1, reset:1, image:1};
 
-  // Sincroniza cada campo con su contenedor en vatiaco: si ya hay un valor guardado, lo
+  // Sincroniza cada campo con su contenedor en vatiolibre: si ya hay un valor guardado, lo
   // vuelca en el campo (memoria -> formulario); si no hay nada guardado todavia, guarda el
   // valor que el campo tiene ahora mismo -- el que trae por defecto, o vacio si no tiene
   // (formulario -> memoria), de forma que la clave quede creada desde la primera visita.
@@ -2568,7 +2568,7 @@ document.getElementById('btnPdf').addEventListener('click', async ()=>{
     });
   }
 
-  // Registra en vatiaco.fv_diseno_sistemas_fv.outputs cada vez que se genera el informe (salida del
+  // Registra en vatiolibre.fv_diseno_sistemas_fv.outputs cada vez que se genera el informe (salida del
   // documento). No duplica la logica de calculo de cada documento (distinta en cada uno):
   // deja constancia de cuando se genero la ultima salida, junto con los inputs vigentes en
   // ese momento, para poder distinguir una salida ya desactualizada de una reciente.
@@ -2594,7 +2594,7 @@ document.getElementById('btnPdf').addEventListener('click', async ()=>{
       var blob = new Blob([JSON.stringify(vatiacoLeer(), null, 2)], {type:'application/json'});
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.href = url; a.download = 'vatiaco.json';
+      a.href = url; a.download = 'vatiolibre.json';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
@@ -2641,7 +2641,7 @@ document.getElementById('btnPdf').addEventListener('click', async ()=>{
       function(vv){ return vv.proyecto; },
       function(vv){ vv.proyecto = vv.proyecto || {}; return vv.proyecto; }
     );
-    // Resto de campos de este documento: propios, acumulados en vatiaco.fv_diseno_sistemas_fv.inputs.
+    // Resto de campos de este documento: propios, acumulados en vatiolibre.fv_diseno_sistemas_fv.inputs.
     sincronizarCampos(
       Array.prototype.slice.call(document.querySelectorAll('input:not([id^="p_"]), select:not([id^="p_"]), textarea:not([id^="p_"])')),
       function(vv){ return vv[DOC_KEY] && vv[DOC_KEY].inputs; },
