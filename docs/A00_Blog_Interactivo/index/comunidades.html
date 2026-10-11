@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Comunidades energéticas · VatioLibre</title>
+<meta name="description" content="Mapa de comunidades energéticas repartidas por España." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<!--
+  Mapa publico de comunidades energeticas (ficticias) repartidas por España.
+  Se muestra dentro del visor del blog (/?doc=/docs/A00_Blog_Interactivo/index/comunidades.html)
+  o suelto. Al pulsar una comunidad se abre la plataforma (DESTINO) a pantalla completa.
+-->
+<style>
+  :root {
+    color-scheme: dark;
+    font-family: Inter, system-ui, sans-serif;
+    --nav-height: 3.5rem;
+    --color-accent: #3369ff;
+    --color-white: #ffffff;
+    --color-gray-1: #edeef3;
+    --color-gray-2: #c1c3c8;
+    --color-gray-3: #888c96;
+    --color-gray-5: #353841;
+    --color-gray-6: #23262f;
+    --color-black: #17181c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--color-black);
+    color: var(--color-gray-2);
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 1rem;
+    background: var(--color-gray-6);
+    border-bottom: 1px solid var(--color-black);
+  }
+  /* Dentro del visor del blog la cabecera sobra (el blog ya tiene la suya) */
+  .embebido header { display: none; }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-white);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .brand .libre { color: #ff8c00; }
+  .back { color: var(--color-gray-2); text-decoration: none; font-size: 0.875rem; white-space: nowrap; }
+  .back:hover { color: var(--color-white); }
+  .intro { padding: 1.25rem 1rem 0.75rem; max-width: 72rem; width: 100%; margin: 0 auto; }
+  h1 { margin: 0 0 0.35rem; font-size: clamp(1.3rem, 3vw, 1.8rem); color: var(--color-white); }
+  .intro p { margin: 0; font-size: 0.95rem; color: var(--color-gray-3); }
+  .stats { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 0.75rem; font-size: 0.9rem; }
+  .stats strong { color: var(--color-white); font-variant-numeric: tabular-nums; }
+  .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-top: 0.6rem; font-size: 0.85rem; }
+  .legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .dot { width: 0.8rem; height: 0.8rem; border-radius: 50%; display: inline-block; }
+  .map-wrap {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1rem 1rem;
+    display: flex;
+  }
+  #mapa {
+    flex: 1;
+    min-height: 420px;
+    height: calc(100vh - 14rem);
+    border-radius: 0.6rem;
+    border: 1px solid var(--color-gray-5);
+    background: #1b1d22;
+  }
+  .embebido #mapa { height: calc(100vh - 10.5rem); }
+  /* Recuadro de Canarias (como en los mapas de España) */
+  #canarias {
+    position: absolute;
+    left: 1.6rem;
+    bottom: 1.6rem;
+    width: min(240px, 42%);
+    height: 150px;
+    border: 1px solid var(--color-gray-3);
+    border-radius: 0.4rem;
+    background: #1b1d22;
+    z-index: 500;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  }
+  #canarias .leaflet-control-attribution { display: none; }
+  /* Teselas de OpenStreetMap oscurecidas para el tema del sitio */
+  .mapa-oscuro { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9) saturate(0.6); }
+  .ce-marker {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .ce-marker:hover { transform: scale(1.15); }
+  .leaflet-tooltip.ce-tip {
+    background: var(--color-gray-6);
+    color: var(--color-gray-1);
+    border: 1px solid var(--color-gray-5);
+    border-radius: 0.4rem;
+    font: 13px/1.4 Inter, system-ui, sans-serif;
+    padding: 0.5rem 0.65rem;
+  }
+  .leaflet-tooltip.ce-tip::before { display: none; }
+  .ce-tip b { color: var(--color-white); }
+  .ce-tip small { color: var(--color-gray-3); }
+  noscript { display: block; padding: 1rem; }
+  @media (max-width: 600px) {
+    .map-wrap { padding: 0; }
+    #mapa { border-radius: 0; border-left: 0; border-right: 0; height: calc(100vh - 16rem); }
+    #canarias { left: 0.6rem; bottom: 0.6rem; height: 110px; }
+  }
+</style>
+<script>
+  // Dentro del visor del blog: sin cabecera propia (antes de pintar, sin parpadeo)
+  if (window.top !== window) document.documentElement.classList.add('embebido');
+</script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/" target="_top"><span aria-hidden="true">⚡</span><span>Vatio</span><span class="libre">Libre</span></a>
+    <a class="back" href="/" target="_top">← Volver al blog</a>
+  </header>
+
+  <section class="intro">
+    <h1>Comunidades energéticas en España</h1>
+    <p>Mapa de comunidades energéticas de ejemplo (ficticias). Pulsa una para entrar en su plataforma.</p>
+    <div class="stats">
+      <span><strong id="nComunidades">–</strong> comunidades</span>
+      <span><strong id="nSocios">–</strong> socios</span>
+      <span><strong id="nKw">–</strong> kW instalados</span>
+    </div>
+    <div class="legend" aria-label="Leyenda">
+      <span><i class="dot" style="background:#f5a623"></i>Solar</span>
+      <span><i class="dot" style="background:#29b6f6"></i>Eólica</span>
+      <span><i class="dot" style="background:#2e9d6b"></i>Mixta</span>
+    </div>
+  </section>
+
+  <div class="map-wrap">
+    <div id="mapa" role="region" aria-label="Mapa de comunidades energéticas"></div>
+    <div id="canarias" role="region" aria-label="Canarias"></div>
+  </div>
+  <noscript>El mapa necesita JavaScript.</noscript>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script>
+    // nombre, municipio, provincia, lat, lon, socios, kW instalados, tipo (Solar | Eólica | Mixta)
+    const comunidades = [
+      { nombre: 'Comunidad Energética Churriana', municipio: 'Churriana', provincia: 'Málaga', lat: 36.6652, lon: -4.4983, socios: 7, kwp: 152, tipo: 'Mixta' },
+      { nombre: 'Sol de Tabernas', municipio: 'Tabernas', provincia: 'Almería', lat: 37.0496, lon: -2.3903, socios: 42, kwp: 310, tipo: 'Solar' },
+      { nombre: 'Vega Viva', municipio: 'Santa Fe', provincia: 'Granada', lat: 37.1889, lon: -3.7186, socios: 28, kwp: 185, tipo: 'Solar' },
+      { nombre: 'Aljarafe Renovable', municipio: 'Mairena del Aljarafe', provincia: 'Sevilla', lat: 37.3447, lon: -6.0628, socios: 64, kwp: 420, tipo: 'Solar' },
+      { nombre: 'Viento de Tarifa', municipio: 'Tarifa', provincia: 'Cádiz', lat: 36.0143, lon: -5.6044, socios: 35, kwp: 600, tipo: 'Eólica' },
+      { nombre: 'Campiña Solar', municipio: 'Écija', provincia: 'Sevilla', lat: 37.5422, lon: -5.0826, socios: 22, kwp: 160, tipo: 'Solar' },
+      { nombre: 'Huerta Energética', municipio: 'Alzira', provincia: 'Valencia', lat: 39.1514, lon: -0.4356, socios: 51, kwp: 280, tipo: 'Solar' },
+      { nombre: 'Mar Menor Sostenible', municipio: 'San Javier', provincia: 'Murcia', lat: 37.8063, lon: -0.8374, socios: 39, kwp: 260, tipo: 'Solar' },
+      { nombre: 'Montes de Toledo Energía', municipio: 'Los Yébenes', provincia: 'Toledo', lat: 39.5822, lon: -3.8730, socios: 18, kwp: 220, tipo: 'Mixta' },
+      { nombre: 'Barrio Solar Vallecas', municipio: 'Madrid', provincia: 'Madrid', lat: 40.3845, lon: -3.6585, socios: 120, kwp: 540, tipo: 'Solar' },
+      { nombre: 'Sierra Norte Renovable', municipio: 'Buitrago del Lozoya', provincia: 'Madrid', lat: 40.9928, lon: -3.6386, socios: 26, kwp: 140, tipo: 'Mixta' },
+      { nombre: 'La Mancha Eólica', municipio: 'Campo de Criptana', provincia: 'Ciudad Real', lat: 39.4049, lon: -3.1246, socios: 33, kwp: 750, tipo: 'Eólica' },
+      { nombre: 'Dehesa Viva', municipio: 'Zafra', provincia: 'Badajoz', lat: 38.4245, lon: -6.4176, socios: 24, kwp: 190, tipo: 'Solar' },
+      { nombre: 'Tierra de Campos Energía', municipio: 'Medina de Rioseco', provincia: 'Valladolid', lat: 41.8826, lon: -5.0429, socios: 19, kwp: 330, tipo: 'Mixta' },
+      { nombre: 'Páramo Eólico', municipio: 'Villadiego', provincia: 'Burgos', lat: 42.5157, lon: -4.0101, socios: 15, kwp: 480, tipo: 'Eólica' },
+      { nombre: 'Moncayo Renovable', municipio: 'Tarazona', provincia: 'Zaragoza', lat: 41.9050, lon: -1.7253, socios: 30, kwp: 520, tipo: 'Eólica' },
+      { nombre: 'Delta Energètic', municipio: 'Deltebre', provincia: 'Tarragona', lat: 40.7203, lon: 0.7106, socios: 27, kwp: 210, tipo: 'Solar' },
+      { nombre: 'Gràcia Solar', municipio: 'Barcelona', provincia: 'Barcelona', lat: 41.4036, lon: 2.1570, socios: 95, kwp: 380, tipo: 'Solar' },
+      { nombre: 'Empordà Renovable', municipio: 'Figueres', provincia: 'Girona', lat: 42.2667, lon: 2.9617, socios: 36, kwp: 410, tipo: 'Mixta' },
+      { nombre: 'Navarra Comunal', municipio: 'Tafalla', provincia: 'Navarra', lat: 42.5280, lon: -1.6737, socios: 44, kwp: 560, tipo: 'Mixta' },
+      { nombre: 'Rioja Alta Energía', municipio: 'Haro', provincia: 'La Rioja', lat: 42.5770, lon: -2.8466, socios: 21, kwp: 175, tipo: 'Solar' },
+      { nombre: 'Urdaibai Energia', municipio: 'Gernika', provincia: 'Bizkaia', lat: 43.3170, lon: -2.6780, socios: 38, kwp: 230, tipo: 'Mixta' },
+      { nombre: 'Picos Verdes', municipio: 'Cangas de Onís', provincia: 'Asturias', lat: 43.3512, lon: -5.1290, socios: 17, kwp: 120, tipo: 'Mixta' },
+      { nombre: 'Costa da Morte Eólica', municipio: 'Malpica de Bergantiños', provincia: 'A Coruña', lat: 43.3226, lon: -8.8106, socios: 29, kwp: 690, tipo: 'Eólica' },
+      { nombre: 'Ribeira Sacra Solar', municipio: 'Monforte de Lemos', provincia: 'Lugo', lat: 42.5214, lon: -7.5146, socios: 16, kwp: 115, tipo: 'Solar' },
+      { nombre: 'Illa Solar', municipio: 'Inca', provincia: 'Illes Balears', lat: 39.7210, lon: 2.9110, socios: 47, kwp: 300, tipo: 'Solar' },
+      { nombre: 'Alisios Comunidad', municipio: 'Telde', provincia: 'Las Palmas', lat: 27.9924, lon: -15.4192, socios: 52, kwp: 640, tipo: 'Mixta' },
+      { nombre: 'Teide Renovable', municipio: 'La Orotava', provincia: 'Santa Cruz de Tenerife', lat: 28.3907, lon: -16.5230, socios: 34, kwp: 260, tipo: 'Solar' },
+    ];
+    const DESTINO = 'https://vatiolibre.duckdns.org/';   // plataforma de la comunidad (ThingsBoard)
+    const COLOR = { Solar: '#f5a623', 'Eólica': '#29b6f6', Mixta: '#2e9d6b' };
+    const fmt = (n) => n.toLocaleString('es-ES');
+
+    document.getElementById('nComunidades').textContent = comunidades.length;
+    document.getElementById('nSocios').textContent = fmt(comunidades.reduce((a, c) => a + c.socios, 0));
+    document.getElementById('nKw').textContent = fmt(comunidades.reduce((a, c) => a + c.kwp, 0));
+
+    // ---- Visor a pantalla completa: la plataforma en un iframe sin barra ----
+    // Dentro del visor del blog se monta en la ventana de arriba (mismo origen) para
+    // ocupar toda la pantalla y no solo el visor. Se cierra con "atras" del navegador
+    // (o Esc mientras el foco no este en la plataforma).
+    let W = window;
+    try { if (window.top !== window && window.top.document) W = window.top; } catch (e) { W = window; }
+    const D = W.document;
+    const HASH = '#plataforma';
+    let visor = D.getElementById('ceVisor');
+    if (!visor) {
+      visor = D.createElement('div');
+      visor.id = 'ceVisor';
+      visor.setAttribute('role', 'dialog');
+      visor.setAttribute('aria-modal', 'true');
+      visor.setAttribute('aria-label', 'Plataforma de la comunidad energética');
+      visor.style.cssText = 'position:fixed;inset:0;z-index:2147483000;display:none;background:#17181c;';
+      const fr = D.createElement('iframe');
+      fr.title = 'Plataforma de la comunidad energética';
+      fr.allow = 'fullscreen; clipboard-write';
+      fr.style.cssText = 'width:100%;height:100%;border:0;background:#fff;display:block;';
+      visor.appendChild(fr);
+      D.body.appendChild(visor);
+    }
+    const visorFrame = visor.querySelector('iframe');
+    let foco = null;
+    const abierto = () => visor.style.display !== 'none';
+    function abrir(c) {
+      visorFrame.title = c.nombre;
+      if (visorFrame.getAttribute('src') !== DESTINO) visorFrame.src = DESTINO;
+      foco = document.activeElement;
+      visor.style.display = 'block';
+      D.body.style.overflow = 'hidden';
+      visorFrame.focus();
+      if (W.location.hash !== HASH) W.history.pushState({ ceVisor: true }, '', W.location.pathname + W.location.search + HASH);
+    }
+    function cerrar() {
+      if (!abierto()) return;
+      visor.style.display = 'none';
+      D.body.style.overflow = '';
+      if (foco) foco.focus();
+    }
+    const salir = () => (W.location.hash === HASH ? W.history.back() : cerrar());
+    W.addEventListener('popstate', cerrar);
+    for (const t of new Set([D, document])) {
+      t.addEventListener('keydown', (e) => { if (e.key === 'Escape' && abierto()) salir(); });
+    }
+    // Al recargar con #plataforma (p.ej. tras navegar) no se deja el hash colgado
+    if (W.location.hash === HASH) W.history.replaceState(null, '', W.location.pathname + W.location.search);
+    // Si el blog cambia de documento, el visor no se queda montado encima
+    window.addEventListener('pagehide', () => { cerrar(); visor.remove(); });
+
+    // ---- Mapa ----
+    const capa = () => L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      className: 'mapa-oscuro',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+    });
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+    // Marcadores de las comunidades de 'lista' en el mapa 'm'; al pulsar, a la plataforma
+    function marcar(m, lista) {
+      for (const c of lista) {
+        const icono = L.divIcon({
+          className: '',
+          html: `<div class="ce-marker" style="background:${COLOR[c.tipo]}" role="link" aria-label="${esc(c.nombre)}">⚡</div>`,
+          iconSize: [34, 34],
+          iconAnchor: [17, 17],
+        });
+        const mk = L.marker([c.lat, c.lon], { icon: icono, title: c.nombre, keyboard: true }).addTo(m);
+        mk.bindTooltip(
+          `<b>${esc(c.nombre)}</b><br><small>${esc(c.municipio)} · ${esc(c.provincia)}</small><br>` +
+            `${c.socios} socios · ${fmt(c.kwp)} kW · ${esc(c.tipo)}`,
+          { className: 'ce-tip', direction: 'top', offset: [0, -16] },
+        );
+        mk.on('click keypress', () => abrir(c));
+      }
+    }
+
+    const enCanarias = (c) => c.lat < 30;
+    const peninsula = comunidades.filter((c) => !enCanarias(c));
+    const canarias = comunidades.filter(enCanarias);
+
+    // Mapa principal: peninsula y Baleares
+    const mapa = L.map('mapa', { zoomSnap: 0.25 });
+    capa().addTo(mapa);
+    marcar(mapa, peninsula);
+    mapa.fitBounds(L.latLngBounds(peninsula.map((c) => [c.lat, c.lon])).pad(0.08));
+
+    // Recuadro de Canarias, fijo
+    const recuadro = L.map('canarias', {
+      zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false,
+      doubleClickZoom: false, boxZoom: false, keyboard: false, touchZoom: false, zoomSnap: 0.25,
+    });
+    capa().addTo(recuadro);
+    marcar(recuadro, canarias);
+    recuadro.fitBounds([[27.6, -18.2], [29.45, -13.3]]);
+  </script>
+</body>
+</html>
