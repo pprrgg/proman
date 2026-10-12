@@ -1144,9 +1144,9 @@ echo "    ThingsBoard responde ($(( $(date +%s) - INICIO ))s)"
 # El original se pide desde el contenedor de Caddy, que ve thingsboard:8080 en la red interna.
 if docker compose exec -T caddy wget -qO- http://thingsboard:8080/ > config/branding/index.orig.html 2>/dev/null \
    && [ -s config/branding/index.orig.html ]; then
-  python3 - "$BRAND" "$COLOR_BG" config/branding/index.orig.html "$BRAND_WEB" > config/branding/index.html <<'PY'
-import sys
-brand, bg, orig, web = sys.argv[1:]
+  python3 - "$BRAND" "$COLOR_BG" config/branding/index.orig.html "$BRAND_WEB" "$TB_LANG" > config/branding/index.html <<'PY'
+import json, sys
+brand, bg, orig, web, lang = sys.argv[1:]
 html = open(orig, encoding="utf-8").read()
 html = html.replace("<title>ThingsBoard</title>", f"<title>{brand}</title>")
 html = html.replace("background-color: #eee;", f"background-color: {bg};")
@@ -1167,6 +1167,30 @@ home = ("<script>(function(){var U=" + repr(web) + ";"
         "a.textContent='\u26a1';s.insertBefore(a,s.firstChild);});}"
         "new MutationObserver(f).observe(document.documentElement,{childList:true,subtree:true});})();"
         "</script>")
+# Idioma antes de iniciar sesion (login, recuperar contraseña): ThingsBoard lo toma del
+# navegador; se le presenta TB_LANG para que salga traducido aunque el navegador este en
+# otro idioma. Tras entrar manda el idioma de cada usuario (additionalInfo.lang).
+bcp = lang.replace("_", "-")
+idioma = ("<script>(function(){var L=" + repr([bcp, bcp.split("-")[0]]) + ";try{"
+          "Object.defineProperty(navigator,'languages',{get:function(){return L;}});"
+          "Object.defineProperty(navigator,'language',{get:function(){return L[0];}});"
+          "}catch(e){}})();</script>")
+# Mensajes de error del inicio de sesion: los manda el servidor siempre en ingles
+ERRORES = {"Invalid username or password": "Usuario o contraseña incorrectos",
+           "Authentication failed": "Error de autenticación",
+           "User account is not active": "La cuenta de usuario no está activa",
+           "User is not active": "La cuenta de usuario no está activa",
+           "User account is locked due to security policy": "Cuenta bloqueada por la política de seguridad",
+           "User password expired!": "La contraseña ha caducado",
+           "Token has expired": "La sesión ha caducado"}
+if lang.lower().startswith("es"):
+    idioma += ("<script>(function(){var T=" + json.dumps(ERRORES, ensure_ascii=False) + ";"
+               "function f(){document.querySelectorAll('.mat-mdc-snack-bar-container,tb-snack-bar-component,.toast-panel')"
+               ".forEach(function(c){var w=document.createTreeWalker(c,NodeFilter.SHOW_TEXT),n;"
+               "while((n=w.nextNode())){var k=n.nodeValue.trim();if(T[k])n.nodeValue=n.nodeValue.replace(k,T[k]);}});}"
+               "new MutationObserver(f).observe(document.documentElement,{childList:true,subtree:true,characterData:true});})();"
+               "</script>")
+html = html.replace("<head>", "<head>\n  " + idioma, 1)
 html = html.replace("</head>", '  <link rel="stylesheet" href="/branding/VatiaCo.css"/>\n  '
                     + titulo + "\n  " + home + "\n</head>", 1)
 sys.stdout.write(html)
