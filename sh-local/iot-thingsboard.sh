@@ -13,6 +13,7 @@ set -euo pipefail
 #   Caddy       -> HTTPS en el 443 del servidor (certificado interno o Let's Encrypt)
 #   pg-backup   -> copia diaria de PostgreSQL en backups/postgres
 #   Homepage    -> portada de los servicios del servidor (LAN, puerto HOMEPAGE_PORT)
+#   proman      -> web Astro de este repositorio (compilada y servida con nginx, LAN)
 #
 # Cambios respecto a la version con network_mode: host:
 #  - Red bridge en lugar de network_mode: host. Solo se publican 80/443 (Caddy) y 8883 (MQTT con TLS).
@@ -39,6 +40,9 @@ set -euo pipefail
 #                       dispositivos, paneles, reglas) y flujos de Node-RED
 #                       -> se regenera con ./export.sh
 # ============================================
+
+# Web Astro (proman) que se sirve en el stack: el repositorio que contiene este script
+PROMAN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Todo el stack vive en esta carpeta del host (config, datos, exportaciones)
 INSTALL_DIR="$HOME/iot-tb"
@@ -72,6 +76,7 @@ NODERED_PORT="1880"     # editor de Node-RED, solo 127.0.0.1
 ADMINER_PORT="8081"     # Adminer, solo 127.0.0.1 (perfil tools)
 MQTTX_PORT="4000"       # MQTT Explorer, solo 127.0.0.1 (perfil tools)
 HOMEPAGE_PORT="3000"    # Homepage (portada de servicios), LAN
+PROMAN_PORT="8030"      # web Astro (proman), LAN
 # Puertos internos de Mosquitto (no publicados)
 MQTT_PORT="1883"        # MQTT sin TLS: Node-RED, MQTT Explorer
 MQTT_WS_PORT="9001"     # WebSocket: Caddy lo publica como wss://<dominio>/mqtt
@@ -220,7 +225,7 @@ if [ "$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project"}}
   docker rm -f homepage >/dev/null
 fi
 OCUPADOS=()
-for p in 80 443 "$MQTTS_PORT" "$NODERED_PORT" "$HOMEPAGE_PORT"; do
+for p in 80 443 "$MQTTS_PORT" "$NODERED_PORT" "$HOMEPAGE_PORT" "$PROMAN_PORT"; do
   if ss -ltnH "( sport = :$p )" 2>/dev/null | grep -q .; then
     OCUPADOS+=("$p")
   fi
@@ -232,7 +237,7 @@ if [ ${#OCUPADOS[@]} -gt 0 ] && ! docker ps -q --filter "label=com.docker.compos
 fi
 
 echo "==> Creando estructura en $INSTALL_DIR"
-mkdir -p "$INSTALL_DIR"/config/{mosquitto,caddy,nodered,branding,homepage} \
+mkdir -p "$INSTALL_DIR"/config/{mosquitto,caddy,nodered,branding,homepage,proman} \
          "$INSTALL_DIR"/data/{postgres,thingsboard,thingsboard-logs,nodered,mosquitto,caddy,caddy-config,mqtt-explorer} \
          "$INSTALL_DIR"/export "$INSTALL_DIR"/backups/postgres
 cd "$INSTALL_DIR"
@@ -286,6 +291,9 @@ MQTTX_VERSION=$MQTTX_VERSION
 HOMEPAGE_VERSION=$HOMEPAGE_VERSION
 HOMEPAGE_PORT=$HOMEPAGE_PORT
 HOMEPAGE_ALLOWED_HOSTS=$HOMEPAGE_HOSTS
+PROMAN_DIR=$PROMAN_DIR
+PROMAN_DOCKERFILE=$INSTALL_DIR/config/proman/Dockerfile
+PROMAN_PORT=$PROMAN_PORT
 DUCKDNS_VERSION=$DUCKDNS_VERSION
 MQTTS_PORT=$MQTTS_PORT
 NODERED_PORT=$NODERED_PORT
@@ -615,11 +623,11 @@ cat > config/homepage/services.yaml <<EOF
 
 - Web:
     - VatiaCo (proman):
-        href: http://$IP:8030
-        description: "Web Astro, sin autenticacion / Puerto 8030"
+        href: http://$IP:$PROMAN_PORT
+        description: "Web Astro de $PROMAN_DIR · sin autenticación · puerto $PROMAN_PORT · recompilar: $INSTALL_DIR/web.sh"
         icon: astro
         server: my-docker
-        container: proman-web
+        container: iot-proman
 
 - Administracion:
     - Portainer:
@@ -628,6 +636,65 @@ cat > config/homepage/services.yaml <<EOF
         icon: portainer
         server: my-docker
         container: portainer
+EOF
+
+# --------------------------------------------
+# 5c. Web Astro (proman): se compila desde PROMAN_DIR y se sirve con nginx
+# --------------------------------------------
+# La carpeta del proyecto no se modifica: solo es el contexto de build (lectura).
+# El Dockerfile, su .dockerignore y la config de nginx viven en config/proman.
+cat > config/proman/Dockerfile <<'EOF'
+FROM node:20.19-alpine AS build
+# ffprobe lo usa scripts/generate-video-manifest.mjs (prebuild)
+RUN apk add --no-cache ffmpeg bash
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:1.27-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EOF
+
+# Ignore propio del Dockerfile (BuildKit lo busca junto a el): no se toca el proyecto
+cat > config/proman/Dockerfile.dockerignore <<'EOF'
+node_modules
+dist
+.astro
+.git
+.claude
+.env
+.env.*
+zz
+py
+sh
+sh-local
+EOF
+
+cat > config/proman/nginx.conf <<'EOF'
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml text/plain;
+
+    location / {
+        try_files $uri $uri/ $uri.html =404;
+    }
+
+    # El service worker no debe quedarse en cache
+    location = /sw.js {
+        add_header Cache-Control "no-cache";
+    }
+
+    location /_astro/ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+}
 EOF
 
 # --------------------------------------------
@@ -803,6 +870,20 @@ services:
       - ./config/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  # Web Astro del repositorio (PROMAN_DIR): build con Node y nginx. Se reconstruye en
+  # cada ejecucion de iot-thingsboard.sh o con ./web.sh
+  proman:
+    <<: *common
+    build:
+      context: ${PROMAN_DIR}
+      dockerfile: ${PROMAN_DOCKERFILE}
+    image: iot-proman:local
+    container_name: iot-proman
+    ports:
+      - "${PROMAN_PORT}:80"
+    volumes:
+      - ./config/proman/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
   # Solo se arranca si hay TB_DOMAIN y DUCKDNS_TOKEN (COMPOSE_PROFILES=duckdns)
   duckdns:
     <<: *common
@@ -848,7 +929,14 @@ case "${1:-up}" in
   *)    echo "uso: $0 [up|down]" >&2; exit 1 ;;
 esac
 EOF
-chmod +x start.sh stop.sh logs.sh tools.sh
+# Recompila y publica solo la web Astro (tras cambiar el proyecto): ./web.sh
+cat > web.sh <<'EOF'
+#!/bin/bash
+set -e
+cd "$(dirname "$0")"
+docker compose up -d --build proman
+EOF
+chmod +x start.sh stop.sh logs.sh tools.sh web.sh
 
 # Certificado TLS de Mosquitto (8883): el de Let's Encrypt que obtiene Caddy para
 # TB_DOMAIN o, mientras no exista, uno autofirmado. Lo ejecuta cron cada semana.
@@ -984,7 +1072,9 @@ EOF
 # 8. Base de datos + instalacion inicial de ThingsBoard (solo la primera vez)
 # --------------------------------------------
 echo "==> Descargando imagenes..."
-docker compose pull -q
+docker compose pull -q --ignore-buildable
+echo "==> Compilando la web Astro (proman) desde $PROMAN_DIR..."
+docker compose build -q proman
 
 # Mosquitto no arranca el listener TLS sin certificado: se crea antes de levantarlo
 ./mqtt-cert.sh
@@ -2977,6 +3067,7 @@ $(for s_ in "${SOCIOS[@]}"; do IFS='|' read -r n e pw pf sim <<< "$s_"; [ -n "$e
 | PostgreSQL | postgres:5432 (solo red interna) | $PG_USER / $PG_PASSWORD |
 | Adminer (tools, tunel SSH) | http://127.0.0.1:$ADMINER_PORT/?pgsql=postgres&username=$PG_USER&db=thingsboard | sistema **PostgreSQL** (no MySQL) · $PG_USER / $PG_PASSWORD |
 | Homepage (portada de servicios) | http://$IP:$HOMEPAGE_PORT | — |
+| Web Astro (proman) | http://$IP:$PROMAN_PORT | — (recompilar: \`./web.sh\`) |
 | MQTT Explorer (tools, tunel SSH) | http://127.0.0.1:$MQTTX_PORT | $MQTT_USER / $MQTT_PASSWORD (conexion "Mosquitto" precargada) |
 
 Solo se publican 80/443 (Caddy) y $MQTTS_PORT (MQTT con TLS). Node-RED, Adminer y
@@ -3087,6 +3178,7 @@ echo "   comunidad: ${#SENSORES[@]} medidores de ${#SOCIOS[@]} socios -> cec/<so
 echo " Mosquitto TLS     : mqtts://${TB_DOMAIN:-$IP}:$MQTTS_PORT  ($MQTT_USER / $MQTT_PASSWORD)"
 echo "   WebSocket       : wss://${TB_DOMAIN:-$IP}/mqtt  (mismas credenciales, TLS via Caddy)"
 echo " Homepage          : http://$IP:$HOMEPAGE_PORT   (portada de los servicios del servidor)"
+echo " Web Astro (proman): http://$IP:$PROMAN_PORT   (de $PROMAN_DIR; recompilar con ./web.sh)"
 echo " Herramientas      : ./tools.sh up   (Adminer y MQTT Explorer, solo 127.0.0.1)"
 echo "   Adminer (BD)    : http://127.0.0.1:$ADMINER_PORT/?pgsql=postgres&username=$PG_USER&db=thingsboard"
 echo "   MQTT Explorer   : http://127.0.0.1:$MQTTX_PORT  ($MQTT_USER / $MQTT_PASSWORD, pulsa CONNECT en 'Mosquitto')"
