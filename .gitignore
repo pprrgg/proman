@@ -6,3 +6,6 @@ dist/
 !.env.example
 npm-debug.log*
 .DS_Store
+
+# Datadis: datos de consumo descargados
+datadis_out/
