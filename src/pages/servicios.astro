@@ -1,0 +1,185 @@
+---
+import TopNav from '../components/TopNav.astro';
+import PieSitio from '../components/PieSitio.astro';
+import '../styles/sitio.css';
+// Servicios de VatiaCo: gestion de comunidades, ingenieria, instalacion y mantenimiento.
+// Cada servicio enlaza las guias y calculadoras del blog que lo respaldan.
+const PORTAL_URL = 'https://VatiaCo.duckdns.org/';
+const B = '/docs/A00_Blog_Interactivo/';
+const doc = (ruta: string) => `/blog/?doc=${encodeURIComponent(B + ruta)}`;
+
+const servicios = [
+  {
+    id: 'gestion', num: '01', icono: 'gestion',
+    titulo: 'Gestión de comunidades energéticas',
+    lema: 'Constitución, participantes y plataforma para la comunidad.',
+    puntos: [
+      'Constitución de la comunidad: forma jurídica, estatutos, alta de participantes y acuerdos de reparto.',
+      'Plataforma en la nube con un panel para cada participante y otro para la gestión de la comunidad.',
+      'Medida hora a hora de la generación y el consumo de cada participante, base para fijar y revisar los coeficientes de reparto.',
+      'Administración de usuarios, puntos de medida e informes de seguimiento.',
+    ],
+    enlaces: [
+      { t: 'Constitución de comunidades', href: doc('A02_Comunidades Energéticas/C01_Comunidades_Energeticas.html') },
+      { t: 'Presupuesto de puntos de medida', href: doc('A02_Comunidades Energéticas/C02_Presupuesto_Puntos_de_Medida.html') },
+    ],
+  },
+  {
+    id: 'ingenieria', num: '02', icono: 'ingenieria',
+    titulo: 'Ingeniería',
+    lema: 'Estudios, proyectos y tramitación con cálculo detallado.',
+    puntos: [
+      'Estudios de autoconsumo fotovoltaico, con y sin baterías: producción, dimensionado eléctrico y rentabilidad.',
+      'Proyectos y memorias técnicas de instalaciones de baja tensión, recarga de vehículo eléctrico y generación.',
+      'Tramitación del autoconsumo y de la legalización de la instalación.',
+      'Auditorías energéticas, optimización de la potencia contratada y certificados de ahorro energético (CAE).',
+    ],
+    enlaces: [
+      { t: 'Diseño de sistemas FV', href: doc('A01_FV/C01_Diseno_Sistemas_FV.html') },
+      { t: 'Tramitación del autoconsumo', href: doc('A01_FV/C01_Autoconsumo_Tramitacion.html') },
+      { t: 'Auditoría energética', href: doc('A06_Auditoria_Energetica/C01_Auditoria_Energetica.html') },
+    ],
+  },
+  {
+    id: 'instalacion', num: '03', icono: 'instalacion',
+    titulo: 'Instalación',
+    lema: 'Montaje, puesta en marcha y legalización.',
+    puntos: [
+      'Instalaciones fotovoltaicas de autoconsumo individual y colectivo.',
+      'Almacenamiento con baterías e integración con el inversor.',
+      'Puntos de recarga de vehículo eléctrico.',
+      'Medidores y pasarelas de comunicación para monitorizar cada punto de la comunidad.',
+    ],
+    enlaces: [
+      { t: 'Presupuesto fotovoltaico detallado', href: doc('A01_FV/C10_Presupuesto_fotovoltaico_detallado.html') },
+      { t: 'Autoconsumo FV con batería', href: doc('A01_FV/C04_Autoconsumo_FV_con_bateria.html') },
+      { t: 'Infraestructura de recarga (ITC-BT-52)', href: doc('A05_Vehiculo_Electrico/C03_ INFRAESTRUCTURA PARA LA RECARGA DE VEHÍCULOS ELÉCTRICOS_Guia_BT_52.html') },
+    ],
+  },
+  {
+    id: 'mantenimiento', num: '04', icono: 'mantenimiento',
+    titulo: 'Mantenimiento de instalaciones',
+    lema: 'Supervisión continua y cuota anual.',
+    puntos: [
+      'Mantenimiento preventivo y correctivo de instalaciones fotovoltaicas, baterías y puntos de recarga.',
+      'Supervisión remota con la plataforma: la caída de producción o de comunicación de un punto se detecta en sus curvas.',
+      'Revisión y sustitución en garantía de los equipos de medida.',
+      'Cuota anual que incluye el servicio en la nube, el soporte y las actualizaciones de la plataforma.',
+    ],
+    enlaces: [
+      { t: 'Presupuesto de puntos de medida', href: doc('A02_Comunidades Energéticas/C02_Presupuesto_Puntos_de_Medida.html') },
+    ],
+  },
+];
+
+const pasos = [
+  { t: 'Estudio', d: 'Visita, consumos y objetivos de cada participante o instalación' },
+  { t: 'Propuesta', d: 'Solución técnica y presupuesto detallado' },
+  { t: 'Instalación', d: 'Montaje, legalización y tramitación' },
+  { t: 'Puesta en marcha', d: 'Alta en la plataforma y paneles para cada participante' },
+  { t: 'Mantenimiento', d: 'Supervisión continua y cuota anual' },
+];
+---
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Servicios · VatiaCo</title>
+    <meta name="description" content="Gestión de comunidades energéticas, ingeniería, instalación y mantenimiento de instalaciones fotovoltaicas, almacenamiento y recarga." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>" />
+    <style is:global>
+      .enlaces { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--gray-5); }
+      .enlaces a { font-size: 0.85rem; font-weight: 600; color: var(--accent-high); text-decoration: none; padding: 0.3rem 0.65rem;
+        border: 1px solid var(--gray-5); border-radius: 0.45rem; }
+      .enlaces a:hover { border-color: var(--accent); background: var(--accent-low); }
+    </style>
+  </head>
+  <body>
+    <TopNav />
+
+    <main>
+      <div class="hero">
+        <div class="wrap">
+          <div class="etiqueta">Servicios</div>
+          <h1>De la idea a la instalación funcionando, <em>y después también</em>.</h1>
+          <p>Acompañamos a comunidades energéticas, empresas y particulares en todo el ciclo: gestión de la comunidad, ingeniería y tramitación, instalación y mantenimiento, con los datos de cada instalación en una plataforma propia.</p>
+          <div class="acciones">
+            <a class="btn principal" href="#contacto">Pedir propuesta</a>
+            <a class="btn" href={PORTAL_URL} data-plataforma="Acceso participantes">Acceso participantes</a>
+          </div>
+        </div>
+      </div>
+
+      <section id="servicios">
+        <div class="wrap">
+          <div class="etiqueta">Qué hacemos</div>
+          <h2>Cuatro servicios, un mismo equipo.</h2>
+          <p class="intro">Se pueden contratar por separado o juntos. Cada uno se apoya en las guías y calculadoras del blog.</p>
+          <div class="pilares">
+            {servicios.map((s) => (
+              <article class="pilar" id={s.id}>
+                <header>
+                  <div class="ico" aria-hidden="true">
+                    {s.icono === 'gestion' && (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3.2 3.2 0 0 1 0 6.2M18 14.5c1.8.8 3 2.7 3 4.9"/></svg>
+                    )}
+                    {s.icono === 'ingenieria' && (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg>
+                    )}
+                    {s.icono === 'instalacion' && (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g><circle cx="6" cy="6" r="2.4"/><path d="M6 1.2v1.1M6 9.7v1.1M1.2 6h1.1M9.7 6h1.1"/></g><path d="M9 12h13l-3 7H6l3-7Z"/><path d="M13.3 12l-3 7M17.7 12l-3 7M7.5 15.5h13"/><path d="M12.5 19v3M10 22h5"/></svg>
+                    )}
+                    {s.icono === 'mantenimiento' && (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4 2.6-2.6Z"/></svg>
+                    )}
+                  </div>
+                  <div>
+                    <div class="num">{s.num}</div>
+                    <h3>{s.titulo}</h3>
+                  </div>
+                </header>
+                <p class="lema">{s.lema}</p>
+                <ul>{s.puntos.map((t) => <li>{t}</li>)}</ul>
+                <div class="enlaces">{s.enlaces.map((e) => <a href={e.href}>{e.t}</a>)}</div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="como-trabajamos" style="background: rgba(35, 38, 47, 0.35);">
+        <div class="wrap">
+          <div class="etiqueta">Cómo trabajamos</div>
+          <h2>Un proyecto, de principio a fin.</h2>
+          <p class="intro">Desde el primer estudio hasta el mantenimiento, con un único interlocutor.</p>
+          <div class="cadena">
+            {pasos.map((p) => (
+              <div class="paso"><h4>{p.t}</h4><p>{p.d}</p></div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="contacto">
+        <div class="wrap">
+          <div class="etiqueta">Contacto</div>
+          <h2>Cuéntanos tu proyecto.</h2>
+          <p class="intro" style="margin-bottom: 0;">Indícanos qué servicio necesitas, dónde está la instalación y, si es una comunidad, cuántos participantes y puntos de medida tiene. Te preparamos una propuesta.</p>
+          <div class="contacto">
+            <a class="btn principal" href="tel:+34951733491">
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.46 15.46 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24 11.36 11.36 0 0 0 3.57.57 1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h4.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.57 1 1 0 0 1-.24 1.01l-2.21 2.21Z"/></svg>
+              951 733 491
+            </a>
+            <a class="btn" href="mailto:vatiaco2@gmail.com?subject=Propuesta%20de%20servicios">
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z"/></svg>
+              vatiaco2@gmail.com
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <PieSitio />
+  </body>
+</html>
